@@ -3,16 +3,19 @@ CC = g++
 LINKER = g++
 
 SOURCE_DIR = ./src
+BIN_DIR = ./bin
+OBJ_DIR = $(BIN_DIR)/obj
 
-main : main.o svector.o
-	@$(LINKER) -o main main.o svector.o
+TARGET = $(BIN_DIR)/main
+SOURCES = $(wildcard $(SOURCE_DIR)/*.cc)
+OBJECTS = $(SOURCES:$(SOURCE_DIR)/%.cc=$(OBJ_DIR)/%.o)
 
-main.o: $(SOURCE_DIR)/main.cc
-	@$(CC) -c $(SOURCE_DIR)/main.cc
-svector.o : $(SOURCE_DIR)/svector.cc
-	@$(CC) -c $(SOURCE_DIR)/svector.cc
+$(TARGET) : $(OBJECTS)
+	@$(LINKER) -o $(TARGET) $(OBJECTS)
 
+$(OBJECTS): $(OBJ_DIR)/%.o : $(SOURCE_DIR)/%.cc
+	@$(CC) -c $< -o $@
 
 .PHONY: clean
 clean:
-	@rm -f *.o main
+	@rm -f $(OBJECTS) $(TARGET)
