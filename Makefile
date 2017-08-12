@@ -16,6 +16,10 @@ $(TARGET) : $(OBJECTS)
 $(OBJECTS): $(OBJ_DIR)/%.o : $(SOURCE_DIR)/%.cc
 	@$(CC) -c $< -o $@
 
+.PHONY: run
+run: $(TARGET)
+	@$(TARGET)
+
 .PHONY: clean
 clean:
 	@rm -f $(OBJECTS) $(TARGET)
