@@ -5,9 +5,8 @@
 #include <memory>
 #include "svector.h"
 
-using dim = unsigned int;
 
-template <dim m, dim n = m>
+template <int m, int n = m>
 class ColMatrix {
   private:
     std::array<std::unique_ptr<SVector>, n> cols;
@@ -19,11 +18,14 @@ class ColMatrix {
     void add_value(int row, int col, double val) {
       cols[col]->add_value(row, val);
     }
-    template <dim mm, dim nn>
+    std::vector<Nonzero>& column(int i) {
+      return cols[i]->values;
+    }
+    template <int mm, int nn>
     friend std::ostream &operator<<(std::ostream &os, ColMatrix<mm,nn> const &matrix);
 };
 
-template <dim m, dim n>
+template <int m, int n>
 std::ostream &operator<<(std::ostream &os, ColMatrix<m,n> const &matrix) {
   for(auto& col : matrix.cols)
     os << *col << std::endl;

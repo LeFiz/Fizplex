@@ -15,7 +15,7 @@ class SVector {
     void add_value (int ind, double val);
     int length();
     friend std::ostream &operator<<(std::ostream &os, SVector const &n);
-  private:
+//  private:
     std::vector<Nonzero> values;
 };
 
