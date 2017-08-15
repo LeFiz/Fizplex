@@ -14,8 +14,17 @@ class SVector {
   public:
     void add_value (int ind, double val);
     int length();
+
+    using iterator = std::vector<Nonzero>::iterator;
+    iterator begin() {
+      return values.begin();
+    }
+    iterator end() {
+      return values.end();
+    }
+
     friend std::ostream &operator<<(std::ostream &os, SVector const &n);
-//  private:
+  private:
     std::vector<Nonzero> values;
 };
 

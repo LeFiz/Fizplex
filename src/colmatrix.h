@@ -18,8 +18,8 @@ class ColMatrix {
     void add_value(int row, int col, double val) {
       cols[col]->add_value(row, val);
     }
-    std::vector<Nonzero>& column(int i) {
-      return cols[i]->values;
+    SVector& column(int i) {
+      return *cols[i];
     }
     template <int mm, int nn>
     friend std::ostream &operator<<(std::ostream &os, ColMatrix<mm,nn> const &matrix);

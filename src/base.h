@@ -3,7 +3,6 @@
 
 #include "colmatrix.h"
 
-using Vec = std::vector<Nonzero>;
 
 template <int m>
 class Base {
@@ -11,15 +10,16 @@ class Base {
     Base();
     ColMatrix<m> base;
     void invert();
+    void updateVec(SVector& vec);
   private:
     struct ETM {
-      Vec eta;
+      SVector eta;
       int col;
     };
     std::vector<ETM> etms;
     std::array<double,m> work;
     void updateUnfinishedEtas(int i);
-    void updateVecWithETM(int i, Vec& vec);
+    void updateVecWithETM(ETM& etm, SVector& vec);
 };
 
 
@@ -55,22 +55,22 @@ void Base<m>::invert() {
     updateUnfinishedEtas(i);
 
   }
-//  std::cout << "Eta:" << std::endl;
-//  for(auto j = 0; j < etms.size(); j++)
-//    std::cout << "i = " << j << " eta = " << etms[j].eta;
+  std::cout << "Eta:" << std::endl;
+  for(auto j = 0; j < etms.size(); j++)
+    std::cout << "i = " << j << " eta = " << etms[j].eta << std::endl;
 };
 
 template <int m>
-void Base<m>::updateVecWithETM(int i, Vec& vec) {
+void Base<m>::updateVecWithETM(ETM& etm, SVector& vec) {
   // Copy eta to work array TODO only do if found
-  for(const auto& entry : etms[i].eta)
+  for(auto& entry : etm.eta)
     work[entry.index] = entry.value;
 
   double mult = 0.0;
   bool found = false;
   // Find nonzero multiplier in vec_i
   for(auto& v : vec) {
-    if(v.index == etms[i].col) {
+    if(v.index == etm.col) {
       found = true;
       mult = v.value;
       v.value = 0; // otherwise v_col = v_col + v_col * mult; should be v_col = v_col * mult
@@ -83,30 +83,37 @@ void Base<m>::updateVecWithETM(int i, Vec& vec) {
         work[e.index] = 0.0;
       }
     }
-    for(auto& e : etms[i].eta) {
+    for(auto& e : etm.eta) {
       if(work[e.index] != 0.0) { // not handled already => we have fill in
-        vec.push_back({e.index, work[e.index] * mult});
+        vec.add_value(e.index, work[e.index] * mult);
         work[e.index] = 0.0;
 //        std::cout << "Fill in!" << std::endl;
       }
     }
 
     // v_i = v_i + eta_i * v_i except for pivot element, there it's v_i = eta_i * v_i, i = posi
-    work[etms[i].col] -= mult;
+    work[etm.col] -= mult;
   }
 }
+
+template <int m>
+void Base<m>::updateVec(SVector& vec) {
+  for(const auto& etm : etms)
+    updateVecWithETM(etm, vec);
+}
+
 template <int m>
 void Base<m>::updateUnfinishedEtas(int finishedETM) {
   // Update v_i in that are saved in etas
   for(int i = finishedETM + 1; i < etms.size(); i++)
-    updateVecWithETM(finishedETM, etms[i].eta);
+    updateVecWithETM(etms[finishedETM], etms[i].eta);
 
 };
 
-std::ostream& operator<<(std::ostream& os, Vec const& vec) {
-  for(const auto& n : vec)
-    std::cout << n;
-  std::cout << std::endl;
-}
+//std::ostream& operator<<(std::ostream& os, Vec const& vec) {
+//  for(const auto& n : vec)
+//    std::cout << n;
+//  std::cout << std::endl;
+//}
 
 #endif
