@@ -3,6 +3,10 @@
 
 #include <vector>
 #include <iostream>
+#include <iomanip>
+#include <cmath>
+
+const double eps = 1e-9;
 
 struct Nonzero {
   int index;
@@ -12,18 +16,23 @@ struct Nonzero {
 // Sparse Vector
 class SVector {
   public:
+    SVector() = default;
+    SVector(std::initializer_list<Nonzero>);
     void add_value (int ind, double val);
     int length();
 
-    using iterator = std::vector<Nonzero>::iterator;
-    iterator begin() {
+    auto begin() {
       return values.begin();
     }
-    iterator end() {
+    auto end() {
       return values.end();
     }
 
     friend std::ostream &operator<<(std::ostream &os, SVector const &n);
+
+    bool operator==(const SVector& rhs) const;
+    bool operator!=(const SVector& rhs) const;
+
   private:
     std::vector<Nonzero> values;
 };
