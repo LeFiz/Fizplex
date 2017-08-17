@@ -25,6 +25,18 @@ void test_svector() {
   EXPECT_TRUE(ww==w);
 }
 
+void test_colmatrix() {
+  ColMatrix<3> m = {{{0,7}, {2,-3}},
+                    {{0,2}, {1,3}, {2,4}},
+                    {{0,1}, {1,-1}, {2,-2}}};
+  ColMatrix<3> mm = {{{0,7}, {2,-3}, {1,0.0}},
+                    {{0,2}, {1,3}, {2,4}},
+                    {{0,1}, {1,-1}, {2,-2}}};
+  EXPECT_TRUE(m==mm);
+  EXPECT_TRUE(mm==m);
+  SVector v = {{0,2}, {1,3}, {2,4}};
+  EXPECT_TRUE(m.column(1) == v);
+}
 
 int main() {
 //  const int m = 1000;
@@ -51,15 +63,12 @@ int main() {
 //  b.base.add_value(1,0,3);
 //  b.base.add_value(1,1,2);
   test_svector();
+  test_colmatrix();
+  ColMatrix<3> m = {{{0,7}, {2,-3}},
+                    {{0,2}, {1,3}, {2,4}},
+                    {{0,1}, {1,-1}, {2,-2}}};
   Base<3> b;
-  b.base.add_value(0,0,7);
-  b.base.add_value(0,1,2);
-  b.base.add_value(0,2,1);
-  b.base.add_value(1,1,3);
-  b.base.add_value(1,2,-1);
-  b.base.add_value(2,0,-3);
-  b.base.add_value(2,1,4);
-  b.base.add_value(2,2,-2);
+  b.base = m;
   std::cout << "Base:\n";
   std::cout << b.base;
   b.invert();
