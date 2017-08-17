@@ -98,7 +98,7 @@ void Base<m>::updateVecWithETM(ETM& etm, SVector& vec) {
 
 template <int m>
 void Base<m>::updateVec(SVector& vec) {
-  for(const auto& etm : etms)
+  for(auto& etm : etms)
     updateVecWithETM(etm, vec);
 }
 
@@ -109,11 +109,5 @@ void Base<m>::updateUnfinishedEtas(int finishedETM) {
     updateVecWithETM(etms[finishedETM], etms[i].eta);
 
 };
-
-//std::ostream& operator<<(std::ostream& os, Vec const& vec) {
-//  for(const auto& n : vec)
-//    std::cout << n;
-//  std::cout << std::endl;
-//}
 
 #endif

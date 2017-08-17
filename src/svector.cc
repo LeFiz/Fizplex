@@ -26,8 +26,8 @@ bool SVector::operator==(const SVector& rhs) const {
     if(e.value != 0.0)
       rhsNonzeroEntries++;
   }
-//  if(lhsNonzeroEntries != rhsNonzeroEntries)
-//    return false;
+  if(lhsNonzeroEntries != rhsNonzeroEntries)
+    return false;
   bool found;
   for(const auto& lhsVal : values) {
     if(lhsVal.value == 0) // Only compare nonzeroes
