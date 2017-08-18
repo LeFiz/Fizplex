@@ -2,6 +2,7 @@
 #define BASE_H
 
 #include "colmatrix.h"
+#include <algorithm>
 
 
 template <int m>
@@ -15,49 +16,65 @@ class Base {
     struct ETM {
       SVector eta;
       int col;
+      ETM() = default;
+      ETM(const SVector& e, int c) : eta(e), col(c) {};
     };
-    std::vector<ETM> etms;
+    std::array<int,m> rowOrdering;
+    std::vector<std::unique_ptr<ETM>> etms;
     std::array<double,m> work;
     void updateUnfinishedEtas(int i);
     void updateVecWithETM(ETM& etm, SVector& vec);
+    void swapBaseColumns(int i, int j);
 };
 
 
 template <int m>
 Base<m>::Base() {
   work.fill(0.0);
+  for(int i = 0; i < m; i++)
+    rowOrdering[i]=i;
 };
 
+template <int m>
+void Base<m>::swapBaseColumns(int i, int j) {
+  assert(i >= 0 && i < m && j >= 0 && j < m);
+  etms[i].swap(etms[j]);
+  base.swapColumns(i,j);
+  std::swap<int>(rowOrdering[i], rowOrdering[j]);
+}
 
 template <int m>
 void Base<m>::invert() {
 //  etms.clear();
 //  etms.reserve(m);
   for(int i = 0; i < m; i++)
-    etms.push_back({base.column(i), i});
+    etms.push_back(std::make_unique<ETM>(base.column(i), i));
   double mult;
-  for(int i = 0; i < m; i++) {
-    for(auto& n : etms[i].eta) {
-      if(n.index == i) {
-        mult =  - 1.0 / n.value;
-        n.value = -1;
-//        std::cout << "Mult = " << mult << std::endl;
+  bool found = false;
+  for(int i = 0; i < m; i++) { // Update all columns
+    for(int j = i; j < m; j++) { // Find non-zero column
+      found = false;
+      for(auto& n : etms[j]->eta) { // Find right index
+        if(n.index == i) {
+          if(n.value == 0) // TODO is_eq
+            break;
+          found = true;
+          mult =  - 1.0 / n.value;
+          n.value = -1;
+          break;
+        }
+      }
+      if(found) {
+        for(auto& n : etms[j]->eta)
+          n.value *= mult;
+        etms[j]->col = i;
+        if(i!=j)
+          swapBaseColumns(i,j);
         break;
       }
     }
-    for(auto& n : etms[i].eta) {
-      n.value *= mult;
-    }
-
-    etms[i].col = i;
-
-    // Update v_i
     updateUnfinishedEtas(i);
-
   }
-  std::cout << "Eta:" << std::endl;
-  for(auto j = 0; j < etms.size(); j++)
-    std::cout << "i = " << j << " eta = " << etms[j].eta << std::endl;
 };
 
 template <int m>
@@ -90,23 +107,27 @@ void Base<m>::updateVecWithETM(ETM& etm, SVector& vec) {
 //        std::cout << "Fill in!" << std::endl;
       }
     }
-
-    // v_i = v_i + eta_i * v_i except for pivot element, there it's v_i = eta_i * v_i, i = posi
-    work[etm.col] -= mult;
   }
+  //TODO assert work is zero at the end and beginning
 }
 
 template <int m>
 void Base<m>::updateVec(SVector& vec) {
   for(auto& etm : etms)
-    updateVecWithETM(etm, vec);
+    updateVecWithETM(*etm, vec);
+
+  // Reorder vec according to base column swaps
+  SVector w;
+  for(auto& entry : vec)
+    w.add_value(rowOrdering[entry.index], entry.value);
+  vec = w;
 }
 
 template <int m>
 void Base<m>::updateUnfinishedEtas(int finishedETM) {
   // Update v_i in that are saved in etas
   for(int i = finishedETM + 1; i < etms.size(); i++)
-    updateVecWithETM(etms[finishedETM], etms[i].eta);
+    updateVecWithETM(*etms[finishedETM], etms[i]->eta);
 
 };
 

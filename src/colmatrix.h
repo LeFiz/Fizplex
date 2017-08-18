@@ -23,6 +23,7 @@ class ColMatrix {
     const SVector& column(int i) const {
       return *cols[i];
     }
+    void swapColumns(int i, int j);
     ColMatrix& operator=(ColMatrix& rhs) {
       for(int i = 0; i < n; i++)
         cols[i] = std::make_unique<SVector>(rhs.column(i));
@@ -47,6 +48,12 @@ ColMatrix<m,n>::ColMatrix(std::initializer_list<SVector> colList) {
   int i = 0;
   for(auto& v : colList)
     cols[i++] = std::make_unique<SVector>(v);
+}
+
+template <int m, int n>
+void ColMatrix<m,n>::swapColumns(int i, int j) {
+  assert(i >= 0 && i < m && j >= 0 && j < m);
+  cols[i].swap(cols[j]);
 }
 
 template <int m, int n>
