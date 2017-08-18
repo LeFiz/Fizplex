@@ -38,7 +38,57 @@ void test_colmatrix() {
   EXPECT_TRUE(m.column(1) == v);
 }
 
+void test_base_no_reordering() {
+  ColMatrix<3> m = {{{0,7}, {2,-3}},
+                    {{0,2}, {1,3}, {2,4}},
+                    {{0,1}, {1,-1}, {2,-2}}};
+  Base<3> b;
+  b.base = m;
+  SVector e0 = {{0, 1}};
+  SVector e1 = {{1, 1}};
+  SVector e2 = {{2, 1}};
+  const SVector r0 = {{0,-2}, {1,3}, {2,9}};
+  const SVector r1 = {{0,8}, {1,-11}, {2,-34}};
+  const SVector r2 = {{0,-5}, {1,7}, {2,21}};
+  b.invert();
+  b.updateVec(e0);
+  b.updateVec(e1);
+  b.updateVec(e2);
+  EXPECT_TRUE(e0 == r0);
+  EXPECT_TRUE(e1 == r1);
+  EXPECT_TRUE(e2 == r2);
+}
+
+void test_base_with_reordering() {
+  ColMatrix<3> m = {{{1,7}, {2,-3}},
+                    {{0,2}, {1,3}, {2,4}},
+                    {{0,1}, {1,-1}, {2,-2}}};
+  Base<3> b;
+  b.base = m;
+  SVector e0 = {{0, 1}};
+  SVector e1 = {{1, 1}};
+  SVector e2 = {{2, 1}};
+  const SVector r0 = {{0,-2.0/71}, {1,17.0/71}, {2,37.0/71}};
+  const SVector r1 = {{0,8.0/71}, {1,3.0/71}, {2,-6.0/71}};
+  const SVector r2 = {{0,-5.0/71}, {1,7.0/71}, {2,-14.0/71}};
+  b.invert();
+  b.updateVec(e0);
+  b.updateVec(e1);
+  b.updateVec(e2);
+  std::cout<<"e0="<<e0<< " r0="<<r0<<std::endl;
+  EXPECT_TRUE(e0 == r0);
+  EXPECT_TRUE(e1 == r1);
+  EXPECT_TRUE(e2 == r2);
+}
+
 int main() {
+  test_svector();
+  test_colmatrix();
+  test_base_no_reordering();
+  test_base_with_reordering();
+  return 0;
+}
+
 //  const int m = 1000;
 //  const int dense = m / 5;
 //  Base<m> b;
@@ -57,26 +107,4 @@ int main() {
 //        b.base.add_value(i,j,unif(re));
 //    }
 //  }
-//  Base<2> b;
-//  b.base.add_value(0,0,1);
-//  b.base.add_value(0,1,0);
-//  b.base.add_value(1,0,3);
-//  b.base.add_value(1,1,2);
-  test_svector();
-  test_colmatrix();
-  ColMatrix<3> m = {{{0,7}, {2,-3}},
-                    {{0,2}, {1,3}, {2,4}},
-                    {{0,1}, {1,-1}, {2,-2}}};
-  Base<3> b;
-  b.base = m;
-  std::cout << "Base:\n";
-  std::cout << b.base;
-  b.invert();
-  SVector v = {{0, 1}};
-  b.updateVec(v);
-  std::cout << v << std::endl;
-  SVector w = {{0,-2}, {1,3}, {2,9}, {7,0}};
-  std::cout << w << std::endl;
-  std::cout << (v==w) << std::endl;
-  return 0;
-}
+
