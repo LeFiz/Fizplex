@@ -1,5 +1,5 @@
 CC = g++
-CC_FLAGS = -Wall -Wextra -pedantic
+CC_FLAGS = -Werror -Wall -Wextra -Wfloat-equal -pedantic -std=c++14
 
 LINKER = g++
 

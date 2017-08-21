@@ -56,7 +56,7 @@ void Base<m>::invert() {
       found = false;
       for(auto& n : etms[j]->eta) { // Find right index
         if(n.index == i) {
-          if(n.value == 0) // TODO is_eq
+          if(is_zero(n.value))
             break;
           found = true;
           mult =  - 1.0 / n.value;
@@ -95,13 +95,13 @@ void Base<m>::updateVecWithETM(ETM& etm, SVector& vec) {
   }
   if(found) { // if !found: v^i_finishedETM is zero, no update required
     for(auto& e : vec) {
-      if(work[e.index] != 0.0) {
+      if(!is_zero(work[e.index])) {
         e.value += work[e.index] * mult;
         work[e.index] = 0.0;
       }
     }
     for(auto& e : etm.eta) {
-      if(work[e.index] != 0.0) { // not handled already => we have fill in
+      if(!is_zero(work[e.index])) {
         vec.add_value(e.index, work[e.index] * mult);
         work[e.index] = 0.0;
 //        std::cout << "Fill in!" << std::endl;

@@ -18,19 +18,19 @@ bool SVector::operator==(const SVector& rhs) const {
   int lhsNonzeroEntries = 0, rhsNonzeroEntries = 0;
   for(const auto& e : values)
   {
-    if(e.value != 0.0)
+    if(!is_eq(e.value, 0.0))
       lhsNonzeroEntries++;
   }
   for(const auto& e : rhs.values)
   {
-    if(e.value != 0.0)
+    if(!is_eq(e.value, 0.0))
       rhsNonzeroEntries++;
   }
   if(lhsNonzeroEntries != rhsNonzeroEntries)
     return false;
   bool found;
   for(const auto& lhsVal : values) {
-    if(lhsVal.value == 0) // Only compare nonzeroes
+    if(is_eq(lhsVal.value, 0.0))
       continue;
     found = false;
     for(const auto& rhsVal : rhs.values) {
