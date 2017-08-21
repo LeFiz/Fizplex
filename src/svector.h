@@ -24,7 +24,7 @@ struct Nonzero {
 // Sparse Vector
 class SVector {
   public:
-    SVector() = default;
+    SVector();
     SVector(std::initializer_list<Nonzero>);
     void add_value (size_t ind, double val);
     size_t length();

@@ -1,9 +1,14 @@
 #include "svector.h"
 #include <typeinfo>
 
-SVector::SVector(std::initializer_list<Nonzero> l) {
-  for(auto& e : l)
-    values.push_back(e);
+SVector::SVector() :
+  values()
+{
+}
+
+SVector::SVector(std::initializer_list<Nonzero> l) :
+  values(l)
+{
 }
 
 void SVector::add_value (size_t ind, double val) {

@@ -1,5 +1,7 @@
 CC = g++
-CC_FLAGS = -Werror -Wall -Wextra -Wfloat-equal -pedantic -std=c++14
+CC_FLAGS =	-Werror -Wall -Wextra -Wfloat-equal -Winline -Wcast-qual -Wcast-align -Wconversion -Wshadow -Wswitch-default\
+						-Wmissing-declarations -Wmissing-include-dirs -Wuninitialized -Wwrite-strings -Wold-style-cast -Woverloaded-virtual\
+						-Wsign-promo -pedantic -std=c++14
 
 LINKER = g++
 

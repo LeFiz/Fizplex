@@ -7,6 +7,20 @@
 
 #define EXPECT_TRUE(statement) (statement ? std::cerr : (std::cerr << "Error! Expected true got false! In " << __FUNCTION__ << " (Line " << __LINE__ << " in " << __FILE__ << ")\n"))
 
+void test_svector();
+void test_colmatrix();
+void test_base_no_reordering();
+void test_base_with_reordering();
+
+
+int main() {
+  test_svector();
+  test_colmatrix();
+  test_base_no_reordering();
+  test_base_with_reordering();
+  return 0;
+}
+
 void test_svector() {
   SVector v;
   EXPECT_TRUE(v.length() == 0);
@@ -79,14 +93,6 @@ void test_base_with_reordering() {
   EXPECT_TRUE(e0 == r0);
   EXPECT_TRUE(e1 == r1);
   EXPECT_TRUE(e2 == r2);
-}
-
-int main() {
-  test_svector();
-  test_colmatrix();
-  test_base_no_reordering();
-  test_base_with_reordering();
-  return 0;
 }
 
 //  const int m = 1000;
