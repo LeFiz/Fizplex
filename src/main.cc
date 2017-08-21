@@ -1,5 +1,6 @@
 #include <random>
 #include <iostream>
+#include <chrono>
 
 #include "svector.h"
 #include "colmatrix.h"
@@ -12,12 +13,24 @@ void test_colmatrix();
 void test_base_no_reordering();
 void test_base_with_reordering();
 
+using TestFunction = void (*) ();
+using Timer = std::chrono::high_resolution_clock;
 
 int main() {
-  test_svector();
-  test_colmatrix();
-  test_base_no_reordering();
-  test_base_with_reordering();
+  std::vector<TestFunction> tests;
+  tests.push_back(test_svector);
+  tests.push_back(test_colmatrix);
+  tests.push_back(test_base_no_reordering);
+  tests.push_back(test_base_with_reordering);
+  for(auto& t : tests) {
+    auto start = Timer::now();
+    t();
+    auto end = Timer::now();
+    auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
+    std::cout << duration.count() * 1000 << "ms" << std::endl;
+  }
+  std::cout << std::endl;
+  std::cout << std::chrono::steady_clock::is_steady;
   return 0;
 }
 
@@ -89,7 +102,6 @@ void test_base_with_reordering() {
   b.updateVec(e0);
   b.updateVec(e1);
   b.updateVec(e2);
-  std::cout<<"e0="<<e0<< " r0="<<r0<<std::endl;
   EXPECT_TRUE(e0 == r0);
   EXPECT_TRUE(e1 == r1);
   EXPECT_TRUE(e2 == r2);
