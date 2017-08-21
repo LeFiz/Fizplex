@@ -1,4 +1,5 @@
 CC = g++
+CC_FLAGS = -Wall -Wextra -pedantic
 
 LINKER = g++
 
@@ -14,7 +15,7 @@ $(TARGET) : $(OBJECTS)
 	@$(LINKER) -o $(TARGET) $(OBJECTS)
 
 $(OBJECTS): $(OBJ_DIR)/%.o : $(SOURCE_DIR)/%.cc
-	@$(CC) -c $< -o $@
+	@$(CC) $(CC_FLAGS) -c $< -o $@
 
 .PHONY: run
 run: $(TARGET)

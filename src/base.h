@@ -15,28 +15,28 @@ class Base {
   private:
     struct ETM {
       SVector eta;
-      int col;
+      size_t col;
       ETM() = default;
-      ETM(const SVector& e, int c) : eta(e), col(c) {};
+      ETM(const SVector& e, size_t c) : eta(e), col(c) {};
     };
     std::array<int,m> rowOrdering;
     std::vector<std::unique_ptr<ETM>> etms;
     std::array<double,m> work;
-    void updateUnfinishedEtas(int i);
+    void updateUnfinishedEtas(size_t i);
     void updateVecWithETM(ETM& etm, SVector& vec);
-    void swapBaseColumns(int i, int j);
+    void swapBaseColumns(size_t i, size_t j);
 };
 
 
 template <int m>
 Base<m>::Base() {
   work.fill(0.0);
-  for(int i = 0; i < m; i++)
+  for(auto i = 0; i < m; i++)
     rowOrdering[i]=i;
-};
+}
 
 template <int m>
-void Base<m>::swapBaseColumns(int i, int j) {
+void Base<m>::swapBaseColumns(size_t i, size_t j) {
   assert(i >= 0 && i < m && j >= 0 && j < m);
   etms[i].swap(etms[j]);
   base.swapColumns(i,j);
@@ -47,12 +47,12 @@ template <int m>
 void Base<m>::invert() {
 //  etms.clear();
 //  etms.reserve(m);
-  for(int i = 0; i < m; i++)
+  for(auto i = 0; i < m; i++)
     etms.push_back(std::make_unique<ETM>(base.column(i), i));
   double mult;
   bool found = false;
-  for(int i = 0; i < m; i++) { // Update all columns
-    for(int j = i; j < m; j++) { // Find non-zero column
+  for(size_t i = 0; i < m; i++) { // Update all columns
+    for(size_t j = i; j < m; j++) { // Find non-zero column
       found = false;
       for(auto& n : etms[j]->eta) { // Find right index
         if(n.index == i) {
@@ -75,7 +75,7 @@ void Base<m>::invert() {
     }
     updateUnfinishedEtas(i);
   }
-};
+}
 
 template <int m>
 void Base<m>::updateVecWithETM(ETM& etm, SVector& vec) {
@@ -124,11 +124,11 @@ void Base<m>::updateVec(SVector& vec) {
 }
 
 template <int m>
-void Base<m>::updateUnfinishedEtas(int finishedETM) {
+void Base<m>::updateUnfinishedEtas(size_t finishedETM) {
   // Update v_i in that are saved in etas
-  for(int i = finishedETM + 1; i < etms.size(); i++)
+  for(auto i = finishedETM + 1; i < etms.size(); i++)
     updateVecWithETM(*etms[finishedETM], etms[i]->eta);
 
-};
+}
 
 #endif

@@ -9,7 +9,7 @@
 const double eps = 1e-9;
 
 struct Nonzero {
-  int index;
+  size_t index;
   double value;
 };
 
@@ -18,8 +18,8 @@ class SVector {
   public:
     SVector() = default;
     SVector(std::initializer_list<Nonzero>);
-    void add_value (int ind, double val);
-    int length();
+    void add_value (size_t ind, double val);
+    size_t length();
 
     auto begin() {
       return values.begin();

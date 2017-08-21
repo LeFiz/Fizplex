@@ -6,11 +6,11 @@ SVector::SVector(std::initializer_list<Nonzero> l) {
     values.push_back(e);
 }
 
-void SVector::add_value (int ind, double val) {
+void SVector::add_value (size_t ind, double val) {
   values.push_back({ind, val});
 }
 
-int SVector::length() {
+size_t SVector::length() {
   return values.size();
 }
 
