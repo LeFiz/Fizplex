@@ -3,6 +3,7 @@
 
 #include "colmatrix.h"
 #include <algorithm>
+#include <numeric>
 
 
 template <int m>
@@ -10,9 +11,9 @@ class Base {
   public:
     Base();
     explicit Base(const ColMatrix<m>&);
+    void setBase(const ColMatrix<m>&);
     bool invert();
     void updateVec(SVector& vec);
-    void setBase(const ColMatrix<m>&);
   private:
     struct ETM {
       SVector eta;
@@ -20,25 +21,29 @@ class Base {
       ETM() = default;
       ETM(const SVector& e, size_t c) : eta(e), col(c) {};
     };
+
+    void updateUnfinishedEtas(size_t i);
+    void updateVecWithETM(ETM& etm, SVector& vec);
+    void swapBaseColumns(size_t i, size_t j);
+
     std::array<int,m> rowOrdering;
     std::vector<std::unique_ptr<ETM>> etms;
     std::array<double,m> work;
     ColMatrix<m> base;
-    void updateUnfinishedEtas(size_t i);
-    void updateVecWithETM(ETM& etm, SVector& vec);
-    void swapBaseColumns(size_t i, size_t j);
 };
 
 
 template <int m>
-Base<m>::Base() {
-  work.fill(0.0);
+Base<m>::Base()
+  : work()
+{
   setBase(ColMatrix<m>());
 }
 
 template <int m>
-Base<m>::Base(const ColMatrix<m>& b) {
-  work.fill(0.0);
+Base<m>::Base(const ColMatrix<m>& b)
+  : work()
+{
   setBase(b);
 }
 
@@ -97,9 +102,7 @@ bool Base<m>::invert() {
 
 template <int m>
 void Base<m>::updateVecWithETM(ETM& etm, SVector& vec) {
-  // Copy eta to work array TODO only do if found
-  for(auto& entry : etm.eta)
-    work[entry.index] = entry.value;
+  assert(std::accumulate(work.begin(), work.end(), 0) == 0); //quite slow
 
   double mult = 0.0;
   bool found = false;
@@ -112,6 +115,8 @@ void Base<m>::updateVecWithETM(ETM& etm, SVector& vec) {
     }
   }
   if(found) { // if !found: v^i_finishedETM is zero, no update required
+    for(auto& entry : etm.eta)
+      work[entry.index] = entry.value;
     for(auto& e : vec) {
       if(!is_zero(work[e.index])) {
         e.value += work[e.index] * mult;
@@ -125,7 +130,8 @@ void Base<m>::updateVecWithETM(ETM& etm, SVector& vec) {
       }
     }
   }
-  //TODO assert work is zero at the end and beginning
+
+  assert(std::accumulate(work.begin(), work.end(), 0) == 0);
 }
 
 template <int m>

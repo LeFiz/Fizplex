@@ -142,5 +142,5 @@ void random_base() {
     }
   }
   Base<m> b(M);
-  std::cout << "Invertible: " << b.invert() << std::endl;
+  b.invert();
 }
