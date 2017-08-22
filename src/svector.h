@@ -27,7 +27,7 @@ class SVector {
     SVector();
     SVector(std::initializer_list<Nonzero>);
     void add_value (size_t ind, double val);
-    size_t length();
+    size_t length() const;
 
     auto begin() {
       return values.begin();

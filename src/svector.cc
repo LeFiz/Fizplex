@@ -15,7 +15,7 @@ void SVector::add_value (size_t ind, double val) {
   values.push_back({ind, val});
 }
 
-size_t SVector::length() {
+size_t SVector::length() const {
   return values.size();
 }
 

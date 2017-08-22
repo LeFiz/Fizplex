@@ -37,7 +37,7 @@ Base<m>::Base() {
 
 template <int m>
 void Base<m>::swapBaseColumns(size_t i, size_t j) {
-  assert(i >= 0 && i < m && j >= 0 && j < m);
+  assert(i < m && j < m);
   etms[i].swap(etms[j]);
   base.swapColumns(i,j);
   std::swap<int>(rowOrdering[i], rowOrdering[j]);

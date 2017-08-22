@@ -52,7 +52,7 @@ ColMatrix<m,n>::ColMatrix(std::initializer_list<SVector> colList) {
 
 template <size_t m, size_t n>
 void ColMatrix<m,n>::swapColumns(size_t i, size_t j) {
-  assert(i >= 0 && i < m && j >= 0 && j < m);
+  assert(i < m && j < m);
   cols[i].swap(cols[j]);
 }
 
