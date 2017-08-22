@@ -82,8 +82,9 @@ bool Base<m>::invert() {
         for(auto& n : etms[j]->eta)
           n.value *= mult;
         etms[j]->col = i;
-        if(i!=j)
+        if(i!=j) {
           swapBaseColumns(i,j);
+        }
         break;
       }
     }
@@ -121,7 +122,6 @@ void Base<m>::updateVecWithETM(ETM& etm, SVector& vec) {
       if(!is_zero(work[e.index])) {
         vec.add_value(e.index, work[e.index] * mult);
         work[e.index] = 0.0;
-//        std::cout << "Fill in!" << std::endl;
       }
     }
   }

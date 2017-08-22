@@ -16,6 +16,7 @@ void test_colmatrix();
 void test_base_no_reordering();
 void test_base_with_reordering();
 void test_base_singular_matrix();
+void random_base();
 
 using TestFunction = void (*) ();
 using Timer = std::chrono::high_resolution_clock;
@@ -27,6 +28,7 @@ int main() {
   tests.push_back(test_base_no_reordering);
   tests.push_back(test_base_with_reordering);
   tests.push_back(test_base_singular_matrix);
+  tests.push_back(random_base);
   for(auto& t : tests) {
     auto start = Timer::now();
     t();
@@ -120,22 +122,25 @@ void test_base_singular_matrix()
   EXPECT_FALSE(b.invert());
 }
 
-//  const int m = 1000;
-//  const int dense = m / 5;
-//  Base<m> b;
-//  double lower_bound = 1;
-//  double upper_bound = 10;
-//  std::uniform_real_distribution<double> unif(lower_bound,upper_bound);
-//  std::uniform_int_distribution<int> dense_dist(1,dense);
-//  std::default_random_engine re;
-//  for(int i = 0; i < m; i++)
-//    b.base.add_value(i,i,unif(re));
-//  for(int i = 0; i < m; i++) {
-//    for(int j = 0; j < m; j++) {
-//      if(i==j)
-//        continue;
-//      if(dense_dist(re) == dense)
-//        b.base.add_value(i,j,unif(re));
-//    }
-//  }
-
+void random_base() {
+  const int m = 300;
+  const int dense = m / 5;
+  ColMatrix<m> M;
+  double lower_bound = -1;
+  double upper_bound = 1;
+  std::uniform_real_distribution<double> unif(lower_bound,upper_bound);
+  std::uniform_int_distribution<int> dense_dist(1,dense);
+  std::default_random_engine re;
+  for(int i = 0; i < m; i++)
+    M.add_value(i,i,unif(re));
+  for(int i = 0; i < m; i++) {
+    for(int j = 0; j < m; j++) {
+      if(i==j)
+        continue;
+      if(dense_dist(re) == dense)
+        M.add_value(i,j,unif(re));
+    }
+  }
+  Base<m> b(M);
+  std::cout << "Invertible: " << b.invert() << std::endl;
+}
