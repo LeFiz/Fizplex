@@ -8,10 +8,14 @@
 
 #define EXPECT_TRUE(statement) (statement ? std::cerr : (std::cerr << "Error! Expected true got false! In " << __FUNCTION__ << " (Line " << __LINE__ << " in " << __FILE__ << ")\n"))
 
+#define EXPECT_FALSE(statement) (!(statement) ? std::cerr : (std::cerr << "Error! Expected false got true! In " << __FUNCTION__ << " (Line " << __LINE__ << " in " << __FILE__ << ")\n"))
+
+
 void test_svector();
 void test_colmatrix();
 void test_base_no_reordering();
 void test_base_with_reordering();
+void test_base_singular_matrix();
 
 using TestFunction = void (*) ();
 using Timer = std::chrono::high_resolution_clock;
@@ -22,6 +26,7 @@ int main() {
   tests.push_back(test_colmatrix);
   tests.push_back(test_base_no_reordering);
   tests.push_back(test_base_with_reordering);
+  tests.push_back(test_base_singular_matrix);
   for(auto& t : tests) {
     auto start = Timer::now();
     t();
@@ -67,15 +72,14 @@ void test_base_no_reordering() {
   ColMatrix<3> m = {{{0,7}, {2,-3}},
                     {{0,2}, {1,3}, {2,4}},
                     {{0,1}, {1,-1}, {2,-2}}};
-  Base<3> b;
-  b.base = m;
+  Base<3> b(m);
   SVector e0 = {{0, 1}};
   SVector e1 = {{1, 1}};
   SVector e2 = {{2, 1}};
   const SVector r0 = {{0,-2}, {1,3}, {2,9}};
   const SVector r1 = {{0,8}, {1,-11}, {2,-34}};
   const SVector r2 = {{0,-5}, {1,7}, {2,21}};
-  b.invert();
+  EXPECT_TRUE(b.invert());
   b.updateVec(e0);
   b.updateVec(e1);
   b.updateVec(e2);
@@ -88,21 +92,32 @@ void test_base_with_reordering() {
   ColMatrix<3> m = {{{1,7}, {2,-3}},
                     {{0,2}, {1,3}, {2,4}},
                     {{0,1}, {1,-1}, {2,-2}}};
-  Base<3> b;
-  b.base = m;
+  Base<3> b(m);
   SVector e0 = {{0, 1}};
   SVector e1 = {{1, 1}};
   SVector e2 = {{2, 1}};
   const SVector r0 = {{0,-2.0/71}, {1,17.0/71}, {2,37.0/71}};
   const SVector r1 = {{0,8.0/71}, {1,3.0/71}, {2,-6.0/71}};
   const SVector r2 = {{0,-5.0/71}, {1,7.0/71}, {2,-14.0/71}};
-  b.invert();
+  EXPECT_TRUE(b.invert());
   b.updateVec(e0);
   b.updateVec(e1);
   b.updateVec(e2);
   EXPECT_TRUE(e0 == r0);
   EXPECT_TRUE(e1 == r1);
   EXPECT_TRUE(e2 == r2);
+}
+
+void test_base_singular_matrix()
+{
+  Base<3> b;
+  EXPECT_FALSE(b.invert()); // Empty base / matrix
+
+  ColMatrix<3> m = {{{0,1}, {1,1}, {2,1}},
+                    {{0,1}, {1,1}, {2,1}},
+                    {{0,1}, {1,1}, {2,1}}};
+  b.setBase(m);
+  EXPECT_FALSE(b.invert());
 }
 
 //  const int m = 1000;

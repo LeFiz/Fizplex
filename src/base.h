@@ -9,9 +9,10 @@ template <int m>
 class Base {
   public:
     Base();
-    ColMatrix<m> base;
-    void invert();
+    explicit Base(const ColMatrix<m>&);
+    bool invert();
     void updateVec(SVector& vec);
+    void setBase(const ColMatrix<m>&);
   private:
     struct ETM {
       SVector eta;
@@ -22,6 +23,7 @@ class Base {
     std::array<int,m> rowOrdering;
     std::vector<std::unique_ptr<ETM>> etms;
     std::array<double,m> work;
+    ColMatrix<m> base;
     void updateUnfinishedEtas(size_t i);
     void updateVecWithETM(ETM& etm, SVector& vec);
     void swapBaseColumns(size_t i, size_t j);
@@ -31,8 +33,21 @@ class Base {
 template <int m>
 Base<m>::Base() {
   work.fill(0.0);
+  setBase(ColMatrix<m>());
+}
+
+template <int m>
+Base<m>::Base(const ColMatrix<m>& b) {
+  work.fill(0.0);
+  setBase(b);
+}
+
+template <int m>
+void Base<m>::setBase(const ColMatrix<m>& b) {
+  base = b;
   for(auto i = 0; i < m; i++)
     rowOrdering[i]=i;
+  etms.clear();
 }
 
 template <int m>
@@ -44,16 +59,15 @@ void Base<m>::swapBaseColumns(size_t i, size_t j) {
 }
 
 template <int m>
-void Base<m>::invert() {
-//  etms.clear();
-//  etms.reserve(m);
+bool Base<m>::invert() {
+  etms.clear();
+  etms.reserve(m);
   for(auto i = 0; i < m; i++)
     etms.push_back(std::make_unique<ETM>(base.column(i), i));
   double mult;
-  bool found = false;
   for(size_t i = 0; i < m; i++) { // Update all columns
+    auto found = false;
     for(size_t j = i; j < m; j++) { // Find non-zero column
-      found = false;
       for(auto& n : etms[j]->eta) { // Find right index
         if(n.index == i) {
           if(is_zero(n.value))
@@ -73,8 +87,11 @@ void Base<m>::invert() {
         break;
       }
     }
+    if(!found)
+      return false;
     updateUnfinishedEtas(i);
   }
+  return true;
 }
 
 template <int m>

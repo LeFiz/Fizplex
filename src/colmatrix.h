@@ -24,7 +24,7 @@ class ColMatrix {
       return *cols[i];
     }
     void swapColumns(size_t i, size_t j);
-    ColMatrix& operator=(ColMatrix& rhs) {
+    ColMatrix& operator=(const ColMatrix& rhs) {
       for(size_t i = 0; i < n; i++)
         cols[i] = std::make_unique<SVector>(rhs.column(i));
       return *this;
