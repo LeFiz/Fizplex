@@ -23,3 +23,12 @@ Test(LP, add_row, "empty LP") {
   lp.add_row(RowType::Range, -1.33333, 302);
   EXPECT(lp.row_count() == 1);
 }
+
+Test(LP, get_value, "single value in LP") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::Range, 3, 15);
+  const double d = 3.14;
+  lp.add_value(0, 0, d);
+  EXPECT(is_eq(lp.get_value(0, 0), d));
+}

@@ -32,8 +32,10 @@ public:
   void add_column(ColType type, double lower, double upper,
                   bool is_logical = false);
   void add_row(RowType type, double lower, double upper);
-  size_t column_count();
-  size_t row_count();
+  size_t column_count() const;
+  size_t row_count() const;
+  void add_value(size_t row, size_t column, double value);
+  double get_value(size_t row, size_t column);
 
 private:
   std::vector<Column> cols;
