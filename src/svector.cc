@@ -1,4 +1,5 @@
 #include "svector.h"
+#include <cassert>
 #include <typeinfo>
 
 SVector::SVector() : values() {}
@@ -52,4 +53,12 @@ std::ostream &operator<<(std::ostream &os, SVector const &vec) {
     os << n;
   }
   return os;
+}
+
+double SVector::get_value(size_t ind) {
+  for (auto &n : values) {
+    if (n.index == ind)
+      return n.value;
+  }
+  return 0.0;
 }
