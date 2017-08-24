@@ -1,6 +1,8 @@
 #ifndef NUMERIC_H
 #define NUMERIC_H
 
+#include <cmath>
+#include <cstddef>
 #include <limits>
 
 const double eps = 1e-9;
