@@ -5,9 +5,10 @@
 #include <iostream>
 
 #define EXPECT(statement)                                                      \
-  (statement ? std::cerr : (std::cerr << "Error! Expected true got false! In " \
-                                      << __FUNCTION__ << " (Line " << __LINE__ \
-                                      << " in " << __FILE__ << ")\n"))
+  (statement ? std::cerr                                                       \
+             : (std::cerr << "\033[1;31mError! Expected true got false! In "   \
+                          << __FUNCTION__ << " (Line " << __LINE__ << " in "   \
+                          << __FILE__ << ")\033[0m\n"))
 
 // 3rd pass-through macro is required as otherwise __LINE__
 // would be taken literally instead of being expanded
@@ -42,13 +43,14 @@ public:
   }
   static void run() {
     for (auto &t : tests()) {
-      std::cout << t.clss << "." << t.method << " " << t.desc << std::endl;
       auto start = Timer::now();
       t.f();
       auto end = Timer::now();
       auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(
           end - start);
-      std::cout << duration.count() * 1000 << "ms" << std::endl;
+      std::cout << t.clss << "." << t.method << " " << t.desc;
+      std::cout << "(" << duration.count() * 1000 << "ms"
+                << ")" << std::endl;
     }
   }
 
