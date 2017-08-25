@@ -32,3 +32,10 @@ Test(LP, get_value, "single value in LP") {
   lp.add_value(0, 0, d);
   EXPECT(is_eq(lp.get_value(0, 0), d));
 }
+
+Test(LP, get_value, "non-existing value") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::Range, 3, 15);
+  EXPECT(is_zero(lp.get_value(0, 0)));
+}
