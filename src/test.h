@@ -2,6 +2,7 @@
 #define TEST_H
 
 #include <chrono>
+#include <iostream>
 
 #define EXPECT(statement)                                                      \
   (statement ? std::cerr : (std::cerr << "Error! Expected true got false! In " \
@@ -37,10 +38,10 @@ public:
   };
 
   static void reg(TestFunction f, std::string c, std::string m, std::string d) {
-    tests.push_back({f, c, m, d});
+    tests().push_back({f, c, m, d});
   }
   static void run() {
-    for (auto &t : tests) {
+    for (auto &t : tests()) {
       std::cout << t.clss << "." << t.method << " " << t.desc << std::endl;
       auto start = Timer::now();
       t.f();
@@ -52,7 +53,10 @@ public:
   }
 
 private:
-  static std::vector<Test> tests;
+  static std::vector<Test> &tests() {
+    static std::vector<Test> *_t = new std::vector<Test>();
+    return *_t;
+  }
 };
 
 class Registration {
