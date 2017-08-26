@@ -1,9 +1,7 @@
 #ifndef LP_H
 #define LP_H
 
-#include "numeric.h"
 #include "svector.h"
-#include <string>
 
 enum class ColType { Fixed, Bounded, LowerBound, Free, UpperBound };
 enum class RowType { Equality, Range, LE, Free, GE };
@@ -11,7 +9,6 @@ enum class RowType { Equality, Range, LE, Free, GE };
 class LP {
 public:
   struct Column {
-    //    std::string id;
     ColType type;
     bool is_logical;
     double lower;
@@ -21,7 +18,6 @@ public:
   };
 
   struct Row {
-    //    std::string id;
     RowType type;
     double lower;
     double upper;
@@ -37,9 +33,15 @@ public:
   void add_value(size_t row, size_t column, double value);
   double get_value(size_t row, size_t column);
 
+  void add_logicals();
+
 private:
   std::vector<Column> cols;
   std::vector<Row> rows;
+
+  std::vector<double> b;
+
+  void set_b();
 };
 
 #endif

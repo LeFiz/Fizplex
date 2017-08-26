@@ -37,3 +37,30 @@ double LP::get_value(size_t row, size_t column) {
   assert(is_eq(d, rows[row].vec.get_value(column)));
   return d;
 }
+
+void LP::set_b() {
+  for (const auto &row : rows) {
+    if (row.type == RowType::LE)
+      b.push_back(row.lower);
+    else
+      b.push_back(row.upper);
+  }
+}
+
+void LP::add_logicals() { // WIP
+  const size_t n = column_count();
+  for (size_t i = 0; i < row_count(); i++) {
+    Column col(ColType::Fixed, neg_inf, inf, true);
+    switch (rows[i].type) {
+    case RowType::Equality:
+      col.type = ColType::Fixed;
+      col.lower = 0.0;
+      col.upper = 0.0;
+      break;
+    default:
+      break;
+    }
+    cols.push_back(col);
+    add_value(i, i + n, 1.0);
+  }
+}

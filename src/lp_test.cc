@@ -39,3 +39,12 @@ Test(LP, get_value, "non-existing value") {
   lp.add_row(RowType::Range, 3, 15);
   EXPECT(is_zero(lp.get_value(0, 0)));
 }
+
+Test(LP, add_logicals, "all") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::Equality, 15, 15);
+  lp.add_logicals();
+  EXPECT(lp.column_count() == 2);
+  EXPECT(is_eq(lp.get_value(0, 1), 1));
+}

@@ -56,7 +56,7 @@ public:
 
 private:
   static std::vector<Test> &tests() {
-    static std::vector<Test> *_t = new std::vector<Test>();
+    static std::vector<Test> *_t = new std::vector<Test>(); // TODO leaking!
     return *_t;
   }
 };
