@@ -8,8 +8,8 @@
 template <int m> class Base {
 public:
   Base();
-  explicit Base(const ColMatrix<m> &);
-  void setBase(const ColMatrix<m> &);
+  explicit Base(const ColMatrix &);
+  void setBase(const ColMatrix &);
   bool invert();
   void updateVec(SVector &vec);
 
@@ -28,14 +28,14 @@ private:
   std::array<int, m> rowOrdering;
   std::vector<std::unique_ptr<ETM>> etms;
   std::array<double, m> work;
-  ColMatrix<m> base;
+  ColMatrix base;
 };
 
-template <int m> Base<m>::Base() : work() { setBase(ColMatrix<m>()); }
+template <int m> Base<m>::Base() : work() { setBase(ColMatrix(m, m)); }
 
-template <int m> Base<m>::Base(const ColMatrix<m> &b) : work() { setBase(b); }
+template <int m> Base<m>::Base(const ColMatrix &b) : work() { setBase(b); }
 
-template <int m> void Base<m>::setBase(const ColMatrix<m> &b) {
+template <int m> void Base<m>::setBase(const ColMatrix &b) {
   base = b;
   for (auto i = 0; i < m; i++)
     rowOrdering[i] = i;
@@ -45,7 +45,7 @@ template <int m> void Base<m>::setBase(const ColMatrix<m> &b) {
 template <int m> void Base<m>::swapBaseColumns(size_t i, size_t j) {
   assert(i < m && j < m);
   etms[i].swap(etms[j]);
-  base.swapColumns(i, j);
+  base.swap_columns(i, j);
   std::swap<int>(rowOrdering[i], rowOrdering[j]);
 }
 

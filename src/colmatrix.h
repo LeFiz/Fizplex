@@ -6,66 +6,27 @@
 #include <memory>
 #include <vector>
 
-template <size_t m, size_t n = m> class ColMatrix {
-private:
-  std::vector<std::unique_ptr<SVector>> cols;
-
+class ColMatrix {
 public:
-  ColMatrix() {
-    for (size_t i = 0; i < n; i++)
-      cols.push_back(std::make_unique<SVector>());
-  }
-  ColMatrix(std::initializer_list<SVector>);
-  void add_value(size_t row, size_t col, double val) {
-    cols[col]->add_value(row, val);
-  }
-  const SVector &column(size_t i) const { return *cols[i]; }
-  void swapColumns(size_t i, size_t j);
-  ColMatrix &operator=(const ColMatrix &rhs) {
-    cols.clear();
-    for (size_t i = 0; i < n; i++)
-      cols.push_back(std::make_unique<SVector>(rhs.column(i)));
-    return *this;
-  }
+  ColMatrix();
+  ColMatrix(size_t _m, size_t _n);
+  ColMatrix(size_t _m, size_t _n, std::initializer_list<SVector>);
+  ColMatrix &operator=(const ColMatrix &rhs);
+
+  size_t row_count() const;
+  size_t col_count() const;
+  const SVector &column(size_t i) const;
+  void add_value(size_t row, size_t col, double val);
+  void swap_columns(size_t i, size_t j);
+
   bool operator==(const ColMatrix &rhs) const;
   bool operator!=(const ColMatrix &rhs) const;
-  template <size_t mm, size_t nn>
-  friend std::ostream &operator<<(std::ostream &os,
-                                  ColMatrix<mm, nn> const &matrix);
+
+  friend std::ostream &operator<<(std::ostream &os, ColMatrix const &matrix);
+
+private:
+  std::vector<std::unique_ptr<SVector>> cols;
+  size_t m, n;
 };
-
-template <size_t m, size_t n>
-std::ostream &operator<<(std::ostream &os, ColMatrix<m, n> const &matrix) {
-  for (auto &col : matrix.cols)
-    os << *col << std::endl;
-  return os;
-}
-
-template <size_t m, size_t n>
-ColMatrix<m, n>::ColMatrix(std::initializer_list<SVector> colList) {
-  assert(colList.size() == n);
-  for (auto &v : colList)
-    cols.push_back(std::make_unique<SVector>(v));
-}
-
-template <size_t m, size_t n>
-void ColMatrix<m, n>::swapColumns(size_t i, size_t j) {
-  assert(i < m && j < m);
-  cols[i].swap(cols[j]);
-}
-
-template <size_t m, size_t n>
-bool ColMatrix<m, n>::operator==(const ColMatrix &rhs) const {
-  for (size_t i = 0; i < n; i++) {
-    if (column(i) != rhs.column(i))
-      return false;
-  }
-  return true;
-}
-
-template <size_t m, size_t n>
-bool ColMatrix<m, n>::operator!=(const ColMatrix &rhs) const {
-  return !(*this == rhs);
-}
 
 #endif
