@@ -1,3 +1,4 @@
+#include <iostream>
 
 #include "base.h"
 #include "test.h"
@@ -44,6 +45,7 @@ Test(Base, invert, "singular") {
   Base<3> b;
   EXPECT(b.invert() == false);
 
+  std::cout << "in singular\n";
   ColMatrix<3> m = {{{0, 1}, {1, 1}, {2, 1}},
                     {{0, 1}, {1, 1}, {2, 1}},
                     {{0, 1}, {1, 1}, {2, 1}}};

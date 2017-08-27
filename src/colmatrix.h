@@ -2,18 +2,18 @@
 #define COLMATRIX_H
 
 #include "svector.h"
-#include <array>
 #include <cassert>
 #include <memory>
+#include <vector>
 
 template <size_t m, size_t n = m> class ColMatrix {
 private:
-  std::array<std::unique_ptr<SVector>, n> cols;
+  std::vector<std::unique_ptr<SVector>> cols;
 
 public:
   ColMatrix() {
-    for (auto &i : cols)
-      i = std::make_unique<SVector>();
+    for (size_t i = 0; i < n; i++)
+      cols.push_back(std::make_unique<SVector>());
   }
   ColMatrix(std::initializer_list<SVector>);
   void add_value(size_t row, size_t col, double val) {
@@ -22,8 +22,9 @@ public:
   const SVector &column(size_t i) const { return *cols[i]; }
   void swapColumns(size_t i, size_t j);
   ColMatrix &operator=(const ColMatrix &rhs) {
+    cols.clear();
     for (size_t i = 0; i < n; i++)
-      cols[i] = std::make_unique<SVector>(rhs.column(i));
+      cols.push_back(std::make_unique<SVector>(rhs.column(i)));
     return *this;
   }
   bool operator==(const ColMatrix &rhs) const;
@@ -43,9 +44,8 @@ std::ostream &operator<<(std::ostream &os, ColMatrix<m, n> const &matrix) {
 template <size_t m, size_t n>
 ColMatrix<m, n>::ColMatrix(std::initializer_list<SVector> colList) {
   assert(colList.size() == n);
-  size_t i = 0;
   for (auto &v : colList)
-    cols[i++] = std::make_unique<SVector>(v);
+    cols.push_back(std::make_unique<SVector>(v));
 }
 
 template <size_t m, size_t n>
