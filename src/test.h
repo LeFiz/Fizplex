@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <vector>
 
 #define EXPECT(statement)                                                      \
   (statement ? std::cerr                                                       \
