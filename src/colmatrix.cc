@@ -68,3 +68,8 @@ void ColMatrix::add_column() {
   n++;
   cols.push_back(std::make_unique<SVector>());
 }
+
+double ColMatrix::get_value(size_t row, size_t column) {
+  assert(row < m && column < n);
+  return cols[column]->get_value(row);
+}

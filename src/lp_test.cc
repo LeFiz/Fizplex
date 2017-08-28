@@ -40,15 +40,6 @@ Test(LP, get_value, "non-existing value") {
   EXPECT(is_zero(lp.get_value(0, 0)));
 }
 
-Test(LP, add_logicals, "all") {
-  LP lp;
-  lp.add_column(ColType::Bounded, 0, 5);
-  lp.add_row(RowType::Equality, 15, 15);
-  lp.add_logicals();
-  EXPECT(lp.column_count() == 2);
-  EXPECT(is_eq(lp.get_value(0, 1), 1));
-}
-
 Test(LP, set_b, "range row") {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
@@ -57,10 +48,32 @@ Test(LP, set_b, "range row") {
   EXPECT(is_eq(lp.b[0], 15));
 }
 
-Test(LP, set_b, "LE row") {
+Test(LP, set_b, "GE row") {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
-  lp.add_row(RowType::LE, 3, 15);
+  lp.add_row(RowType::GE, 3, 15);
   lp.set_b();
   EXPECT(is_eq(lp.b[0], 3));
+}
+
+Test(LP, add_logicals, "all types") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::Equality, 1, 1);
+  lp.add_row(RowType::Range, 3, 15);
+  lp.add_row(RowType::LE, -inf, 7);
+  lp.add_row(RowType::NonBinding, -inf, inf);
+  lp.add_row(RowType::GE, 3, inf);
+  lp.add_logicals();
+
+  EXPECT(lp.column_count() == 6);
+
+  EXPECT(lp.column_header(1).type == ColType::Fixed);
+  EXPECT(lp.column_header(2).type == ColType::Bounded);
+  EXPECT(lp.column_header(3).type == ColType::LowerBound);
+  EXPECT(lp.column_header(4).type == ColType::Free);
+  EXPECT(lp.column_header(5).type == ColType::UpperBound);
+
+  for (int i = 0; i < 5; i++)
+    EXPECT(is_eq(lp.get_value(i, 1 + i), 1));
 }

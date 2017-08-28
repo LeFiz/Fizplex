@@ -6,7 +6,7 @@
 #include <valarray>
 
 enum class ColType { Fixed, Bounded, LowerBound, Free, UpperBound };
-enum class RowType { Equality, Range, LE, Free, GE };
+enum class RowType { Equality, Range, LE, NonBinding, GE };
 
 class LP {
 public:
@@ -15,7 +15,6 @@ public:
     bool is_logical;
     double lower;
     double upper;
-    SVector vec;
     Column(ColType type, double lower, double upper, bool is_logical = false);
   };
 
@@ -23,9 +22,10 @@ public:
     RowType type;
     double lower;
     double upper;
-    SVector vec;
     Row(RowType type, double lower, double upper);
   };
+
+  LP();
 
   void add_column(ColType type, double lower, double upper,
                   bool is_logical = false);
@@ -34,17 +34,18 @@ public:
   size_t row_count() const;
   void add_value(size_t row, size_t column, double value);
   double get_value(size_t row, size_t column);
+  const LP::Column &column_header(size_t column) const;
 
   void add_logicals();
-
   void set_b();
+
+  ColMatrix A;
   std::valarray<double> b;
+  // std::valarray<double> c;
 
 private:
   std::vector<Column> cols;
   std::vector<Row> rows;
-
-  ColMatrix A;
 };
 
 #endif
