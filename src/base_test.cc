@@ -7,7 +7,7 @@ Test(Base, invert, "invertible, no re-ordering") {
               {{{0, 7}, {2, -3}},
                {{0, 2}, {1, 3}, {2, 4}},
                {{0, 1}, {1, -1}, {2, -2}}});
-  Base<3> b(m);
+  Base b(m);
   SVector e0 = {{0, 1}};
   SVector e1 = {{1, 1}};
   SVector e2 = {{2, 1}};
@@ -28,7 +28,7 @@ Test(Base, invert, "invertible, with re-ordering") {
               {{{1, 7}, {2, -3}},
                {{0, 2}, {1, 3}, {2, 4}},
                {{0, 1}, {1, -1}, {2, -2}}});
-  Base<3> b(m);
+  Base b(m);
   SVector e0 = {{0, 1}};
   SVector e1 = {{1, 1}};
   SVector e2 = {{2, 1}};
@@ -45,13 +45,10 @@ Test(Base, invert, "invertible, with re-ordering") {
 }
 
 Test(Base, invert, "singular") {
-  Base<3> b;
-  EXPECT(b.invert() == false);
-
   ColMatrix m(3, 3,
               {{{0, 1}, {1, 1}, {2, 1}},
                {{0, 1}, {1, 1}, {2, 1}},
                {{0, 1}, {1, 1}, {2, 1}}});
-  b.setBase(m);
+  Base b(m);
   EXPECT(b.invert() == false);
 }
