@@ -1,6 +1,7 @@
 #ifndef LP_H
 #define LP_H
 
+#include "colmatrix.h"
 #include "svector.h"
 #include <valarray>
 
@@ -42,6 +43,8 @@ public:
 private:
   std::vector<Column> cols;
   std::vector<Row> rows;
+
+  ColMatrix A;
 };
 
 #endif

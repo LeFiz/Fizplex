@@ -62,6 +62,30 @@ Test(ColMatrix, assign_operator, "non-empty matrix") {
   EXPECT(m == mm);
 }
 
+Test(ColMatrix, add_row, "empty matrix") {
+  ColMatrix m;
+  m.add_row();
+  EXPECT(m.row_count() == 1);
+}
+
+Test(ColMatrix, add_column, "empty matrix") {
+  ColMatrix m;
+  m.add_column();
+  EXPECT(m.col_count() == 1);
+}
+
+Test(ColMatrix, add_column, "non-empty matrix; add values to new column") {
+  ColMatrix m(3, 3,
+              {{{0, 7}, {2, -3}, {1, 0.0}},
+               {{0, 2}, {1, 3}, {2, 4}},
+               {{0, 1}, {1, -1}, {2, -2}}});
+  m.add_column();
+  const double d = 2.111;
+  m.add_value(1, 3, d);
+  SVector v = {{1, d}};
+  EXPECT(v == m.column(3));
+}
+
 Test(ColMatrix, column, "non-empty matrix") {
   ColMatrix m(3, 3,
               {{{0, 7}, {2, -3}},

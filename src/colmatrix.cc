@@ -60,3 +60,11 @@ ColMatrix &ColMatrix::operator=(const ColMatrix &rhs) {
     cols.push_back(std::make_unique<SVector>(rhs.column(i)));
   return *this;
 }
+
+void ColMatrix::add_row() { m++; }
+
+void ColMatrix::add_column() {
+  assert(n == cols.size());
+  n++;
+  cols.push_back(std::make_unique<SVector>());
+}

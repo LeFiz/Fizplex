@@ -16,6 +16,8 @@ public:
   size_t row_count() const;
   size_t col_count() const;
   const SVector &column(size_t i) const;
+  void add_row();
+  void add_column();
   void add_value(size_t row, size_t col, double val);
   void swap_columns(size_t i, size_t j);
 
