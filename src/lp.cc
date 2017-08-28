@@ -39,11 +39,12 @@ double LP::get_value(size_t row, size_t column) {
 }
 
 void LP::set_b() {
-  for (const auto &row : rows) {
-    if (row.type == RowType::LE)
-      b.push_back(row.lower);
+  b.resize(row_count());
+  for (size_t i = 0; i < row_count(); i++) {
+    if (rows[i].type == RowType::LE)
+      b[i] = rows[i].lower;
     else
-      b.push_back(row.upper);
+      b[i] = rows[i].upper;
   }
 }
 

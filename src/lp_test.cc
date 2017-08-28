@@ -48,3 +48,19 @@ Test(LP, add_logicals, "all") {
   EXPECT(lp.column_count() == 2);
   EXPECT(is_eq(lp.get_value(0, 1), 1));
 }
+
+Test(LP, set_b, "range row") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::Range, 3, 15);
+  lp.set_b();
+  EXPECT(is_eq(lp.b[0], 15));
+}
+
+Test(LP, set_b, "LE row") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::LE, 3, 15);
+  lp.set_b();
+  EXPECT(is_eq(lp.b[0], 3));
+}

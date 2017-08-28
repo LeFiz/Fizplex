@@ -2,6 +2,7 @@
 #define LP_H
 
 #include "svector.h"
+#include <valarray>
 
 enum class ColType { Fixed, Bounded, LowerBound, Free, UpperBound };
 enum class RowType { Equality, Range, LE, Free, GE };
@@ -35,13 +36,12 @@ public:
 
   void add_logicals();
 
+  void set_b();
+  std::valarray<double> b;
+
 private:
   std::vector<Column> cols;
   std::vector<Row> rows;
-
-  std::vector<double> b;
-
-  void set_b();
 };
 
 #endif
