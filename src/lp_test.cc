@@ -56,6 +56,15 @@ Test(LP, set_b, "GE row") {
   EXPECT(is_eq(lp.b[0], 3));
 }
 
+Test(LP, add_obj_value, "non-empty LP") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::Range, 3, 15);
+  const double d = 3.14;
+  lp.add_obj_value(0, d);
+  EXPECT(is_eq(lp.get_obj_value(0), d));
+}
+
 Test(LP, add_logicals, "all types") {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);

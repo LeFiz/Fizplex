@@ -1,7 +1,7 @@
 #include "lp.h"
 #include <cassert>
 
-LP::LP() : A(), b(), cols(), rows() {}
+LP::LP() : A(), b(), c(), cols(), rows() {}
 
 LP::Column::Column(ColType _type, double _lower, double _upper,
                    bool _is_logical)
@@ -11,6 +11,7 @@ void LP::add_column(ColType _type, double _lower, double _upper,
                     bool _is_logical) {
   cols.push_back(Column(_type, _lower, _upper, _is_logical));
   A.add_column();
+  c.resize(c.size() + 1);
 }
 
 LP::Row::Row(RowType _type, double _lower, double _upper)
@@ -48,6 +49,16 @@ void LP::set_b() {
     else
       b[i] = rows[i].upper;
   }
+}
+
+void LP::add_obj_value(size_t ind, double d) {
+  assert(ind < c.size());
+  c[ind] = d;
+}
+
+double LP::get_obj_value(size_t ind) const {
+  assert(ind < c.size());
+  return c[ind];
 }
 
 void LP::add_logicals() {

@@ -38,10 +38,12 @@ public:
 
   void add_logicals();
   void set_b();
+  void add_obj_value(size_t ind, double d);
+  double get_obj_value(size_t ind) const;
 
   ColMatrix A;
   std::valarray<double> b;
-  // std::valarray<double> c;
+  std::valarray<double> c;
 
 private:
   std::vector<Column> cols;
