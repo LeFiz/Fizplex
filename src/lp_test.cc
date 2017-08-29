@@ -74,6 +74,13 @@ Test(LP, add_logicals, "all types") {
   EXPECT(lp.column_header(4).type == ColType::Free);
   EXPECT(lp.column_header(5).type == ColType::UpperBound);
 
+  EXPECT(is_eq(lp.column_header(1).lower, 0));
+  EXPECT(is_eq(lp.column_header(1).upper, 0));
+  EXPECT(is_eq(lp.column_header(2).lower, 0));
+  EXPECT(is_eq(lp.column_header(2).upper, 12));
+  EXPECT(is_eq(lp.column_header(3).lower, 0));
+  EXPECT(is_eq(lp.column_header(5).upper, 0));
+
   for (int i = 0; i < 5; i++)
     EXPECT(is_eq(lp.get_value(i, 1 + i), 1));
 }
