@@ -45,16 +45,34 @@ public:
     tests().push_back({f, c, m, d});
   }
   static void run() {
+    Test slowest_test;
+    auto slowest_time = std::chrono::duration<double>::zero();
+
+    std::cout << "Running tests:\n";
+    auto global_start = Timer::now();
+
     for (auto &t : tests()) {
       auto start = Timer::now();
       t.f();
       auto end = Timer::now();
       auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(
           end - start);
-      std::cout << t.clss << "." << t.method << " " << t.desc;
-      std::cout << "(" << duration.count() * 1000 << "ms"
-                << ")" << std::endl;
+      if (slowest_time < duration) {
+        slowest_time = duration;
+        slowest_test = t;
+      }
+      std::cout << ".";
     }
+    auto global_end = Timer::now();
+    auto global_duration =
+        std::chrono::duration_cast<std::chrono::duration<double>>(global_end -
+                                                                  global_start);
+    std::cout << "\n\nTest time: " << global_duration.count() * 1000 << "ms\n";
+    std::cout << "Slowest test:\n";
+    std::cout << slowest_test.clss << "." << slowest_test.method << " "
+              << slowest_test.desc << ": " << slowest_time.count() * 1000
+              << "ms" << std::endl
+              << std::endl;
   }
 
 private:
