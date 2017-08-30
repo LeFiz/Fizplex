@@ -109,3 +109,5 @@ void Base::updateUnfinishedEtas(size_t finishedETM) {
   for (auto i = finishedETM + 1; i < etms.size(); i++)
     updateVecWithETM(*etms[finishedETM], etms[i]->eta);
 }
+
+const ColMatrix &Base::get_base() { return base; }

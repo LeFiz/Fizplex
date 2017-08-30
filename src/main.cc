@@ -42,5 +42,15 @@ int main() {
   for (const auto &val : lp.c)
     std::cout << val << " ";
   std::cout << std::endl;
+
+  ColMatrix m(2, 0);
+  for (size_t i = 0; i < 2; i++)
+    m.add_column(lp.A.column(i + 3));
+  std::cout << "M:\n" << m << std::endl;
+
+  Base b(m);
+  std::cout << "B:\n" << b.get_base() << std::endl;
+
+  b.invert();
   return 0;
 }

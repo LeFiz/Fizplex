@@ -18,7 +18,7 @@ public:
   const SVector &column(size_t i) const;
   double get_value(size_t row, size_t column);
   void add_row();
-  void add_column();
+  void add_column(const SVector &v = SVector());
   void add_value(size_t row, size_t col, double val);
   void swap_columns(size_t i, size_t j);
 

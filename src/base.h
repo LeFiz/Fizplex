@@ -13,6 +13,7 @@ public:
   void setBase(const ColMatrix &);
   bool invert();
   void updateVec(SVector &vec);
+  const ColMatrix &get_base();
 
 private:
   struct ETM {

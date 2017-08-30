@@ -63,10 +63,10 @@ ColMatrix &ColMatrix::operator=(const ColMatrix &rhs) {
 
 void ColMatrix::add_row() { m++; }
 
-void ColMatrix::add_column() {
+void ColMatrix::add_column(const SVector &v) {
   assert(n == cols.size());
   n++;
-  cols.push_back(std::make_unique<SVector>());
+  cols.push_back(std::make_unique<SVector>(v));
 }
 
 double ColMatrix::get_value(size_t row, size_t column) {
