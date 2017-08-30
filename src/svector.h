@@ -12,7 +12,9 @@
 class SVector {
 public:
   SVector();
+  // cppcheck-suppress noExplicitConstructor
   SVector(std::initializer_list<Nonzero>);
+
   void add_value(size_t ind, double val);
   size_t length() const;
 
