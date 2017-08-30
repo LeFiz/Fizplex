@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #define EXPECT(statement)                                                      \
@@ -39,7 +40,8 @@ public:
     std::string desc;
   };
 
-  static void reg(TestFunction f, std::string c, std::string m, std::string d) {
+  static void reg(const TestFunction f, const std::string &c,
+                  const std::string &m, std::string &d) {
     tests().push_back({f, c, m, d});
   }
   static void run() {
@@ -57,8 +59,8 @@ public:
 
 private:
   static std::vector<Test> &tests() {
-    static std::vector<Test> *_t = new std::vector<Test>(); // TODO leaking!
-    return *_t;
+    static auto tv = std::make_unique<std::vector<Test>>();
+    return *tv;
   }
 };
 
