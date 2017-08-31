@@ -2,6 +2,7 @@
 #define LP_H
 
 #include "colmatrix.h"
+#include "dvector.h"
 #include "svector.h"
 #include <valarray>
 
@@ -42,8 +43,8 @@ public:
   double get_obj_value(size_t ind) const;
 
   ColMatrix A;
-  std::valarray<double> b;
-  std::valarray<double> c;
+  DVector b;
+  DVector c;
 
 private:
   std::vector<Column> cols;

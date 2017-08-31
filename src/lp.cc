@@ -11,7 +11,6 @@ void LP::add_column(ColType _type, double _lower, double _upper,
                     bool _is_logical) {
   cols.push_back(Column(_type, _lower, _upper, _is_logical));
   A.add_column();
-  c.resize(c.size() + 1);
 }
 
 LP::Row::Row(RowType _type, double _lower, double _upper)
@@ -37,12 +36,11 @@ double LP::get_value(size_t row, size_t column) {
   assert(row < row_count());
   assert(column < column_count());
 
-  auto d = A.get_value(row, column);
-  return d;
+  return A.get_value(row, column);
 }
 
 void LP::set_b() {
-  b.resize(row_count());
+  b = DVector(row_count());
   for (size_t i = 0; i < row_count(); i++) {
     if (rows[i].type == RowType::GE)
       b[i] = rows[i].lower;
@@ -52,12 +50,12 @@ void LP::set_b() {
 }
 
 void LP::add_obj_value(size_t ind, double d) {
-  assert(ind < c.size());
+  assert(ind < c.dimension());
   c[ind] = d;
 }
 
 double LP::get_obj_value(size_t ind) const {
-  assert(ind < c.size());
+  assert(ind < c.dimension());
   return c[ind];
 }
 
@@ -92,6 +90,7 @@ void LP::add_logicals() {
     }
     add_value(i, i + n, 1.0);
   }
+  c = DVector(column_count());
 }
 
 const LP::Column &LP::column_header(size_t column) const {

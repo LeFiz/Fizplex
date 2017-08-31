@@ -34,13 +34,13 @@ int main() {
 
   std::cout << "A:\n" << lp.A;
   std::cout << "b:\n";
-  for (const auto &val : lp.b)
-    std::cout << val << " ";
+  for (size_t i = 0; i < lp.b.dimension(); i++)
+    std::cout << lp.b[i] << " ";
   std::cout << std::endl;
 
   std::cout << "c:\n";
-  for (const auto &val : lp.c)
-    std::cout << val << " ";
+  for (size_t i = 0; i < lp.c.dimension(); i++)
+    std::cout << lp.c[i] << " ";
   std::cout << std::endl;
 
   ColMatrix m(2, 0);
@@ -48,9 +48,9 @@ int main() {
     m.add_column(lp.A.column(i + 3));
   std::cout << "M:\n" << m << std::endl;
 
-  Base b(m);
-  std::cout << "B:\n" << b.get_base() << std::endl;
+  Base base(m);
+  std::cout << "B:\n" << base.get_base() << std::endl;
 
-  b.invert();
+  base.invert();
   return 0;
 }

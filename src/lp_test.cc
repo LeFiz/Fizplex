@@ -61,6 +61,7 @@ Test(LP, add_obj_value, "non-empty LP") {
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::Range, 3, 15);
   const double d = 3.14;
+  lp.add_logicals();
   lp.add_obj_value(0, d);
   EXPECT(is_eq(lp.get_obj_value(0), d));
 }
