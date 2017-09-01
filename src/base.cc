@@ -93,6 +93,21 @@ void Base::updateVecWithETM(ETM &etm, SVector &vec) {
   // assert(std::accumulate(work.begin(), work.end(), 0) == 0);
 }
 
+void Base::updateVecWithETM(ETM &etm, DVector &vec) {
+  //  assert(std::accumulate(work.begin(), work.end(), 0) == 0); // quite slow
+  assert(vec.dimension() == m);
+
+  double mult = vec[etm.col];
+  if (is_zero(mult)) // all updates would be += 0
+    return;
+  vec[etm.col] = 0.0f; // special case for pivot
+
+  for (auto &entry : etm.eta)
+    vec[entry.index] += entry.value * mult;
+
+  // assert(std::accumulate(work.begin(), work.end(), 0) == 0);
+}
+
 void Base::updateVec(SVector &vec) {
   for (auto &etm : etms)
     updateVecWithETM(*etm, vec);
@@ -101,6 +116,17 @@ void Base::updateVec(SVector &vec) {
   SVector w;
   for (auto &entry : vec)
     w.add_value(rowOrdering[entry.index], entry.value);
+  vec = w;
+}
+
+void Base::updateVec(DVector &vec) {
+  for (auto &etm : etms)
+    updateVecWithETM(*etm, vec);
+
+  // Reorder vec according to base column swaps
+  DVector w(m);
+  for (size_t i = 0; i < m; i++)
+    w[rowOrdering[i]] = vec[i];
   vec = w;
 }
 

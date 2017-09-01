@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <limits>
 
-const double eps = 1e-9;
+const double eps = 1e-6;
 
 const double inf = std::numeric_limits<double>::infinity();
 

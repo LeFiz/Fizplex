@@ -2,6 +2,7 @@
 #define BASE_H
 
 #include "colmatrix.h"
+#include "dvector.h"
 #include <algorithm>
 #include <memory>
 #include <numeric>
@@ -13,6 +14,7 @@ public:
   void setBase(const ColMatrix &);
   bool invert();
   void updateVec(SVector &vec);
+  void updateVec(DVector &vec);
   const ColMatrix &get_base() const;
 
 private:
@@ -25,6 +27,7 @@ private:
 
   void updateUnfinishedEtas(size_t i);
   void updateVecWithETM(ETM &etm, SVector &vec);
+  void updateVecWithETM(ETM &etm, DVector &vec);
   void swapBaseColumns(size_t i, size_t j);
 
   std::unique_ptr<size_t[]> rowOrdering;
