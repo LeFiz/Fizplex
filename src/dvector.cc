@@ -1,5 +1,7 @@
 #include "dvector.h"
+#include "numeric.h"
 #include <cassert>
+#include <iostream>
 
 DVector::DVector(size_t d) : dim(d), vals(dim) {}
 
@@ -7,6 +9,17 @@ const size_t &DVector::dimension() const {
   assert(dim == vals.size());
   return dim;
 }
+
+bool DVector::operator==(const DVector &rhs) const {
+  assert(dimension() == rhs.dimension());
+  for (size_t i = 0; i < dimension(); i++) {
+    if (!is_eq(vals[i], rhs[i]))
+      return false;
+  }
+  return true;
+}
+
+bool DVector::operator!=(const DVector &rhs) const { return !(*this == rhs); }
 
 double &DVector::operator[](size_t i) {
   assert(i < dimension());

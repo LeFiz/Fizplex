@@ -29,3 +29,31 @@ Test(DVector, dot_product, "non-zero vector") {
   EXPECT(is_eq(v * w, d + 1));
   EXPECT(is_eq(v * w, w * v));
 }
+
+Test(DVector, equality, "empty vectors") {
+  DVector v, w;
+  EXPECT(v == w);
+}
+
+Test(DVector, equality, "non-empty, equal") {
+  DVector v(3), w(3);
+  const double d = 2.123456f;
+  v[0] = 1;
+  w[0] = 1;
+  v[2] = d;
+  w[2] = d;
+  EXPECT(v == w);
+  EXPECT(!(v != w));
+}
+
+Test(DVector, equality, "non-empty, inequal") {
+  DVector v(3), w(3);
+  const double d = 2.123456f;
+  v[0] = 1;
+  w[0] = 1;
+  v[1] = 17;
+  v[2] = d;
+  w[2] = d;
+  EXPECT(!(v == w));
+  EXPECT((v != w));
+}
