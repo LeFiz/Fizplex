@@ -11,6 +11,8 @@ public:
   double &operator[](size_t i);
   const double &operator[](size_t i) const;
 
+  double operator*(const DVector &rhs) const;
+
 private:
   size_t dim;
   std::valarray<double> vals;
