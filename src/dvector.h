@@ -1,6 +1,7 @@
 #ifndef DVECTOR_H
 #define DVECTOR_H
 
+#include <iostream>
 #include <valarray>
 
 class DVector {
@@ -19,5 +20,7 @@ private:
   size_t dim;
   std::valarray<double> vals;
 };
+
+std::ostream &operator<<(std::ostream &os, const DVector &v);
 
 #endif

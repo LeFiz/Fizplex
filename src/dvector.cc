@@ -38,3 +38,12 @@ double DVector::operator*(const DVector &rhs) const {
     d += vals[i] * rhs[i];
   return d;
 }
+
+std::ostream &operator<<(std::ostream &os, const DVector &v) {
+  for (size_t i = 0; i < v.dimension(); i++) {
+    if (i > 0)
+      os << " ";
+    os << v[i];
+  }
+  return os;
+}
