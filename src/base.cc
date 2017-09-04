@@ -133,11 +133,6 @@ void Base::ftran(DVector &vec) {
 
 void Base::btran(DVector &vec) const {
   const size_t num = etms.size();
-  std::cout << "RowOrdering:\n";
-  for (size_t i = 0; i < m; i++)
-    std::cout << rowOrdering[i] << " ";
-
-  std::cout << "\n\n";
   for (size_t i = 0; i < num; i++) {
     double d = 0.0f;
     for (const auto &n : etms[num - i - 1]->eta) {
