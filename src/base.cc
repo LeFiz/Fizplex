@@ -109,8 +109,9 @@ void Base::updateVecWithETM(ETM &etm, DVector &vec) {
 }
 
 void Base::ftran(SVector &vec) {
-  for (auto &etm : etms)
+  for (auto &etm : etms) {
     updateVecWithETM(*etm, vec);
+  }
 
   // Reorder vec according to base column swaps
   SVector w;
@@ -122,6 +123,28 @@ void Base::ftran(SVector &vec) {
 void Base::ftran(DVector &vec) {
   for (auto &etm : etms)
     updateVecWithETM(*etm, vec);
+
+  // Reorder vec according to base column swaps
+  DVector w(m);
+  for (size_t i = 0; i < m; i++)
+    w[rowOrdering[i]] = vec[i];
+  vec = w;
+}
+
+void Base::btran(DVector &vec) const {
+  const size_t num = etms.size();
+  std::cout << "RowOrdering:\n";
+  for (size_t i = 0; i < m; i++)
+    std::cout << rowOrdering[i] << " ";
+
+  std::cout << "\n\n";
+  for (size_t i = 0; i < num; i++) {
+    double d = 0.0f;
+    for (const auto &n : etms[num - i - 1]->eta) {
+      d += n.value * vec[rowOrdering[n.index]];
+    }
+    vec[rowOrdering[etms[num - i - 1]->col]] = d;
+  }
 
   // Reorder vec according to base column swaps
   DVector w(m);

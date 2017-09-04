@@ -15,6 +15,7 @@ public:
   bool invert();
   void ftran(SVector &vec);
   void ftran(DVector &vec);
+  void btran(DVector &vec) const;
   const ColMatrix &get_base() const;
 
 private:
