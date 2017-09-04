@@ -52,5 +52,24 @@ int main() {
   std::cout << "B:\n" << base.get_base() << std::endl;
 
   base.invert();
+
+  DVector beta(2);
+  beta = lp.b;
+
+  std::vector<size_t> base_index;
+  base_index.push_back(3);
+  base_index.push_back(4);
+
+  base.ftran(beta);
+  std::cout << beta << std::endl;
+
+  const size_t rows = base_index.size();
+  DVector c(rows);
+  for (size_t i = 0; i < rows; i++) {
+    c[i] = lp.c[base_index[i]];
+  }
+
+  double z = c * beta;
+  std::cout << "z = " << z << std::endl;
   return 0;
 }

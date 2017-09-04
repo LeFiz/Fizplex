@@ -15,9 +15,9 @@ Test(Base, invert, "invertible, no re-ordering") {
   const SVector r1 = {{0, 8}, {1, -11}, {2, -34}};
   const SVector r2 = {{0, -5}, {1, 7}, {2, 21}};
   EXPECT(b.invert());
-  b.updateVec(e0);
-  b.updateVec(e1);
-  b.updateVec(e2);
+  b.ftran(e0);
+  b.ftran(e1);
+  b.ftran(e2);
   EXPECT(e0 == r0);
   EXPECT(e1 == r1);
   EXPECT(e2 == r2);
@@ -36,9 +36,9 @@ Test(Base, invert, "invertible, with re-ordering") {
   const SVector r1 = {{0, 8.0 / 71}, {1, 3.0 / 71}, {2, -6.0 / 71}};
   const SVector r2 = {{0, -5.0 / 71}, {1, 7.0 / 71}, {2, -14.0 / 71}};
   EXPECT(b.invert());
-  b.updateVec(e0);
-  b.updateVec(e1);
-  b.updateVec(e2);
+  b.ftran(e0);
+  b.ftran(e1);
+  b.ftran(e2);
   EXPECT(e0 == r0);
   EXPECT(e1 == r1);
   EXPECT(e2 == r2);
@@ -76,9 +76,9 @@ Test(Base, updateVecWithETM, "DVector, with reordering") {
   r2[2] = -14.0f / 71;
 
   EXPECT(b.invert());
-  b.updateVec(e0);
-  b.updateVec(e1);
-  b.updateVec(e2);
+  b.ftran(e0);
+  b.ftran(e1);
+  b.ftran(e2);
 
   EXPECT(e0 == r0);
   EXPECT(e1 == r1);
@@ -108,9 +108,9 @@ Test(Base, updateVecWithETM, "DVector, no reordering") {
   r2[2] = 21;
 
   EXPECT(b.invert());
-  b.updateVec(e0);
-  b.updateVec(e1);
-  b.updateVec(e2);
+  b.ftran(e0);
+  b.ftran(e1);
+  b.ftran(e2);
 
   EXPECT(e0 == r0);
   EXPECT(e1 == r1);

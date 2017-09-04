@@ -108,7 +108,7 @@ void Base::updateVecWithETM(ETM &etm, DVector &vec) {
   // assert(std::accumulate(work.begin(), work.end(), 0) == 0);
 }
 
-void Base::updateVec(SVector &vec) {
+void Base::ftran(SVector &vec) {
   for (auto &etm : etms)
     updateVecWithETM(*etm, vec);
 
@@ -119,7 +119,7 @@ void Base::updateVec(SVector &vec) {
   vec = w;
 }
 
-void Base::updateVec(DVector &vec) {
+void Base::ftran(DVector &vec) {
   for (auto &etm : etms)
     updateVecWithETM(*etm, vec);
 

@@ -13,8 +13,8 @@ public:
   explicit Base(const ColMatrix &);
   void setBase(const ColMatrix &);
   bool invert();
-  void updateVec(SVector &vec);
-  void updateVec(DVector &vec);
+  void ftran(SVector &vec);
+  void ftran(DVector &vec);
   const ColMatrix &get_base() const;
 
 private:
