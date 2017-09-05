@@ -1,6 +1,7 @@
 #ifndef DVECTOR_H
 #define DVECTOR_H
 
+#include "svector.h"
 #include <iostream>
 #include <valarray>
 
@@ -15,6 +16,7 @@ public:
   const double &operator[](size_t i) const;
 
   double operator*(const DVector &rhs) const;
+  double operator*(const SVector &rhs) const;
 
 private:
   size_t dim;

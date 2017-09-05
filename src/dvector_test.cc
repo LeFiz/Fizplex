@@ -30,6 +30,23 @@ Test(DVector, dot_product, "non-zero vector") {
   EXPECT(is_eq(v * w, w * v));
 }
 
+Test(DVector, dot_product_svector, "zero vector") {
+  DVector v(10);
+  SVector w;
+  EXPECT(is_zero(v * w));
+}
+
+Test(DVector, dot_product_svector, "non-zero vector") {
+  DVector v(10);
+  SVector w;
+  const double d = 7.123456f;
+  v[3] = 1;
+  w.add_value(3, d);
+  v[7] = 0.5f;
+  w.add_value(7, 2.0f);
+  EXPECT(is_eq(v * w, d + 1));
+}
+
 Test(DVector, equality, "empty vectors") {
   DVector v, w;
   EXPECT(v == w);

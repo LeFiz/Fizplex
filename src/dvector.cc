@@ -39,6 +39,13 @@ double DVector::operator*(const DVector &rhs) const {
   return d;
 }
 
+double DVector::operator*(const SVector &rhs) const {
+  double d = 0;
+  for (auto it = rhs.cbegin(); it != rhs.cend(); it++)
+    d += it->value * vals[it->index];
+  return d;
+}
+
 std::ostream &operator<<(std::ostream &os, const DVector &v) {
   for (size_t i = 0; i < v.dimension(); i++) {
     if (i > 0)
