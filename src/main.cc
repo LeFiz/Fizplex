@@ -14,21 +14,25 @@ int main() {
   lp.add_column(ColType::LowerBound, 0, inf);
   lp.add_column(ColType::LowerBound, 0, inf);
   lp.add_column(ColType::LowerBound, 0, inf);
-  lp.add_row(RowType::LE, -inf, 10);
-  lp.add_row(RowType::LE, -inf, 15);
+  lp.add_row(RowType::LE, -inf, 14);
+  lp.add_row(RowType::LE, -inf, 28);
+  lp.add_row(RowType::LE, -inf, 30);
 
-  lp.add_value(0, 0, 3);
-  lp.add_value(0, 1, 2);
+  lp.add_value(0, 0, 2);
+  lp.add_value(0, 1, 1);
   lp.add_value(0, 2, 1);
-  lp.add_value(1, 0, 2);
-  lp.add_value(1, 1, 5);
+  lp.add_value(1, 0, 4);
+  lp.add_value(1, 1, 2);
   lp.add_value(1, 2, 3);
+  lp.add_value(2, 0, 2);
+  lp.add_value(2, 1, 5);
+  lp.add_value(2, 2, 5);
 
   lp.add_logicals();
 
-  lp.add_obj_value(0, -2);
-  lp.add_obj_value(1, -3);
-  lp.add_obj_value(2, -4);
+  lp.add_obj_value(0, -1);
+  lp.add_obj_value(1, -2);
+  lp.add_obj_value(2, 3);
 
   lp.set_b();
 
@@ -47,6 +51,7 @@ int main() {
   std::vector<size_t> basic_indices;
   basic_indices.push_back(3);
   basic_indices.push_back(4);
+  basic_indices.push_back(5);
   std::vector<size_t> non_basic_indices;
   non_basic_indices.push_back(0);
   non_basic_indices.push_back(1);
@@ -55,8 +60,11 @@ int main() {
   DVector x(lp.c.dimension());
   std::cout << "x = \n" << x << "\n\n";
 
-  for (int round = 0; round < 2; round++) {
-    ColMatrix m(2, 0);
+  for (int round = 0; round < 999; round++) {
+    std::cout << "\n\nIteration " << round;
+    std::cout << "\n-----------------------------------------\n\n";
+
+    ColMatrix m(lp.A.row_count(), 0);
     for (const auto &i : basic_indices)
       m.add_column(lp.A.column(i));
 
@@ -65,7 +73,7 @@ int main() {
 
     base.invert();
 
-    DVector beta(2);
+    DVector beta(lp.A.row_count());
     beta = lp.b;
 
     base.ftran(beta);
@@ -104,6 +112,7 @@ int main() {
       for (size_t i = 0; i < basic_indices.size(); i++)
         x[basic_indices[i]] = beta[i];
       std::cout << "x = \n" << x << "\n\n";
+      break;
     } else {
       SVector alpha = lp.A.column(min_posi);
       std::cout << "alpha = \n" << alpha << "\n\n";
