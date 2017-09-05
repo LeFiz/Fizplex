@@ -20,6 +20,8 @@ public:
 
   auto begin() { return values.begin(); }
   auto end() { return values.end(); }
+  auto cbegin() const { return values.cbegin(); }
+  auto cend() const { return values.cend(); }
 
   friend std::ostream &operator<<(std::ostream &os, SVector const &n);
 
