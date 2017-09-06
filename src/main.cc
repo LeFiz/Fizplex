@@ -39,5 +39,12 @@ int main() {
 
   Simplex splx(lp);
   splx.solve();
+  if (splx.get_result() == Simplex::Result::OptimalSolution) {
+    std::cout << "Optimal solution found!\n";
+    std::cout << "Value = " << splx.get_z() << "\n\n";
+    std::cout << "x = \n" << splx.get_x() << "\n\n";
+  } else {
+    std::cout << "No solution found\n";
+  }
   return 0;
 }

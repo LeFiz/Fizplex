@@ -3,9 +3,15 @@
 #include <iostream>
 
 Simplex::Simplex(const LP &_lp)
-    : lp(_lp), x(lp.A.col_count()), z(inf),
+    : lp(_lp), x(lp.A.col_count()), z(inf), result(Result::Unsolved),
       structural_count(lp.A.col_count() - lp.A.row_count()),
       row_count(lp.A.row_count()), col_count(lp.A.col_count()) {}
+
+const DVector &Simplex::get_x() const { return x; }
+
+const double &Simplex::get_z() const { return z; }
+
+const Simplex::Result &Simplex::get_result() const { return result; }
 
 void Simplex::solve() {
   std::cout << "A:\n" << lp.A;
@@ -23,6 +29,7 @@ void Simplex::solve() {
   DVector beta(row_count);
   DVector c_beta(row_count);
   DVector d(col_count);
+  DVector pi(row_count);
 
   for (int round = 0; round < 999; round++) {
     std::cout << "\n\nIteration " << round;
@@ -46,7 +53,7 @@ void Simplex::solve() {
 
     z = c_beta * beta;
 
-    DVector pi = c_beta;
+    pi = c_beta;
     base.btran(pi);
 
     double min_val = 0.0f;
@@ -68,12 +75,8 @@ void Simplex::solve() {
     if (is_zero(min_val)) {
       for (size_t i = 0; i < basic_indices.size(); i++)
         x[basic_indices[i]] = beta[i];
-
-      std::cout << "Optimal solution found!\n";
-      std::cout << "Value = " << z << "\n\n";
-      std::cout << "x = \n" << x << "\n\n";
-
-      break;
+      result = Result::OptimalSolution;
+      return;
     } else {
       SVector alpha = lp.A.column(min_posi);
       std::cout << "alpha = \n" << alpha << "\n\n";
