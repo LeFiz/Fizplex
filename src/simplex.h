@@ -19,6 +19,11 @@ private:
     bool is_optimal;
     size_t candidate_index;
   };
+  enum class IterationResult { Unbounded, BoundFlip, BaseChange };
+  struct RatioTestResult {
+    IterationResult result;
+    size_t leaving_index;
+  };
   const LP &lp;
   DVector x;
   double z;
@@ -27,7 +32,9 @@ private:
   size_t row_count;
   size_t col_count;
 
-  PricingResult price(DVector &pi, std::vector<size_t> &non_basic_indices);
+  PricingResult price(DVector &pi,
+                      std::vector<size_t> &non_basic_indices) const;
+  RatioTestResult ratio_test(SVector &alpha, DVector &beta) const;
 };
 
 #endif

@@ -67,15 +67,7 @@ void Simplex::solve() {
       base.ftran(alpha);
 
       // Ratio test
-      double min_theta = inf;
-      size_t min_theta_posi = 0;
-      for (const auto &n : alpha) {
-        double t = beta[n.index] / n.value;
-        if (t < min_theta) {
-          min_theta = t;
-          min_theta_posi = n.index;
-        }
-      }
+      auto rt = ratio_test(alpha, beta);
       std::cout << "B:\n" << base.get_base() << std::endl;
       std::cout << "Alpha = \n" << alpha << "\n\n";
       std::cout << "Beta: " << beta << std::endl;
@@ -87,25 +79,19 @@ void Simplex::solve() {
       std::cout << "\n\nNon-Basic:\n";
       for (auto v : non_basic_indices)
         std::cout << v << " ";
-      std::cout << "\nMin theta = " << min_theta << " at position "
-                << min_theta_posi << "\n\n";
 
-      if (is_zero(min_theta)) {
-        // Bound flip or unbounded
-      } else {
+      if (rt.result == IterationResult::BaseChange) {
         size_t temp = non_basic_indices[pr.candidate_index];
-        non_basic_indices[pr.candidate_index] = basic_indices[min_theta_posi];
-        basic_indices[min_theta_posi] = temp;
+        non_basic_indices[pr.candidate_index] = basic_indices[rt.leaving_index];
+        basic_indices[rt.leaving_index] = temp;
       }
     }
   }
 }
 
-Simplex::PricingResult Simplex::price(DVector &pi,
-                                      std::vector<size_t> &non_basic_indices) {
+Simplex::PricingResult
+Simplex::price(DVector &pi, std::vector<size_t> &non_basic_indices) const {
   DVector d(col_count);
-
-  // Price
   double min_val = 0.0f;
   size_t min_posi = 0;
   for (size_t i = 0; i < non_basic_indices.size(); i++) {
@@ -121,4 +107,27 @@ Simplex::PricingResult Simplex::price(DVector &pi,
   std::cout << "pi = " << pi << std::endl;
   std::cout << "d = " << d << "\n\n";
   return pr;
+}
+
+Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha,
+                                             DVector &beta) const {
+  double min_theta = inf;
+  size_t min_theta_posi = 0;
+  for (const auto &n : alpha) {
+    double t = beta[n.index] / n.value;
+    if (t < min_theta) {
+      min_theta = t;
+      min_theta_posi = n.index;
+    }
+  }
+  std::cout << "\nMin theta = " << min_theta << " at position "
+            << min_theta_posi << "\n\n";
+  RatioTestResult rt;
+  if (is_zero(min_theta)) {
+    // bound flip or unbounded
+  } else {
+    rt.leaving_index = min_theta_posi;
+    rt.result = IterationResult::BaseChange;
+  }
+  return rt;
 }
