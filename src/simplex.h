@@ -15,6 +15,10 @@ public:
   const Result &get_result() const;
 
 private:
+  struct PricingResult {
+    bool is_optimal;
+    size_t candidate_index;
+  };
   const LP &lp;
   DVector x;
   double z;
@@ -22,6 +26,8 @@ private:
   size_t structural_count;
   size_t row_count;
   size_t col_count;
+
+  PricingResult price(DVector &pi, std::vector<size_t> &non_basic_indices);
 };
 
 #endif
