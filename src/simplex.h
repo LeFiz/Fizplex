@@ -14,6 +14,8 @@ public:
   const double &get_z() const;
   const Result &get_result() const;
 
+  bool print_iterations;
+
 private:
   struct PricingResult {
     bool is_optimal;

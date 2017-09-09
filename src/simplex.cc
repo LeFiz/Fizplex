@@ -3,7 +3,8 @@
 #include <iostream>
 
 Simplex::Simplex(const LP &_lp)
-    : lp(_lp), x(lp.A.col_count()), z(inf), result(Result::Unsolved),
+    : print_iterations(false), lp(_lp), x(lp.A.col_count()), z(inf),
+      result(Result::Unsolved),
       structural_count(lp.A.col_count() - lp.A.row_count()),
       row_count(lp.A.row_count()), col_count(lp.A.col_count()) {}
 
@@ -14,9 +15,11 @@ const double &Simplex::get_z() const { return z; }
 const Simplex::Result &Simplex::get_result() const { return result; }
 
 void Simplex::solve() {
-  std::cout << "A:\n" << lp.A;
-  std::cout << "b = " << lp.b << std::endl;
-  std::cout << "c = " << lp.c << std::endl;
+  if (print_iterations) {
+    std::cout << "A:\n" << lp.A;
+    std::cout << "b = " << lp.b << std::endl;
+    std::cout << "c = " << lp.c << std::endl;
+  }
 
   // Set up index sets
   std::vector<size_t> basic_indices;
@@ -33,8 +36,10 @@ void Simplex::solve() {
   SVector alpha;
 
   for (int round = 0; round < 999; round++) {
-    std::cout << "\n\nIteration " << round;
-    std::cout << "\n-----------------------------------------\n\n";
+    if (print_iterations) {
+      std::cout << "\n\nIteration " << round;
+      std::cout << "\n-----------------------------------------\n\n";
+    }
 
     // Set up base + inverse
     ColMatrix m(row_count, 0);
@@ -51,15 +56,17 @@ void Simplex::solve() {
       c_beta[i] = lp.c[basic_indices[i]];
 
     // Report iteration status
-    std::cout << "B:\n" << base.get_base() << std::endl;
-    std::cout << "Beta: " << beta << std::endl;
-    std::cout << "z = " << z << std::endl;
-    std::cout << "Basic:\n";
-    for (auto v : basic_indices)
-      std::cout << v << " ";
-    std::cout << "\n\nNon-Basic:\n";
-    for (auto v : non_basic_indices)
-      std::cout << v << " ";
+    if (print_iterations) {
+      std::cout << "B:\n" << base.get_base() << std::endl;
+      std::cout << "Beta: " << beta << std::endl;
+      std::cout << "z = " << z << std::endl;
+      std::cout << "Basic:\n";
+      for (auto v : basic_indices)
+        std::cout << v << " ";
+      std::cout << "\n\nNon-Basic:\n";
+      for (auto v : non_basic_indices)
+        std::cout << v << " ";
+    }
 
     // Price
     pi = c_beta;
@@ -76,11 +83,16 @@ void Simplex::solve() {
       // Transform column vector of improving candidate
       alpha = lp.A.column(pr.candidate_index);
       base.ftran(alpha);
-      std::cout << "Alpha = \n" << alpha << "\n\n";
+      if (print_iterations) {
+        std::cout << "Alpha = \n" << alpha << "\n\n";
+      }
 
       // Ratio test
       auto rt = ratio_test(alpha, beta);
-      std::cout << "selected new basic index: " << pr.candidate_index << "\n\n";
+      if (print_iterations) {
+        std::cout << "selected new basic index: " << pr.candidate_index
+                  << "\n\n";
+      }
 
       if (rt.result == IterationResult::BaseChange) {
         std::swap<size_t>(non_basic_indices[pr.candidate_index],
@@ -105,8 +117,10 @@ Simplex::price(DVector &pi, std::vector<size_t> &non_basic_indices) const {
   PricingResult pr;
   pr.is_optimal = is_zero(min_val);
   pr.candidate_index = min_posi;
-  std::cout << "pi = " << pi << std::endl;
-  std::cout << "d = " << d << "\n\n";
+  if (print_iterations) {
+    std::cout << "pi = " << pi << std::endl;
+    std::cout << "d = " << d << "\n\n";
+  }
   return pr;
 }
 
@@ -121,8 +135,10 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha,
       min_theta_posi = n.index;
     }
   }
-  std::cout << "\nMin theta = " << min_theta << " at position "
-            << min_theta_posi << "\n\n";
+  if (print_iterations) {
+    std::cout << "\nMin theta = " << min_theta << " at position "
+              << min_theta_posi << "\n\n";
+  }
   RatioTestResult rt;
   if (is_zero(min_theta)) {
     // bound flip or unbounded
