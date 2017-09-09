@@ -49,7 +49,17 @@ void Simplex::solve() {
 
     for (size_t i = 0; i < row_count; i++)
       c_beta[i] = lp.c[basic_indices[i]];
-    z = c_beta * beta;
+
+    // Report iteration status
+    std::cout << "B:\n" << base.get_base() << std::endl;
+    std::cout << "Beta: " << beta << std::endl;
+    std::cout << "z = " << z << std::endl;
+    std::cout << "Basic:\n";
+    for (auto v : basic_indices)
+      std::cout << v << " ";
+    std::cout << "\n\nNon-Basic:\n";
+    for (auto v : non_basic_indices)
+      std::cout << v << " ";
 
     // Price
     pi = c_beta;
@@ -60,30 +70,21 @@ void Simplex::solve() {
       for (size_t i = 0; i < basic_indices.size(); i++)
         x[basic_indices[i]] = beta[i];
       result = Result::OptimalSolution;
+      z = lp.c * x;
       return;
     } else {
       // Transform column vector of improving candidate
       alpha = lp.A.column(pr.candidate_index);
       base.ftran(alpha);
+      std::cout << "Alpha = \n" << alpha << "\n\n";
 
       // Ratio test
       auto rt = ratio_test(alpha, beta);
-      std::cout << "B:\n" << base.get_base() << std::endl;
-      std::cout << "Alpha = \n" << alpha << "\n\n";
-      std::cout << "Beta: " << beta << std::endl;
-      std::cout << "z = " << z << std::endl;
       std::cout << "selected new basic index: " << pr.candidate_index << "\n\n";
-      std::cout << "Basic:\n";
-      for (auto v : basic_indices)
-        std::cout << v << " ";
-      std::cout << "\n\nNon-Basic:\n";
-      for (auto v : non_basic_indices)
-        std::cout << v << " ";
 
       if (rt.result == IterationResult::BaseChange) {
-        size_t temp = non_basic_indices[pr.candidate_index];
-        non_basic_indices[pr.candidate_index] = basic_indices[rt.leaving_index];
-        basic_indices[rt.leaving_index] = temp;
+        std::swap<size_t>(non_basic_indices[pr.candidate_index],
+                          basic_indices[rt.leaving_index]);
       }
     }
   }
