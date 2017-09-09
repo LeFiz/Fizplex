@@ -19,13 +19,13 @@ int main() {
   lp.add_row(RowType::LE, -inf, 28);
   lp.add_row(RowType::LE, -inf, 30);
 
-  lp.add_value(0, 0, 2);
+  lp.add_value(0, 0, -2);
   lp.add_value(0, 1, 1);
   lp.add_value(0, 2, 1);
-  lp.add_value(1, 0, 4);
+  lp.add_value(1, 0, -4);
   lp.add_value(1, 1, 2);
   lp.add_value(1, 2, 3);
-  lp.add_value(2, 0, 2);
+  lp.add_value(2, 0, -2);
   lp.add_value(2, 1, 5);
   lp.add_value(2, 2, 5);
 
@@ -38,14 +38,18 @@ int main() {
   lp.set_b();
 
   Simplex splx(lp);
-  splx.print_iterations = false;
+  splx.print_iterations = true;
   splx.solve();
   if (splx.get_result() == Simplex::Result::OptimalSolution) {
     std::cout << "Optimal solution found!\n";
     std::cout << "Value = " << splx.get_z() << "\n\n";
     std::cout << "x = \n" << splx.get_x() << "\n\n";
   } else {
-    std::cout << "No solution found\n";
+    if (splx.get_result() == Simplex::Result::Unbounded) {
+      std::cout << "Problem is unbounded\n";
+    } else {
+      std::cout << "No solution found\n";
+    }
   }
   return 0;
 }

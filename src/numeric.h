@@ -14,6 +14,7 @@ inline bool is_eq(double lhs, double rhs) { return fabs(lhs - rhs) < eps; }
 inline bool is_zero(double val) { return fabs(val) < eps; }
 
 inline bool is_finite(double val) { return std::isfinite(val); }
+inline bool is_infinite(double val) { return !std::isfinite(val); }
 
 struct Nonzero {
   size_t index;

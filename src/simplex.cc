@@ -35,7 +35,7 @@ void Simplex::solve() {
   DVector pi(col_count);
   SVector alpha;
 
-  for (int round = 0; round < 999; round++) {
+  for (int round = 0; round < 10; round++) {
     if (print_iterations) {
       std::cout << "\n\nIteration " << round;
       std::cout << "\n-----------------------------------------\n\n";
@@ -59,7 +59,6 @@ void Simplex::solve() {
     if (print_iterations) {
       std::cout << "B:\n" << base.get_base() << std::endl;
       std::cout << "Beta: " << beta << std::endl;
-      std::cout << "z = " << z << std::endl;
       std::cout << "Basic:\n";
       for (auto v : basic_indices)
         std::cout << v << " ";
@@ -88,15 +87,25 @@ void Simplex::solve() {
       }
 
       // Ratio test
-      auto rt = ratio_test(alpha, beta);
+      auto rt = ratio_test(alpha, beta, non_basic_indices[pr.candidate_index]);
       if (print_iterations) {
         std::cout << "selected new basic index: " << pr.candidate_index
                   << "\n\n";
       }
 
-      if (rt.result == IterationResult::BaseChange) {
+      switch (rt.result) {
+      case IterationResult::BaseChange:
         std::swap<size_t>(non_basic_indices[pr.candidate_index],
                           basic_indices[rt.leaving_index]);
+        break;
+      case IterationResult::Unbounded:
+        result = Result::Unbounded;
+        z = -inf;
+        return;
+      case IterationResult::BoundFlip:
+        break;
+      default:
+        assert(false);
       }
     }
   }
@@ -124,8 +133,8 @@ Simplex::price(DVector &pi, std::vector<size_t> &non_basic_indices) const {
   return pr;
 }
 
-Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha,
-                                             DVector &beta) const {
+Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
+                                             size_t candidate_index) const {
   double min_theta = inf;
   size_t min_theta_posi = 0;
   for (const auto &n : alpha) {
@@ -140,8 +149,10 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha,
               << min_theta_posi << "\n\n";
   }
   RatioTestResult rt;
-  if (is_zero(min_theta)) {
-    // bound flip or unbounded
+  if (is_infinite(min_theta)) {
+    if (is_infinite(lp.column_header(candidate_index).upper)) {
+      rt.result = IterationResult::Unbounded;
+    }
   } else {
     rt.leaving_index = min_theta_posi;
     rt.result = IterationResult::BaseChange;
