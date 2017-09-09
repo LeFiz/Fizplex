@@ -38,7 +38,7 @@ int main() {
   lp.set_b();
 
   Simplex splx(lp);
-  splx.print_iterations = true;
+  splx.print_iterations = false;
   splx.solve();
   if (splx.get_result() == Simplex::Result::OptimalSolution) {
     std::cout << "Optimal solution found!\n";

@@ -138,10 +138,12 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
   double min_theta = inf;
   size_t min_theta_posi = 0;
   for (const auto &n : alpha) {
-    double t = beta[n.index] / n.value;
-    if (t < min_theta) {
-      min_theta = t;
-      min_theta_posi = n.index;
+    if (is_ge(n.value, 0.0f)) {
+      double t = beta[n.index] / n.value;
+      if (t < min_theta) {
+        min_theta = t;
+        min_theta_posi = n.index;
+      }
     }
   }
   if (print_iterations) {

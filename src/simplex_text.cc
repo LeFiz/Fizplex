@@ -30,6 +30,27 @@ Test(Simplex, solve, "Ax <= b, x >= 0, optimal Solution exists") {
 
   Simplex splx(lp);
   splx.solve();
+
   EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
   EXPECT(is_eq(splx.get_z(), -13));
+}
+
+Test(Simplex, solve, "Ax <= b, x >= 0, unbounded") {
+  LP lp;
+  lp.add_column(ColType::LowerBound, 0, inf);
+  lp.add_row(RowType::LE, -inf, 14);
+
+  lp.add_value(0, 0, -2);
+
+  lp.add_logicals();
+
+  lp.add_obj_value(0, -1);
+
+  lp.set_b();
+
+  Simplex splx(lp);
+  splx.solve();
+
+  EXPECT(splx.get_result() == Simplex::Result::Unbounded);
+  EXPECT(is_infinite(splx.get_z()));
 }
