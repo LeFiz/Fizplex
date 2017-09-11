@@ -37,7 +37,9 @@ private:
   PricingResult price(DVector &pi,
                       std::vector<size_t> &non_basic_indices) const;
   RatioTestResult ratio_test(SVector &alpha, DVector &beta,
-                             size_t candidate_index) const;
+                             size_t candidate_index,
+                             std::vector<size_t> &basic_indices,
+                             double candidate_cost) const;
 };
 
 #endif

@@ -33,6 +33,7 @@ void Simplex::solve() {
   DVector beta(row_count);
   DVector c_beta(row_count);
   DVector pi(col_count);
+  DVector d(col_count);
   SVector alpha;
 
   for (int round = 0; round < 10; round++) {
@@ -70,7 +71,16 @@ void Simplex::solve() {
     // Price
     pi = c_beta;
     base.btran(pi);
-    auto pr = price(pi, non_basic_indices);
+    for (size_t i = 0; i < non_basic_indices.size(); i++)
+      d[i] =
+          lp.c[non_basic_indices[i]] - pi * lp.A.column(non_basic_indices[i]);
+
+    if (print_iterations) {
+      std::cout << "pi = " << pi << std::endl;
+      std::cout << "d = " << d << "\n\n";
+    }
+
+    auto pr = price(d, non_basic_indices);
 
     if (pr.is_optimal) {
       for (size_t i = 0; i < basic_indices.size(); i++)
@@ -87,7 +97,8 @@ void Simplex::solve() {
       }
 
       // Ratio test
-      auto rt = ratio_test(alpha, beta, non_basic_indices[pr.candidate_index]);
+      auto rt = ratio_test(alpha, beta, non_basic_indices[pr.candidate_index],
+                           basic_indices, d[pr.candidate_index]);
       if (print_iterations) {
         std::cout << "selected new basic index: " << pr.candidate_index
                   << "\n\n";
@@ -112,38 +123,46 @@ void Simplex::solve() {
 }
 
 Simplex::PricingResult
-Simplex::price(DVector &pi, std::vector<size_t> &non_basic_indices) const {
-  DVector d(col_count);
+Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
   double min_val = 0.0f;
   size_t min_posi = 0;
   for (size_t i = 0; i < non_basic_indices.size(); i++) {
-    d[i] = lp.c[non_basic_indices[i]] - pi * lp.A.column(non_basic_indices[i]);
-    if (d[i] < min_val) {
-      min_val = d[i];
+    size_t j = non_basic_indices[i];
+    double sign = 1.0f;
+    if (is_eq(x[j], lp.column_header(j).upper))
+      sign = -1.0f; // move from upper bound down
+    if (sign * d[i] < min_val) {
+      min_val = sign * d[i];
       min_posi = i;
     }
   }
   PricingResult pr;
   pr.is_optimal = is_zero(min_val);
   pr.candidate_index = min_posi;
-  if (print_iterations) {
-    std::cout << "pi = " << pi << std::endl;
-    std::cout << "d = " << d << "\n\n";
-  }
   return pr;
 }
 
 Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
-                                             size_t candidate_index) const {
+                                             size_t candidate_index,
+                                             std::vector<size_t> &basic_indices,
+                                             double candidate_cost) const {
   double min_theta = inf;
   size_t min_theta_posi = 0;
+  double bound = inf;
+  double a = inf;
+  const double direction = is_ge(candidate_cost, 0.0f) ? -1.0f : 1.0f;
+
   for (const auto &n : alpha) {
-    if (is_ge(n.value, 0.0f)) {
-      double t = beta[n.index] / n.value;
-      if (t < min_theta) {
-        min_theta = t;
-        min_theta_posi = n.index;
-      }
+    a = n.value * direction;
+    if (is_le(a, 0.0f)) { // moving towards i's lower bound
+      bound = lp.column_header(basic_indices[n.index]).upper;
+    } else {
+      bound = lp.column_header(basic_indices[n.index]).lower;
+    }
+    double t = (beta[n.index] - bound) / a;
+    if (t < min_theta) {
+      min_theta = t;
+      min_theta_posi = n.index;
     }
   }
   if (print_iterations) {
