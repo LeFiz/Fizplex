@@ -74,3 +74,25 @@ Test(Simplex, solve, "Ax <= b, x <= 0, bounded") {
   EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
   EXPECT(is_eq(splx.get_z(), -7.0f));
 }
+
+Test(Simplex, solve, "Ax <= b, l <= x <= u, bounded") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::LE, -inf, 14);
+
+  lp.add_value(0, 0, 2);
+
+  lp.add_logicals();
+
+  lp.add_obj_value(0, -1);
+
+  lp.set_b();
+
+  Simplex splx(lp);
+  splx.print_iterations = true;
+  splx.solve();
+
+  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
+  std::cout << "\nz=" << splx.get_z() << "\n";
+  EXPECT(is_eq(splx.get_z(), -5.0f));
+}

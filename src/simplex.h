@@ -25,6 +25,7 @@ private:
   struct RatioTestResult {
     IterationResult result;
     size_t leaving_index;
+    double step_length;
   };
   const LP &lp;
   DVector x;

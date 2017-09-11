@@ -106,6 +106,7 @@ void Simplex::solve() {
 
       switch (rt.result) {
       case IterationResult::BaseChange:
+        //        x[basic_indices[rt.leaving_index]] = rt.leaving_value;
         std::swap<size_t>(non_basic_indices[pr.candidate_index],
                           basic_indices[rt.leaving_index]);
         break;
@@ -114,6 +115,7 @@ void Simplex::solve() {
         z = -inf;
         return;
       case IterationResult::BoundFlip:
+        x[pr.candidate_index] += rt.step_length;
         break;
       default:
         assert(false);
@@ -130,7 +132,7 @@ Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
     size_t j = non_basic_indices[i];
     double sign = 1.0f;
     if (is_eq(x[j], lp.column_header(j).upper))
-      sign = -1.0f; // move from upper bound down
+      sign = -1.0f;
     if (sign * d[i] < min_val) {
       min_val = sign * d[i];
       min_posi = i;
@@ -163,20 +165,30 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
     if (t < min_theta) {
       min_theta = t;
       min_theta_posi = n.index;
+      assert(is_ge(min_theta, 0.0f));
     }
   }
+
+  const double max_steplength = lp.column_header(candidate_index).upper -
+                                lp.column_header(candidate_index).lower;
+  min_theta = std::min<double>(min_theta, max_steplength);
+
   if (print_iterations) {
     std::cout << "\nMin theta = " << min_theta << " at position "
               << min_theta_posi << "\n\n";
   }
+
   RatioTestResult rt;
+  rt.step_length = direction * min_theta; // make signed again
   if (is_infinite(min_theta)) {
     if (is_infinite(lp.column_header(candidate_index).upper)) {
       rt.result = IterationResult::Unbounded;
     }
+  } else if (is_eq(min_theta, max_steplength)) {
+    rt.result = IterationResult::BoundFlip;
   } else {
-    rt.leaving_index = min_theta_posi;
     rt.result = IterationResult::BaseChange;
+    rt.leaving_index = min_theta_posi;
   }
   return rt;
 }
