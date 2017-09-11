@@ -86,7 +86,7 @@ Test(DVector, mult_with_scalar, "non-empty") {
   EXPECT(2.0f * v == w);
 }
 
-Test(DVector, operator_compound_subtraction, "non-empty") {
+Test(DVector, operator_compound_subtraction, "DVector") {
   DVector v(3), w(3);
   v[0] = 1;
   w[0] = 2;
@@ -95,5 +95,19 @@ Test(DVector, operator_compound_subtraction, "non-empty") {
   v[2] = 0;
   w[2] = 0;
   w -= v;
+  EXPECT(v == w);
+}
+
+Test(DVector, operator_compound_subtraction, "SVector") {
+  DVector v(3), w(3);
+  v[0] = 4;
+  v[1] = 40;
+  v[2] = 0.5f;
+  w[0] = 2;
+  w[1] = 35.0f;
+  w[2] = 0.75f;
+
+  SVector sv = {{0, 2}, {1, 5}, {2, -0.25f}};
+  v -= sv;
   EXPECT(v == w);
 }

@@ -34,5 +34,6 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &os, Nonzero const &n);
+SVector operator*(const double c, const SVector &vec);
 
 #endif

@@ -51,6 +51,8 @@ void Simplex::solve() {
 
     // Calc beta
     beta = lp.b;
+    for (auto &i : non_basic_indices)
+      beta -= x[i] * lp.A.column(i);
     base.ftran(beta);
 
     for (size_t i = 0; i < row_count; i++)
@@ -60,6 +62,7 @@ void Simplex::solve() {
     if (print_iterations) {
       std::cout << "B:\n" << base.get_base() << std::endl;
       std::cout << "Beta: " << beta << std::endl;
+      std::cout << "x: " << x << std::endl;
       std::cout << "Basic:\n";
       for (auto v : basic_indices)
         std::cout << v << " ";

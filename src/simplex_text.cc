@@ -89,10 +89,8 @@ Test(Simplex, solve, "Ax <= b, l <= x <= u, bounded") {
   lp.set_b();
 
   Simplex splx(lp);
-  splx.print_iterations = true;
   splx.solve();
 
   EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  std::cout << "\nz=" << splx.get_z() << "\n";
   EXPECT(is_eq(splx.get_z(), -5.0f));
 }

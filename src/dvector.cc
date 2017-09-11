@@ -69,3 +69,9 @@ DVector &DVector::operator-=(const DVector &rhs) {
     vals[i] -= rhs[i];
   return *this;
 }
+
+DVector &DVector::operator-=(const SVector &rhs) {
+  for (auto it = rhs.cbegin(); it != rhs.cend(); it++)
+    vals[it->index] -= it->value;
+  return *this;
+}

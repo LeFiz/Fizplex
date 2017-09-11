@@ -18,6 +18,7 @@ public:
   double operator*(const DVector &rhs) const;
   double operator*(const SVector &rhs) const;
   DVector &operator-=(const DVector &rhs);
+  DVector &operator-=(const SVector &rhs);
 
 private:
   size_t dim;

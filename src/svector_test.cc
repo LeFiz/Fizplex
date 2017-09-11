@@ -69,3 +69,9 @@ Test(SVector, iterator, "empty") {
     EXPECT(false);
   }
 }
+
+Test(SVector, scalar_mult, "non-empty") {
+  SVector v = {{0, -2}, {1, 3}, {4, 9}};
+  SVector w = {{0, -4}, {1, 6}, {4, 18}};
+  EXPECT(2.0f * v == w);
+}

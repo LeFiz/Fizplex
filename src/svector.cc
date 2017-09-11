@@ -63,3 +63,10 @@ double SVector::get_value(size_t ind) {
   }
   return 0.0;
 }
+
+SVector operator*(const double c, const SVector &vec) {
+  SVector result = vec;
+  for (auto &n : result)
+    n.value *= c;
+  return result;
+}
