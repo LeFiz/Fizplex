@@ -74,3 +74,26 @@ Test(DVector, equality, "non-empty, inequal") {
   EXPECT(!(v == w));
   EXPECT((v != w));
 }
+
+Test(DVector, mult_with_scalar, "non-empty") {
+  DVector v(3), w(3);
+  v[0] = 1;
+  w[0] = 2;
+  v[1] = 17.5f;
+  w[1] = 35.0f;
+  v[2] = 0;
+  w[2] = 0;
+  EXPECT(2.0f * v == w);
+}
+
+Test(DVector, operator_compound_subtraction, "non-empty") {
+  DVector v(3), w(3);
+  v[0] = 1;
+  w[0] = 2;
+  v[1] = 17.5f;
+  w[1] = 35.0f;
+  v[2] = 0;
+  w[2] = 0;
+  w -= v;
+  EXPECT(v == w);
+}

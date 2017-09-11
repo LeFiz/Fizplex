@@ -17,6 +17,7 @@ public:
 
   double operator*(const DVector &rhs) const;
   double operator*(const SVector &rhs) const;
+  DVector &operator-=(const DVector &rhs);
 
 private:
   size_t dim;
@@ -24,5 +25,6 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &os, const DVector &v);
+DVector operator*(const double c, const DVector &rhs);
 
 #endif

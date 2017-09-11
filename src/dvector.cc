@@ -54,3 +54,18 @@ std::ostream &operator<<(std::ostream &os, const DVector &v) {
   }
   return os;
 }
+
+DVector operator*(const double c, const DVector &vec) {
+  size_t dim = vec.dimension();
+  DVector result(dim);
+  for (size_t i = 0; i < dim; i++)
+    result[i] = c * vec[i];
+  return result;
+}
+
+DVector &DVector::operator-=(const DVector &rhs) {
+  assert(dim == rhs.dimension());
+  for (size_t i = 0; i < dim; i++)
+    vals[i] -= rhs[i];
+  return *this;
+}
