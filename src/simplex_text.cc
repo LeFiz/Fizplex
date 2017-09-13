@@ -75,7 +75,7 @@ Test(Simplex, solve, "Ax <= b, x <= 0, bounded") {
   EXPECT(is_eq(splx.get_z(), -7.0f));
 }
 
-Test(Simplex, solve, "Ax <= b, l <= x <= u, bounded") {
+Test(Simplex, solve, "Ax <= b, l <= x <= u, bounded, boundflip") {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::LE, -inf, 14);

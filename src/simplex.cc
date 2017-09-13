@@ -109,7 +109,7 @@ void Simplex::solve() {
 
       switch (rt.result) {
       case IterationResult::BaseChange:
-        //        x[basic_indices[rt.leaving_index]] = rt.leaving_value;
+        x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
         std::swap<size_t>(non_basic_indices[pr.candidate_index],
                           basic_indices[rt.leaving_index]);
         break;
@@ -154,20 +154,33 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
   double min_theta = inf;
   size_t min_theta_posi = 0;
   double bound = inf;
+  double leaving_bound = inf;
   double a = inf;
   const double direction = is_ge(candidate_cost, 0.0f) ? -1.0f : 1.0f;
 
   for (const auto &n : alpha) {
+    if (is_zero(n.value))
+      continue; // alpha_i = 0 can not limit displacement
+
+    const auto &column_header = lp.column_header(basic_indices[n.index]);
+    if (column_header.type == ColType::Fixed) {
+      min_theta = 0; // Fixed variable always means step_length = 0
+      min_theta_posi = n.index;
+      leaving_bound = column_header.lower;
+      break;
+    }
+
     a = n.value * direction;
-    if (is_le(a, 0.0f)) { // moving towards i's lower bound
-      bound = lp.column_header(basic_indices[n.index]).upper;
+    if (is_le(a, 0.0f)) {
+      bound = column_header.upper; // = inf for ColType = Lower
     } else {
-      bound = lp.column_header(basic_indices[n.index]).lower;
+      bound = column_header.lower; // = -inf for ColType = upper
     }
     double t = (beta[n.index] - bound) / a;
     if (t < min_theta) {
       min_theta = t;
       min_theta_posi = n.index;
+      leaving_bound = bound;
       assert(is_ge(min_theta, 0.0f));
     }
   }
@@ -183,6 +196,7 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
 
   RatioTestResult rt;
   rt.step_length = direction * min_theta; // make signed again
+  rt.leaving_bound = leaving_bound;
   if (is_infinite(min_theta)) {
     if (is_infinite(lp.column_header(candidate_index).upper)) {
       rt.result = IterationResult::Unbounded;

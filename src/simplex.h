@@ -26,6 +26,7 @@ private:
     IterationResult result;
     size_t leaving_index;
     double step_length;
+    double leaving_bound;
   };
   const LP &lp;
   DVector x;
