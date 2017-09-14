@@ -30,5 +30,12 @@ Test(Numeric, is_infinite, "finite values") {
 
 Test(Numeric, is_ge, "finite values") {
   EXPECT(is_ge(1.0f, 0.0f));
+  EXPECT(is_ge(0.0f, 0.0f));
   EXPECT(is_ge(-2.111f, -999));
+}
+
+Test(Numeric, is_le, "finite values") {
+  EXPECT(is_le(-1.0f, 0.0f));
+  EXPECT(is_le(0.0f, 0.0f));
+  EXPECT(is_le(-2111.0f, -999));
 }

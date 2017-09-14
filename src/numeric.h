@@ -12,8 +12,8 @@ const double inf = std::numeric_limits<double>::infinity();
 inline bool is_eq(double lhs, double rhs) { return fabs(lhs - rhs) <= eps; }
 
 inline bool is_zero(double val) { return fabs(val) <= eps; }
-inline bool is_ge(double lhs, double rhs) { return (lhs - rhs) >= eps; }
-inline bool is_le(double lhs, double rhs) { return (rhs - lhs) >= eps; }
+inline bool is_ge(double lhs, double rhs) { return (lhs + eps) >= rhs; }
+inline bool is_le(double lhs, double rhs) { return (rhs + eps) >= lhs; }
 
 inline bool is_finite(double val) { return std::isfinite(val); }
 inline bool is_infinite(double val) { return !std::isfinite(val); }
