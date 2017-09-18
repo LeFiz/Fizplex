@@ -86,9 +86,9 @@ void Simplex::solve() {
     auto pr = price(d, non_basic_indices);
 
     if (pr.is_optimal) {
+      result = Result::OptimalSolution;
       for (size_t i = 0; i < basic_indices.size(); i++)
         x[basic_indices[i]] = beta[i];
-      result = Result::OptimalSolution;
       z = lp.c * x;
       return;
     } else {
@@ -136,8 +136,8 @@ Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
     double sign = 1.0f;
     if (is_eq(x[j], lp.column_header(j).upper))
       sign = -1.0f;
-    if (sign * d[i] < min_val) {
-      min_val = sign * d[i];
+    if (sign * d[j] < min_val) {
+      min_val = sign * d[j];
       min_posi = i;
     }
   }
@@ -181,6 +181,8 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
       min_theta = t;
       min_theta_posi = n.index;
       leaving_bound = bound;
+      if (print_iterations)
+        std::cout << "\nmin_theta updated: " << min_theta << "\n";
       assert(is_ge(min_theta, 0.0f));
     }
   }
@@ -198,9 +200,7 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
   rt.step_length = direction * min_theta; // make signed again
   rt.leaving_bound = leaving_bound;
   if (is_infinite(min_theta)) {
-    if (is_infinite(lp.column_header(candidate_index).upper)) {
-      rt.result = IterationResult::Unbounded;
-    }
+    rt.result = IterationResult::Unbounded;
   } else if (is_eq(min_theta, max_steplength)) {
     rt.result = IterationResult::BoundFlip;
   } else {
