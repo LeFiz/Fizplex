@@ -85,11 +85,17 @@ void Simplex::solve() {
 
     auto pr = price(d, non_basic_indices);
 
+    for (size_t i = 0; i < basic_indices.size(); i++)
+      x[basic_indices[i]] = beta[i];
+    z = lp.c * x;
+
+    if (print_iterations) {
+      std::cout << "x = " << x << std::endl;
+      std::cout << "z = " << z << "\n\n";
+    }
+
     if (pr.is_optimal) {
       result = Result::OptimalSolution;
-      for (size_t i = 0; i < basic_indices.size(); i++)
-        x[basic_indices[i]] = beta[i];
-      z = lp.c * x;
       return;
     } else {
       // Transform column vector of improving candidate
@@ -115,6 +121,8 @@ void Simplex::solve() {
         break;
       case IterationResult::Unbounded:
         result = Result::Unbounded;
+        x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
+        x[non_basic_indices[pr.candidate_index]] = rt.step_length;
         z = -inf;
         return;
       case IterationResult::BoundFlip:
@@ -134,7 +142,8 @@ Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
   for (size_t i = 0; i < non_basic_indices.size(); i++) {
     size_t j = non_basic_indices[i];
     double sign = 1.0f;
-    if (is_eq(x[j], lp.column_header(j).upper))
+    if ((is_eq(x[j], lp.column_header(j).upper)) ||
+        (lp.column_header(j).type == ColType::Free && is_ge(d[j], 0.0f)))
       sign = -1.0f;
     if (sign * d[j] < min_val) {
       min_val = sign * d[j];
@@ -201,6 +210,7 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
   rt.leaving_bound = leaving_bound;
   if (is_infinite(min_theta)) {
     rt.result = IterationResult::Unbounded;
+    rt.leaving_index = min_theta_posi;
   } else if (is_eq(min_theta, max_steplength)) {
     rt.result = IterationResult::BoundFlip;
   } else {
