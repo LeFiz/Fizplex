@@ -117,3 +117,23 @@ Test(Simplex, solve, "Ax == b, l <= x <= u, bounded") {
   EXPECT(is_eq(splx.get_z(), -10));
   EXPECT(splx.get_x() == DVector({5.0f, -5.0f, 0.0f}));
 }
+
+Test(Simplex, solve, "Ax >= b, x <= 0, bounded") {
+  LP lp;
+  lp.add_column(ColType::UpperBound, -inf, 0);
+  lp.add_row(RowType::GE, -5, inf);
+
+  lp.add_value(0, 0, 1);
+
+  lp.add_logicals();
+
+  lp.add_obj_value(0, 1);
+
+  lp.set_b();
+
+  Simplex splx(lp);
+  splx.solve();
+
+  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT(is_eq(splx.get_z(), -5.0f));
+}
