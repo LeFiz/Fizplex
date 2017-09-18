@@ -44,6 +44,8 @@ void LP::set_b() {
   for (size_t i = 0; i < row_count(); i++) {
     if (rows[i].type == RowType::GE)
       b[i] = rows[i].lower;
+    else if (rows[i].type == RowType::NonBinding)
+      b[i] = 0.0f;
     else
       b[i] = rows[i].upper;
   }
