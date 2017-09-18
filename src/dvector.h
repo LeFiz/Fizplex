@@ -8,6 +8,7 @@
 class DVector {
 public:
   explicit DVector(size_t dimension = 0);
+  explicit DVector(std::initializer_list<double> l);
 
   const size_t &dimension() const;
   bool operator==(const DVector &rhs) const;
@@ -21,8 +22,8 @@ public:
   DVector &operator-=(const SVector &rhs);
 
 private:
-  size_t dim;
   std::valarray<double> vals;
+  size_t dim;
 };
 
 std::ostream &operator<<(std::ostream &os, const DVector &v);

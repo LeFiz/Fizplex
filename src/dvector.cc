@@ -3,12 +3,15 @@
 #include <cassert>
 #include <iostream>
 
-DVector::DVector(size_t d) : dim(d), vals(dim) {}
+DVector::DVector(size_t d) : vals(d), dim(d) {}
 
 const size_t &DVector::dimension() const {
   assert(dim == vals.size());
   return dim;
 }
+
+// cppcheck-suppress passedByValue
+DVector::DVector(std::initializer_list<double> l) : vals(l), dim(l.size()) {}
 
 bool DVector::operator==(const DVector &rhs) const {
   assert(dimension() == rhs.dimension());

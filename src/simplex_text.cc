@@ -94,3 +94,26 @@ Test(Simplex, solve, "Ax <= b, l <= x <= u, bounded, boundflip") {
   EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
   EXPECT(is_eq(splx.get_z(), -5.0f));
 }
+
+Test(Simplex, solve, "Ax == b, l <= x <= u, bounded") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_column(ColType::Bounded, -5, 0);
+  lp.add_row(RowType::Equality, 0, 0);
+
+  lp.add_value(0, 0, 1);
+  lp.add_value(0, 1, 1);
+
+  lp.add_logicals();
+
+  lp.add_obj_value(0, -1);
+  lp.add_obj_value(1, 1);
+
+  lp.set_b();
+
+  Simplex splx(lp);
+  splx.solve();
+  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT(is_eq(splx.get_z(), -10));
+  EXPECT(splx.get_x() == DVector({5.0f, -5.0f, 0.0f}));
+}
