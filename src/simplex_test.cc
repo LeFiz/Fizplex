@@ -193,12 +193,71 @@ Test(Simplex, solve, "Ax >= b, 0 <= x <= 1, bounded") {
   EXPECT(is_eq(splx.get_z(), 4.0f));
 }
 
+Test(Simplex, solve, "2-phase, 4 var, 4 constr") {
+  LP lp;
+  lp.add_column(ColType::Free, -inf, inf);
+  lp.add_column(ColType::Free, -inf, inf);
+  lp.add_column(ColType::LowerBound, 0.0f, inf);
+  lp.add_column(ColType::LowerBound, 0.0f, inf);
+  lp.add_row(RowType::GE, 4, inf);
+  lp.add_row(RowType::LE, -inf, 6);
+  lp.add_row(RowType::Equality, -1, -1);
+  lp.add_row(RowType::Equality, 0, 0);
+
+  lp.add_value(0, 0, 1);
+  lp.add_value(0, 1, 1);
+  lp.add_value(0, 2, -4);
+  lp.add_value(0, 3, 2);
+  lp.add_value(1, 0, -3);
+  lp.add_value(1, 1, 1);
+  lp.add_value(1, 2, -2);
+  lp.add_value(2, 1, 1);
+  lp.add_value(2, 3, -1);
+  lp.add_value(3, 0, 1);
+  lp.add_value(3, 1, 1);
+  lp.add_value(3, 2, -1);
+
+  lp.add_logicals();
+
+  lp.add_obj_value(0, 3);
+  lp.add_obj_value(1, -2);
+  lp.add_obj_value(2, 1);
+  lp.add_obj_value(3, -4);
+
+  lp.set_b();
+
+  Simplex splx(lp);
+  splx.solve();
+
+  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT(is_eq(splx.get_z(), -32));
+}
+
 Test(Simplex, solve, "infeasible") {
   LP lp;
   lp.add_column(ColType::LowerBound, 1.0f, inf);
   lp.add_row(RowType::LE, -inf, 0);
 
   lp.add_value(0, 0, 1);
+
+  lp.add_logicals();
+
+  lp.add_obj_value(0, 2);
+
+  lp.set_b();
+
+  Simplex splx(lp);
+  splx.solve();
+
+  EXPECT(splx.get_result() == Simplex::Result::Infeasible);
+}
+
+Test(Simplex, solve, "infeasible") {
+  LP lp;
+  lp.add_column(ColType::Fixed, -3.0f, -3.0f);
+  lp.add_row(RowType::Equality, 0, 0);
+
+  lp.add_value(0, 0, 2.5f);
 
   lp.add_logicals();
 
