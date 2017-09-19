@@ -168,6 +168,30 @@ Test(Simplex, solve, "Ax <= b, x == 0, bounded") {
   EXPECT(is_eq(splx.get_x()[0], 0));
 }
 
+// Test(Simplex, solve, "Ax >= b, 0 <= x <= 1, bounded") {
+//  LP lp;
+//  lp.add_column(ColType::LowerBound, 1.0f, inf);
+//  lp.add_column(ColType::LowerBound, 1.0f, inf);
+//  lp.add_row(RowType::Equality, 3, 3);
+//
+//  lp.add_value(0, 0, 1);
+//  lp.add_value(0, 1, 1);
+//
+//  lp.add_logicals();
+//
+//  lp.add_obj_value(0, -1);
+//  lp.add_obj_value(1, -2);
+//
+//  lp.set_b();
+//
+//  Simplex splx(lp);
+//  //  splx.print_iterations = true;
+//  splx.solve();
+//
+//  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
+//  EXPECT(is_eq(splx.get_z(), -5.0f));
+//}
+
 Test(Simplex, solve, "Ax <= b, x >= 0, optimal Solution exists") {
   LP lp;
   lp.add_column(ColType::LowerBound, 0, inf);
