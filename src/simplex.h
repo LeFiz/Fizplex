@@ -36,6 +36,7 @@ private:
   size_t row_count;
   size_t col_count;
 
+  void set_initial_x();
   PricingResult price(DVector &pi,
                       std::vector<size_t> &non_basic_indices) const;
   RatioTestResult ratio_test(SVector &alpha, DVector &beta,

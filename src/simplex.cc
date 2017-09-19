@@ -14,12 +14,27 @@ const double &Simplex::get_z() const { return z; }
 
 const Simplex::Result &Simplex::get_result() const { return result; }
 
+void Simplex::set_initial_x() {
+  for (size_t i = 0; i < col_count; i++) {
+    auto col_header = lp.column_header(i);
+    if (is_finite(col_header.lower)) {
+      x[i] = col_header.lower;
+    } else if (is_finite(col_header.upper)) {
+      x[i] = col_header.upper;
+    } else {
+      x[i] = 0.0f;
+    }
+  }
+}
+
 void Simplex::solve() {
   if (print_iterations) {
     std::cout << "A:\n" << lp.A;
     std::cout << "b = " << lp.b << std::endl;
     std::cout << "c = " << lp.c << std::endl;
   }
+
+  set_initial_x();
 
   // Set up index sets
   std::vector<size_t> basic_indices;

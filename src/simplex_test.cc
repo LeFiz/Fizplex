@@ -104,16 +104,16 @@ Test(Simplex, solve, "Ax >= b, x <= 0, bounded") {
   EXPECT(is_eq(splx.get_z(), -5.0f));
 }
 
-Test(Simplex, solve, "l <= Ax <= b, x >= 0, bounded") {
+Test(Simplex, solve, "l <= Ax <= u, l <= x <= u, bounded") {
   LP lp;
-  lp.add_column(ColType::Bounded, -8, 0);
+  lp.add_column(ColType::Bounded, -4, 6);
   lp.add_row(RowType::Range, -5, 5);
 
-  lp.add_value(0, 0, 2);
+  lp.add_value(0, 0, 1);
 
   lp.add_logicals();
 
-  lp.add_obj_value(0, 5);
+  lp.add_obj_value(0, -5);
 
   lp.set_b();
 
@@ -121,8 +121,8 @@ Test(Simplex, solve, "l <= Ax <= b, x >= 0, bounded") {
   splx.solve();
 
   EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), -12.5f));
-  EXPECT(splx.get_x() == DVector({-2.5f, 10}));
+  EXPECT(is_eq(splx.get_z(), -25.0f));
+  EXPECT(splx.get_x() == DVector({5.0f, 0.0f}));
 }
 
 Test(Simplex, solve, "-inf <= Ax <= inf, x free, unbounded") {
@@ -168,29 +168,29 @@ Test(Simplex, solve, "Ax <= b, x == 0, bounded") {
   EXPECT(is_eq(splx.get_x()[0], 0));
 }
 
-// Test(Simplex, solve, "Ax >= b, 0 <= x <= 1, bounded") {
-//  LP lp;
-//  lp.add_column(ColType::LowerBound, 1.0f, inf);
-//  lp.add_column(ColType::LowerBound, 1.0f, inf);
-//  lp.add_row(RowType::Equality, 3, 3);
-//
-//  lp.add_value(0, 0, 1);
-//  lp.add_value(0, 1, 1);
-//
-//  lp.add_logicals();
-//
-//  lp.add_obj_value(0, -1);
-//  lp.add_obj_value(1, -2);
-//
-//  lp.set_b();
-//
-//  Simplex splx(lp);
-//  //  splx.print_iterations = true;
-//  splx.solve();
-//
-//  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-//  EXPECT(is_eq(splx.get_z(), -5.0f));
-//}
+Test(Simplex, solve, "Ax >= b, 0 <= x <= 1, bounded") {
+  LP lp;
+  lp.add_column(ColType::LowerBound, 1.0f, inf);
+  lp.add_column(ColType::LowerBound, 1.0f, inf);
+  lp.add_row(RowType::Equality, 3, 3);
+
+  lp.add_value(0, 0, 1);
+  lp.add_value(0, 1, 1);
+
+  lp.add_logicals();
+
+  lp.add_obj_value(0, 1);
+  lp.add_obj_value(1, 2);
+
+  lp.set_b();
+
+  Simplex splx(lp);
+  splx.print_iterations = true;
+  splx.solve();
+
+  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT(is_eq(splx.get_z(), 4.0f));
+}
 
 Test(Simplex, solve, "Ax <= b, x >= 0, optimal Solution exists") {
   LP lp;
