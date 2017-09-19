@@ -94,3 +94,43 @@ Test(LP, add_logicals, "all types") {
   for (int i = 0; i < 5; i++)
     EXPECT(is_eq(lp.get_value(i, 1 + i), 1));
 }
+
+Test(LP, is_feasible, "bounded var, range row") {
+  LP lp;
+  lp.add_column(ColType::Bounded, -1.0f, 5);
+  lp.add_row(RowType::Range, 0, 7);
+  lp.add_logicals();
+  lp.add_value(0, 0, 2.0f);
+  EXPECT(lp.is_feasible(DVector({0, 0})));
+  EXPECT(lp.is_feasible(DVector({1, 0})));
+  EXPECT(lp.is_feasible(DVector({3.5f, 0})));
+  EXPECT(!lp.is_feasible(DVector({-1.5f, 0})));
+  EXPECT(!lp.is_feasible(DVector({5, 0})));
+  EXPECT(!lp.is_feasible(DVector({-1.0f, 0})));
+}
+
+Test(LP, is_feasible, "free var, range row") {
+  LP lp;
+  lp.add_column(ColType::Free, -inf, inf);
+  lp.add_row(RowType::Range, -5, 5);
+  lp.add_logicals();
+  lp.add_value(0, 0, 1.0f);
+  EXPECT(lp.is_feasible(DVector({0, 0})));
+  EXPECT(lp.is_feasible(DVector({5, 0})));
+  EXPECT(lp.is_feasible(DVector({-5, 0})));
+  EXPECT(!lp.is_feasible(DVector({6, 0})));
+  EXPECT(!lp.is_feasible(DVector({-6, 0})));
+}
+
+Test(LP, is_feasible, "free var, non-binding row") {
+  LP lp;
+  lp.add_column(ColType::Free, -inf, inf);
+  lp.add_row(RowType::NonBinding, -inf, inf);
+  lp.add_logicals();
+  lp.add_value(0, 0, 1.0f);
+  EXPECT(lp.is_feasible(DVector({0, 0})));
+  EXPECT(lp.is_feasible(DVector({5, 0})));
+  EXPECT(lp.is_feasible(DVector({-5, 0})));
+  EXPECT(lp.is_feasible(DVector({inf, 0})));
+  EXPECT(lp.is_feasible(DVector({-inf, 0})));
+}

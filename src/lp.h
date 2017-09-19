@@ -34,7 +34,7 @@ public:
   size_t column_count() const;
   size_t row_count() const;
   void add_value(size_t row, size_t column, double value);
-  double get_value(size_t row, size_t column);
+  double get_value(size_t row, size_t column) const;
   const LP::Column &column_header(size_t column) const;
 
   void add_logicals();
@@ -42,6 +42,7 @@ public:
   void add_obj_value(size_t ind, double d);
   double get_obj_value(size_t ind) const;
 
+  bool is_feasible(const DVector &vec) const;
   ColMatrix A;
   DVector b;
   DVector c;

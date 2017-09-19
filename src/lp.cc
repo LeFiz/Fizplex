@@ -32,7 +32,7 @@ void LP::add_value(size_t row, size_t column, double value) {
   A.add_value(row, column, value);
 }
 
-double LP::get_value(size_t row, size_t column) {
+double LP::get_value(size_t row, size_t column) const {
   assert(row < row_count());
   assert(column < column_count());
 
@@ -98,4 +98,27 @@ void LP::add_logicals() {
 const LP::Column &LP::column_header(size_t column) const {
   assert(column < cols.size());
   return cols[column];
+}
+
+bool LP::is_feasible(const DVector &x) const {
+  assert(x.dimension() == column_count());
+  for (size_t i = 0; i < cols.size(); i++) {
+    if (cols[i].is_logical)
+      continue;
+    if ((is_finite(cols[i].lower) && is_lower(x[i], cols[i].lower)) ||
+        (is_finite(cols[i].upper) && is_greater(x[i], cols[i].upper))) {
+      return false;
+    }
+  }
+  for (size_t row = 0; row < row_count(); row++) {
+    double val = 0.0f;
+    for (size_t col = 0; col < column_count(); col++) {
+      val += A.get_value(row, col) * x[col];
+    }
+    if ((is_finite(rows[row].lower) && is_lower(val, rows[row].lower)) ||
+        (is_finite(rows[row].upper) && is_greater(val, rows[row].upper))) {
+      return false;
+    }
+  }
+  return true;
 }
