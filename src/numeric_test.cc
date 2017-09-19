@@ -45,3 +45,10 @@ Test(Numeric, is_lower, "finite values") {
   EXPECT(!is_lower(0.0f, 0.0f));
   EXPECT(is_lower(-2111.0f, -999));
 }
+
+Test(Numeric, is_greater, "finite values") {
+  EXPECT(!is_greater(-1.0f, 1.0f));
+  EXPECT(is_greater(1.0f, 0.0f));
+  EXPECT(!is_greater(1.0f, 1.0f));
+  EXPECT(is_greater(2111.0f, -999));
+}
