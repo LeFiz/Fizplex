@@ -16,7 +16,7 @@ public:
   size_t row_count() const;
   size_t col_count() const;
   const SVector &column(size_t i) const;
-  double get_value(size_t row, size_t column);
+  double get_value(size_t row, size_t column) const;
   void add_row();
   void add_column(const SVector &v = SVector());
   void add_value(size_t row, size_t col, double val);
