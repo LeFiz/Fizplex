@@ -103,8 +103,6 @@ const LP::Column &LP::column_header(size_t column) const {
 bool LP::is_feasible(const DVector &x) const {
   assert(x.dimension() == column_count());
   for (size_t i = 0; i < cols.size(); i++) {
-    if (cols[i].is_logical)
-      continue;
     if ((is_finite(cols[i].lower) && is_lower(x[i], cols[i].lower)) ||
         (is_finite(cols[i].upper) && is_greater(x[i], cols[i].upper))) {
       return false;

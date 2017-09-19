@@ -22,6 +22,7 @@ private:
     size_t candidate_index;
   };
   enum class IterationResult { Unbounded, BoundFlip, BaseChange };
+  enum class Phase { One, Two };
   struct RatioTestResult {
     IterationResult result;
     size_t leaving_index;
@@ -35,6 +36,7 @@ private:
   size_t structural_count;
   size_t row_count;
   size_t col_count;
+  Phase phase;
 
   void set_initial_x();
   PricingResult price(DVector &pi,

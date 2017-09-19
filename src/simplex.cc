@@ -6,7 +6,8 @@ Simplex::Simplex(const LP &_lp)
     : print_iterations(false), lp(_lp), x(lp.A.col_count()), z(inf),
       result(Result::Unsolved),
       structural_count(lp.A.col_count() - lp.A.row_count()),
-      row_count(lp.A.row_count()), col_count(lp.A.col_count()) {}
+      row_count(lp.A.row_count()), col_count(lp.A.col_count()),
+      phase(Simplex::Phase::One) {}
 
 const DVector &Simplex::get_x() const { return x; }
 
@@ -34,8 +35,6 @@ void Simplex::solve() {
     std::cout << "c = " << lp.c << std::endl;
   }
 
-  set_initial_x();
-
   // Set up index sets
   std::vector<size_t> basic_indices;
   std::vector<size_t> non_basic_indices;
@@ -50,6 +49,13 @@ void Simplex::solve() {
   DVector pi(col_count);
   DVector d(col_count);
   SVector alpha;
+  DVector c(col_count);
+
+  set_initial_x();
+  if (lp.is_feasible(x)) {
+    phase = Simplex::Phase::Two;
+    c = lp.c;
+  }
 
   for (int round = 0; round < 10; round++) {
     if (print_iterations) {
@@ -70,62 +76,95 @@ void Simplex::solve() {
       beta -= x[i] * lp.A.column(i);
     base.ftran(beta);
 
-    for (size_t i = 0; i < row_count; i++)
-      c_beta[i] = lp.c[basic_indices[i]];
+    // Set c for phase I
+    if (phase == Simplex::Phase::One) {
+      for (auto &i : non_basic_indices)
+        c[i] = 0.0f;
+      for (size_t i = 0; i < basic_indices.size(); i++) {
+        auto column_header = lp.column_header(basic_indices[i]);
+        if (is_finite(column_header.lower) &&
+            is_lower(beta[i], column_header.lower)) {
+          c[basic_indices[i]] = -1.0f;
+        } else if (is_finite(column_header.upper) &&
+                   is_greater(beta[i], column_header.upper)) {
+          c[basic_indices[i]] = 1.0f;
+        } else {
+          c[basic_indices[i]] = 0.0f;
+        }
+      }
+    }
 
     // Report iteration status
     if (print_iterations) {
       std::cout << "B:\n" << base.get_base() << std::endl;
       std::cout << "Beta: " << beta << std::endl;
-      std::cout << "x: " << x << std::endl;
       std::cout << "Basic:\n";
       for (auto v : basic_indices)
         std::cout << v << " ";
       std::cout << "\n\nNon-Basic:\n";
       for (auto v : non_basic_indices)
         std::cout << v << " ";
+      std::cout << "\n\n";
     }
 
     // Price
+    for (size_t i = 0; i < row_count; i++)
+      c_beta[i] = c[basic_indices[i]];
     pi = c_beta;
     base.btran(pi);
     for (size_t i = 0; i < non_basic_indices.size(); i++)
-      d[i] =
-          lp.c[non_basic_indices[i]] - pi * lp.A.column(non_basic_indices[i]);
+      d[non_basic_indices[i]] =
+          c[non_basic_indices[i]] - pi * lp.A.column(non_basic_indices[i]);
 
     if (print_iterations) {
+      std::cout << "c = " << c << std::endl;
       std::cout << "pi = " << pi << std::endl;
       std::cout << "d = " << d << "\n\n";
     }
-
-    auto pr = price(d, non_basic_indices);
 
     for (size_t i = 0; i < basic_indices.size(); i++)
       x[basic_indices[i]] = beta[i];
     z = lp.c * x;
 
+    auto pr = price(d, non_basic_indices);
+
     if (print_iterations) {
       std::cout << "x = " << x << std::endl;
-      std::cout << "z = " << z << "\n\n";
+      std::cout << "z = " << z << "\n";
+      std::cout << "optimal? = " << pr.is_optimal << "\n\n";
     }
 
     if (pr.is_optimal) {
-      result = Result::OptimalSolution;
-      return;
+      if (phase == Simplex::Phase::Two) {
+        result = Result::OptimalSolution;
+        return;
+      } else { // Phase I
+        if (lp.is_feasible(x)) {
+          if (print_iterations)
+            std::cout << "is feasible, x = " << x << "\n";
+          phase = Simplex::Phase::Two;
+          c = lp.c;
+          continue;
+        } else {
+          result = Result::Infeasible;
+          return;
+        }
+      }
     } else {
       // Transform column vector of improving candidate
-      alpha = lp.A.column(pr.candidate_index);
+      alpha = lp.A.column(non_basic_indices[pr.candidate_index]);
       base.ftran(alpha);
       if (print_iterations) {
         std::cout << "Alpha = \n" << alpha << "\n\n";
       }
 
       // Ratio test
-      auto rt = ratio_test(alpha, beta, non_basic_indices[pr.candidate_index],
-                           basic_indices, d[pr.candidate_index]);
+      auto rt =
+          ratio_test(alpha, beta, non_basic_indices[pr.candidate_index],
+                     basic_indices, d[non_basic_indices[pr.candidate_index]]);
       if (print_iterations) {
-        std::cout << "selected new basic index: " << pr.candidate_index
-                  << "\n\n";
+        std::cout << "selected new basic index: "
+                  << non_basic_indices[pr.candidate_index] << "\n\n";
       }
 
       switch (rt.result) {
@@ -135,13 +174,15 @@ void Simplex::solve() {
                           basic_indices[rt.leaving_index]);
         break;
       case IterationResult::Unbounded:
+        assert(phase != Simplex::Phase::One);
+
         result = Result::Unbounded;
         x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
         x[non_basic_indices[pr.candidate_index]] = rt.step_length;
         z = -inf;
         return;
       case IterationResult::BoundFlip:
-        x[pr.candidate_index] += rt.step_length;
+        x[non_basic_indices[pr.candidate_index]] += rt.step_length;
         break;
       default:
         assert(false);
@@ -156,6 +197,9 @@ Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
   size_t min_posi = 0;
   for (size_t i = 0; i < non_basic_indices.size(); i++) {
     size_t j = non_basic_indices[i];
+    if (lp.column_header(j).type ==
+        ColType::Fixed) // Fixed vars should not enter the basis
+      continue;
     double sign = 1.0f;
     if ((is_eq(x[j], lp.column_header(j).upper)) ||
         (lp.column_header(j).type == ColType::Free && is_ge(d[j], 0.0f)))
@@ -206,7 +250,8 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
       min_theta_posi = n.index;
       leaving_bound = bound;
       if (print_iterations)
-        std::cout << "\nmin_theta updated: " << min_theta << "\n";
+        std::cout << "\nmin_theta updated: " << min_theta << " at "
+                  << basic_indices[min_theta_posi] << "\n";
       assert(is_ge(min_theta, 0.0f));
     }
   }
