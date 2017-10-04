@@ -56,7 +56,7 @@ std::ostream &operator<<(std::ostream &os, SVector const &vec) {
   return os;
 }
 
-double SVector::get_value(size_t ind) {
+double SVector::get_value(size_t ind) const {
   for (auto &n : values) {
     if (n.index == ind)
       return n.value;

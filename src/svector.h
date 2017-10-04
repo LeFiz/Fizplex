@@ -27,7 +27,7 @@ public:
 
   bool operator==(const SVector &rhs) const;
   bool operator!=(const SVector &rhs) const;
-  double get_value(size_t ind);
+  double get_value(size_t ind) const;
 
 private:
   std::vector<Nonzero> values;
