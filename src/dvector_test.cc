@@ -7,6 +7,40 @@ Test(DVector, DVector, "with dimension") {
   EXPECT(v.dimension() == 5);
 }
 
+Test(DVector, resize, "add to empty vector") {
+  DVector v;
+  v.resize(1);
+  EXPECT(v.dimension() == 1);
+}
+
+Test(DVector, resize, "add to non-empty vector") {
+  DVector v(5);
+  v.resize(10);
+  EXPECT(v.dimension() == 10);
+}
+
+Test(DVector, resize, "values remain when adding to a non-empty vector") {
+  DVector v(5);
+  const double d = 3.14f;
+  v[4] = d;
+  v.resize(10);
+  EXPECT(is_eq(v[4], d));
+}
+
+Test(DVector, resize, "can shrink vectors") {
+  DVector v(5);
+  v.resize(1);
+  EXPECT(v.dimension() == 1);
+}
+
+Test(DVector, resize, "values remain when shrinking a vector") {
+  DVector v(5);
+  const double d = 3.14f;
+  v[0] = d;
+  v.resize(1);
+  EXPECT(is_eq(v[0], d));
+}
+
 Test(DVector, member_access, "existing element") {
   DVector v(5);
   double d = 3.11111f;

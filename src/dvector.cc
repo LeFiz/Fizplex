@@ -10,6 +10,15 @@ const size_t &DVector::dimension() const {
   return dim;
 }
 
+void DVector::resize(size_t new_dim) {
+  std::valarray<double> temp(new_dim);
+  const size_t max_index = std::min(vals.size(), new_dim);
+  for (size_t i = 0; i < max_index; i++)
+    temp[i] = vals[i];
+  vals.swap(temp);
+  dim = new_dim;
+}
+
 // cppcheck-suppress passedByValue
 DVector::DVector(std::initializer_list<double> l) : vals(l), dim(l.size()) {}
 

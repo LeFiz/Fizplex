@@ -11,6 +11,7 @@ public:
   explicit DVector(std::initializer_list<double> l);
 
   const size_t &dimension() const;
+  void resize(size_t new_dim);
   bool operator==(const DVector &rhs) const;
   bool operator!=(const DVector &rhs) const;
   double &operator[](size_t i);
