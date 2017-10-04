@@ -12,6 +12,7 @@ public:
 
   const size_t &dimension() const;
   void resize(size_t new_dim);
+  void append(double val);
   bool operator==(const DVector &rhs) const;
   bool operator!=(const DVector &rhs) const;
   double &operator[](size_t i);

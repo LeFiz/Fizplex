@@ -41,6 +41,13 @@ Test(DVector, resize, "values remain when shrinking a vector") {
   EXPECT(is_eq(v[0], d));
 }
 
+Test(DVector, append, "adds the parameter") {
+  DVector v(5);
+  const double d = 1.23f;
+  v.append(d);
+  EXPECT(is_eq(v[5], d));
+}
+
 Test(DVector, member_access, "existing element") {
   DVector v(5);
   double d = 3.11111f;

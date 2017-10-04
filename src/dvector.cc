@@ -19,6 +19,11 @@ void DVector::resize(size_t new_dim) {
   dim = new_dim;
 }
 
+void DVector::append(double val) {
+  resize(dim + 1);
+  vals[dim - 1] = val;
+}
+
 // cppcheck-suppress passedByValue
 DVector::DVector(std::initializer_list<double> l) : vals(l), dim(l.size()) {}
 
