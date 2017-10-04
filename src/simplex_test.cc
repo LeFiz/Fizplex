@@ -14,8 +14,6 @@ Test(Simplex, solve, "Ax <= b, x >= 0, unbounded") {
 
   lp.add_obj_value(0, -1);
 
-  lp.set_b();
-
   Simplex splx(lp);
   splx.solve();
 
@@ -34,8 +32,6 @@ Test(Simplex, solve, "Ax <= b, x <= 0, bounded") {
 
   lp.add_obj_value(0, 1);
 
-  lp.set_b();
-
   Simplex splx(lp);
   splx.solve();
 
@@ -53,8 +49,6 @@ Test(Simplex, solve, "Ax <= b, l <= x <= u, bounded, boundflip") {
   lp.add_logicals();
 
   lp.add_obj_value(0, -1);
-
-  lp.set_b();
 
   Simplex splx(lp);
   splx.solve();
@@ -77,8 +71,6 @@ Test(Simplex, solve, "Ax == b, l <= x <= u, bounded") {
   lp.add_obj_value(0, -1);
   lp.add_obj_value(1, 0);
 
-  lp.set_b();
-
   Simplex splx(lp);
   splx.solve();
   EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
@@ -97,8 +89,6 @@ Test(Simplex, solve, "Ax >= b, x <= 0, bounded") {
 
   lp.add_obj_value(0, 1);
 
-  lp.set_b();
-
   Simplex splx(lp);
   splx.solve();
 
@@ -116,8 +106,6 @@ Test(Simplex, solve, "l <= Ax <= u, l <= x <= u, bounded") {
   lp.add_logicals();
 
   lp.add_obj_value(0, -5);
-
-  lp.set_b();
 
   Simplex splx(lp);
   splx.solve();
@@ -138,8 +126,6 @@ Test(Simplex, solve, "-inf <= Ax <= inf, x free, unbounded") {
 
   lp.add_obj_value(0, 1);
 
-  lp.set_b();
-
   Simplex splx(lp);
   splx.solve();
 
@@ -159,8 +145,6 @@ Test(Simplex, solve, "Ax <= b, x == 0, bounded") {
   lp.add_logicals();
 
   lp.add_obj_value(0, -1);
-
-  lp.set_b();
 
   Simplex splx(lp);
   splx.solve();
@@ -183,8 +167,6 @@ Test(Simplex, solve, "Ax >= b, 0 <= x <= 1, bounded") {
 
   lp.add_obj_value(0, 2);
   lp.add_obj_value(1, 1);
-
-  lp.set_b();
 
   Simplex splx(lp);
   splx.solve();
@@ -224,8 +206,6 @@ Test(Simplex, solve, "2-phase, 4 var, 4 constr") {
   lp.add_obj_value(2, 1);
   lp.add_obj_value(3, -4);
 
-  lp.set_b();
-
   Simplex splx(lp);
   splx.solve();
 
@@ -244,8 +224,6 @@ Test(Simplex, solve, "infeasible") {
 
   lp.add_obj_value(0, 2);
 
-  lp.set_b();
-
   Simplex splx(lp);
   splx.solve();
 
@@ -262,8 +240,6 @@ Test(Simplex, solve, "infeasible") {
   lp.add_logicals();
 
   lp.add_obj_value(0, 2);
-
-  lp.set_b();
 
   Simplex splx(lp);
   splx.solve();
@@ -295,8 +271,6 @@ Test(Simplex, solve, "Ax <= b, x >= 0, optimal Solution exists") {
   lp.add_obj_value(0, -1);
   lp.add_obj_value(1, -2);
   lp.add_obj_value(2, 3);
-
-  lp.set_b();
 
   Simplex splx(lp);
   splx.solve();

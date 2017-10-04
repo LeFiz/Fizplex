@@ -24,6 +24,20 @@ Test(LP, add_row, "empty LP") {
   EXPECT(lp.row_count() == 1);
 }
 
+Test(LP, add_row, "b is set properly for range rows") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::Range, 3, 15);
+  EXPECT(is_eq(lp.b[0], 15));
+}
+
+Test(LP, add_row, "b is set properly for GE rows") {
+  LP lp;
+  lp.add_column(ColType::Bounded, 0, 5);
+  lp.add_row(RowType::GE, 3, 15);
+  EXPECT(is_eq(lp.b[0], 3));
+}
+
 Test(LP, get_value, "single value in LP") {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
@@ -38,22 +52,6 @@ Test(LP, get_value, "non-existing value") {
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::Range, 3, 15);
   EXPECT(is_zero(lp.get_value(0, 0)));
-}
-
-Test(LP, set_b, "range row") {
-  LP lp;
-  lp.add_column(ColType::Bounded, 0, 5);
-  lp.add_row(RowType::Range, 3, 15);
-  lp.set_b();
-  EXPECT(is_eq(lp.b[0], 15));
-}
-
-Test(LP, set_b, "GE row") {
-  LP lp;
-  lp.add_column(ColType::Bounded, 0, 5);
-  lp.add_row(RowType::GE, 3, 15);
-  lp.set_b();
-  EXPECT(is_eq(lp.b[0], 3));
 }
 
 Test(LP, add_obj_value, "non-empty LP") {

@@ -38,7 +38,6 @@ public:
   const LP::Column &column_header(size_t column) const;
 
   void add_logicals();
-  void set_b();
   void add_obj_value(size_t ind, double d);
   double get_obj_value(size_t ind) const;
 
@@ -48,6 +47,7 @@ public:
   DVector c;
 
 private:
+  void set_b(const size_t row_index);
   std::vector<Column> cols;
   std::vector<Row> rows;
 };
