@@ -28,7 +28,7 @@ public:
   friend std::ostream &operator<<(std::ostream &os, ColMatrix const &matrix);
 
 private:
-  std::vector<std::unique_ptr<SVector>> cols;
+  std::vector<SVector> cols;
   size_t m, n;
 };
 
