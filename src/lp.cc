@@ -19,8 +19,7 @@ LP::Row::Row(RowType _type, double _lower, double _upper)
 void LP::add_row(RowType _type, double _lower, double _upper) {
   rows.push_back(Row(_type, _lower, _upper));
   A.add_row();
-  b.resize(b.dimension() + 1);
-  set_b(b.dimension() - 1);
+  add_b();
 }
 
 size_t LP::column_count() const { return cols.size(); }
@@ -41,13 +40,18 @@ double LP::get_value(size_t row, size_t column) const {
   return A.get_value(row, column);
 }
 
-void LP::set_b(const size_t i) {
-  if (rows[i].type == RowType::GE)
-    b[i] = rows[i].lower;
-  else if (rows[i].type == RowType::NonBinding)
-    b[i] = 0.0f;
-  else
-    b[i] = rows[i].upper;
+void LP::add_b() {
+  const Row &row = rows.back();
+  switch (row.type) {
+  case RowType::GE:
+    b.append(row.lower);
+    break;
+  case RowType::NonBinding:
+    b.append(0.0f);
+    break;
+  default:
+    b.append(row.upper);
+  }
 }
 
 void LP::add_obj_value(size_t ind, double d) {

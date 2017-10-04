@@ -47,7 +47,7 @@ public:
   DVector c;
 
 private:
-  void set_b(const size_t row_index);
+  void add_b();
   std::vector<Column> cols;
   std::vector<Row> rows;
 };

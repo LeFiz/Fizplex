@@ -1,4 +1,3 @@
-
 #include "lp.h"
 #include "test.h"
 
