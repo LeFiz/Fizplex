@@ -8,7 +8,8 @@
 class DVector {
 public:
   explicit DVector(size_t dimension = 0);
-  explicit DVector(std::initializer_list<double> l);
+  // cppcheck-suppress noExplicitConstructor
+  DVector(std::initializer_list<double> l);
 
   const size_t &dimension() const;
   void resize(size_t new_dim);

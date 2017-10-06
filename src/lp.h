@@ -31,6 +31,7 @@ public:
   void add_column(ColType type, double lower, double upper,
                   double obj_value = 0.0f);
   void add_row(RowType type, double lower, double upper);
+  void add_row(RowType type, double lower, double upper, DVector row);
   size_t column_count() const;
   size_t row_count() const;
   void add_value(size_t row, size_t column, double value);

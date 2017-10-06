@@ -32,6 +32,15 @@ void LP::add_row(RowType _type, double _lower, double _upper) {
   add_b();
 }
 
+void LP::add_row(RowType type, double lower, double upper, DVector row) {
+  assert(row.dimension() == column_count());
+  add_row(type, lower, upper);
+  auto row_index = row_count() - 1;
+  for (size_t col_index = 0; col_index < row.dimension(); col_index++) {
+    add_value(row_index, col_index, row[col_index]);
+  }
+}
+
 size_t LP::column_count() const { return cols.size(); }
 
 size_t LP::row_count() const { return rows.size(); }
