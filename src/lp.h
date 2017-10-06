@@ -29,7 +29,7 @@ public:
   LP();
 
   void add_column(ColType type, double lower, double upper,
-                  bool is_logical = false);
+                  double obj_value = 0.0f);
   void add_row(RowType type, double lower, double upper);
   size_t column_count() const;
   size_t row_count() const;
@@ -47,9 +47,13 @@ public:
   DVector c;
 
 private:
-  void add_b();
   std::vector<Column> cols;
   std::vector<Row> rows;
+
+  void add_b();
+  void add_logical_column(ColType _type, double _lower, double _upper);
+  void add_column(ColType type, double lower, double upper, double obj_value,
+                  bool is_logical);
 };
 
 #endif

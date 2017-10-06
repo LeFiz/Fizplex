@@ -7,10 +7,20 @@ LP::Column::Column(ColType _type, double _lower, double _upper,
                    bool _is_logical)
     : type(_type), is_logical(_is_logical), lower(_lower), upper(_upper) {}
 
-void LP::add_column(ColType _type, double _lower, double _upper,
-                    bool _is_logical) {
-  cols.push_back(Column(_type, _lower, _upper, _is_logical));
+void LP::add_column(ColType type, double lower, double upper, double obj_value,
+                    bool is_logical) {
+  cols.push_back(Column(type, lower, upper, is_logical));
   A.add_column();
+  c.append(obj_value);
+}
+
+void LP::add_column(ColType _type, double _lower, double _upper,
+                    double obj_value) {
+  add_column(_type, _lower, _upper, obj_value, false);
+}
+
+void LP::add_logical_column(ColType _type, double _lower, double _upper) {
+  add_column(_type, _lower, _upper, 0.0f, true);
 }
 
 LP::Row::Row(RowType _type, double _lower, double _upper)
@@ -65,37 +75,37 @@ double LP::get_obj_value(size_t ind) const {
 }
 
 void LP::add_logicals() {
-  const size_t n = column_count();
+  const size_t first_logical_index = column_count();
   for (size_t i = 0; i < row_count(); i++) {
+
     switch (rows[i].type) {
     case RowType::Equality:
       assert(is_finite(rows[i].upper));
       assert(is_finite(rows[i].lower));
       assert(is_eq(rows[i].upper, rows[i].lower));
-      add_column(ColType::Fixed, 0.0, 0.0, true);
+      add_logical_column(ColType::Fixed, 0.0, 0.0);
       break;
     case RowType::Range:
       assert(is_finite(rows[i].upper));
       assert(is_finite(rows[i].lower));
-      add_column(ColType::Bounded, 0.0, rows[i].upper - rows[i].lower, true);
+      add_logical_column(ColType::Bounded, 0.0, rows[i].upper - rows[i].lower);
       break;
     case RowType::LE:
       assert(is_finite(rows[i].upper));
-      add_column(ColType::LowerBound, 0.0, inf, true);
+      add_logical_column(ColType::LowerBound, 0.0, inf);
       break;
     case RowType::NonBinding:
-      add_column(ColType::Free, -inf, inf, true);
+      add_logical_column(ColType::Free, -inf, inf);
       break;
     case RowType::GE:
       assert(is_finite(rows[i].lower));
-      add_column(ColType::UpperBound, -inf, 0, true);
+      add_logical_column(ColType::UpperBound, -inf, 0);
       break;
     default:
       break;
     }
-    add_value(i, i + n, 1.0);
+    add_value(i, i + first_logical_index, 1.0);
   }
-  c = DVector(column_count());
 }
 
 const LP::Column &LP::column_header(size_t column) const {
