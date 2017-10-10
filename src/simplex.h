@@ -33,9 +33,6 @@ private:
   DVector x;
   double z = inf;
   Result result = Result::Unsolved;
-  size_t structural_count;
-  size_t row_count;
-  size_t col_count;
   Phase phase = Phase::One;
 
   void set_initial_x();
