@@ -2,12 +2,13 @@
 #include "base.h"
 #include <iostream>
 
-Simplex::Simplex(const LP &_lp)
-    : print_iterations(false), lp(_lp), x(lp.A.col_count()), z(inf),
-      result(Result::Unsolved),
-      structural_count(lp.A.col_count() - lp.A.row_count()),
-      row_count(lp.A.row_count()), col_count(lp.A.col_count()),
-      phase(Simplex::Phase::One) {}
+Simplex::Simplex(LP &_lp) : lp(_lp) {
+  lp.add_logicals();
+  col_count = lp.A.col_count();
+  row_count = lp.A.row_count();
+  structural_count = col_count - row_count;
+  x = DVector(col_count);
+}
 
 const DVector &Simplex::get_x() const { return x; }
 
@@ -29,6 +30,7 @@ void Simplex::set_initial_x() {
 }
 
 void Simplex::solve() {
+
   if (print_iterations) {
     std::cout << "A:\n" << lp.A;
     std::cout << "b = " << lp.b << std::endl;

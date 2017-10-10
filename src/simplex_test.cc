@@ -8,7 +8,6 @@ Test(Simplex, solve, "Ax <= b, x >= 0, unbounded") {
   lp.add_column(ColType::LowerBound, 0, inf, -1);
   lp.add_row(RowType::LE, -inf, 14, {-2});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -21,7 +20,6 @@ Test(Simplex, solve, "Ax <= b, x <= 0, bounded") {
   lp.add_column(ColType::UpperBound, -inf, 0.0f, 1);
   lp.add_row(RowType::LE, -inf, 14, {-2});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -34,7 +32,6 @@ Test(Simplex, solve, "Ax <= b, l <= x <= u, bounded, boundflip") {
   lp.add_column(ColType::Bounded, 0, 5, -1);
   lp.add_row(RowType::LE, -inf, 14, {2});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -48,7 +45,6 @@ Test(Simplex, solve, "Ax == b, l <= x <= u, bounded") {
   lp.add_column(ColType::Bounded, 0, 5, 0);
   lp.add_row(RowType::Equality, 0, 0, {1, -1});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -62,7 +58,6 @@ Test(Simplex, solve, "Ax >= b, x <= 0, bounded") {
   lp.add_column(ColType::UpperBound, -inf, 0, 1);
   lp.add_row(RowType::GE, -5, inf, {1});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -75,7 +70,6 @@ Test(Simplex, solve, "l <= Ax <= u, l <= x <= u, bounded") {
   lp.add_column(ColType::Bounded, -4, 6, -5);
   lp.add_row(RowType::Range, -5, 5, {1});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -89,7 +83,6 @@ Test(Simplex, solve, "-inf <= Ax <= inf, x free, unbounded") {
   lp.add_column(ColType::Free, -inf, inf, 1);
   lp.add_row(RowType::NonBinding, -inf, inf, {1});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -104,7 +97,6 @@ Test(Simplex, solve, "Ax <= b, x == 0, bounded") {
   lp.add_column(ColType::Fixed, 0, 0, -1);
   lp.add_row(RowType::Range, -5, 5, {1});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -119,7 +111,6 @@ Test(Simplex, solve, "Ax >= b, 0 <= x <= 1, bounded") {
   lp.add_column(ColType::LowerBound, 1.0f, inf, 1);
   lp.add_row(RowType::Equality, 3, 3, {1, 1});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -138,7 +129,6 @@ Test(Simplex, solve, "2-phase, 4 var, 4 constr") {
   lp.add_row(RowType::Equality, -1, -1, {0, 1, 0, -1});
   lp.add_row(RowType::Equality, 0, 0, {1, 1, -1, 0});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -151,7 +141,6 @@ Test(Simplex, solve, "infeasible") {
   lp.add_column(ColType::LowerBound, 1.0f, inf, 2);
   lp.add_row(RowType::LE, -inf, 0, {1});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -163,7 +152,6 @@ Test(Simplex, solve, "infeasible") {
   lp.add_column(ColType::Fixed, -3.0f, -3.0f, 2);
   lp.add_row(RowType::Equality, 0, 0, {2.5f});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
@@ -179,7 +167,6 @@ Test(Simplex, solve, "Ax <= b, x >= 0, optimal Solution exists") {
   lp.add_row(RowType::LE, -inf, 28, {4, 2, 3});
   lp.add_row(RowType::LE, -inf, 30, {2, 5, 5});
 
-  lp.add_logicals();
   Simplex splx(lp);
   splx.solve();
 
