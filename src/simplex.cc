@@ -1,5 +1,6 @@
 #include "simplex.h"
 #include "base.h"
+#include <algorithm>
 #include <iostream>
 
 Simplex::Simplex(LP &_lp) : lp(_lp) {}
@@ -113,30 +114,33 @@ void Simplex::solve() {
       }
     } else {
       // Transform column vector of improving candidate
-      alpha = lp.A.column(non_basic_indices[pr.candidate_index]);
+      alpha = lp.A.column(pr.candidate_index);
       base.ftran(alpha);
 
       // Ratio test
-      auto rt =
-          ratio_test(alpha, beta, non_basic_indices[pr.candidate_index],
-                     basic_indices, d[non_basic_indices[pr.candidate_index]]);
+      auto rt = ratio_test(alpha, beta, pr.candidate_index, basic_indices,
+                           d[pr.candidate_index]);
 
       switch (rt.result) {
-      case IterationResult::BaseChange:
+      case IterationResult::BaseChange: {
         x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
-        std::swap<size_t>(non_basic_indices[pr.candidate_index],
+        size_t candidate_non_basic_index =
+            *std::find(non_basic_indices.begin(), non_basic_indices.end(),
+                       pr.candidate_index);
+        std::swap<size_t>(non_basic_indices[candidate_non_basic_index],
                           basic_indices[rt.leaving_index]);
         break;
+      }
       case IterationResult::Unbounded:
         assert(phase != Simplex::Phase::One);
 
         result = Result::Unbounded;
         x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
-        x[non_basic_indices[pr.candidate_index]] = rt.step_length;
+        x[pr.candidate_index] = rt.step_length;
         z = -inf;
         return;
       case IterationResult::BoundFlip:
-        x[non_basic_indices[pr.candidate_index]] += rt.step_length;
+        x[pr.candidate_index] += rt.step_length;
         break;
       default:
         assert(false);
@@ -149,18 +153,16 @@ Simplex::PricingResult
 Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
   double min_val = 0.0;
   size_t min_posi = 0;
-  for (size_t i = 0; i < non_basic_indices.size(); i++) {
-    size_t j = non_basic_indices[i];
-    if (lp.column_header(j).type ==
-        ColType::Fixed) // Fixed vars should not enter the basis
-      continue;
+  for (auto j : non_basic_indices) {
+    if (lp.column_header(j).type == ColType::Fixed)
+      continue; // Fixed vars should not enter the basis
     double sign = 1.0;
     if ((is_eq(x[j], lp.column_header(j).upper)) ||
         (lp.column_header(j).type == ColType::Free && is_ge(d[j], 0.0)))
       sign = -1.0;
     if (sign * d[j] < min_val) {
       min_val = sign * d[j];
-      min_posi = i;
+      min_posi = j;
     }
   }
   PricingResult pr;
