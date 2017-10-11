@@ -40,7 +40,6 @@ void Simplex::solve() {
 
   // Set up vectors
   DVector beta(row_count);
-  DVector c_beta(row_count);
   DVector pi(col_count);
   DVector d(col_count);
   SVector alpha;
@@ -86,8 +85,7 @@ void Simplex::solve() {
 
     // Price
     for (size_t i = 0; i < row_count; i++)
-      c_beta[i] = c[basic_indices[i]];
-    pi = c_beta;
+      pi[i] = c[basic_indices[i]];
     base.btran(pi);
     for (size_t i = 0; i < non_basic_indices.size(); i++)
       d[non_basic_indices[i]] =
