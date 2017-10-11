@@ -30,12 +30,6 @@ void Simplex::solve() {
   const size_t structural_count = col_count - row_count;
   x = DVector(col_count);
 
-  if (print_iterations) {
-    std::cout << "A:\n" << lp.A;
-    std::cout << "b = " << lp.b << std::endl;
-    std::cout << "c = " << lp.c << std::endl;
-  }
-
   // Set up index sets
   std::vector<size_t> basic_indices;
   std::vector<size_t> non_basic_indices;
@@ -59,27 +53,22 @@ void Simplex::solve() {
   }
 
   for (int round = 0; round < 10; round++) {
-    if (print_iterations) {
-      std::cout << "\n\nIteration " << round;
-      std::cout << "\n-----------------------------------------\n\n";
-    }
-
     // Set up base + inverse
     ColMatrix m(row_count, 0);
-    for (const auto &i : basic_indices)
+    for (const auto i : basic_indices)
       m.add_column(lp.A.column(i));
     Base base(m);
     base.invert();
 
     // Calc beta
     beta = lp.b;
-    for (auto &i : non_basic_indices)
+    for (auto i : non_basic_indices)
       beta -= x[i] * lp.A.column(i);
     base.ftran(beta);
 
     // Set c for phase I
     if (phase == Simplex::Phase::One) {
-      for (auto &i : non_basic_indices)
+      for (auto i : non_basic_indices)
         c[i] = 0.0f;
       for (size_t i = 0; i < basic_indices.size(); i++) {
         auto column_header = lp.column_header(basic_indices[i]);
@@ -95,19 +84,6 @@ void Simplex::solve() {
       }
     }
 
-    // Report iteration status
-    if (print_iterations) {
-      std::cout << "B:\n" << base.get_base() << std::endl;
-      std::cout << "Beta: " << beta << std::endl;
-      std::cout << "Basic:\n";
-      for (auto v : basic_indices)
-        std::cout << v << " ";
-      std::cout << "\n\nNon-Basic:\n";
-      for (auto v : non_basic_indices)
-        std::cout << v << " ";
-      std::cout << "\n\n";
-    }
-
     // Price
     for (size_t i = 0; i < row_count; i++)
       c_beta[i] = c[basic_indices[i]];
@@ -117,23 +93,11 @@ void Simplex::solve() {
       d[non_basic_indices[i]] =
           c[non_basic_indices[i]] - pi * lp.A.column(non_basic_indices[i]);
 
-    if (print_iterations) {
-      std::cout << "c = " << c << std::endl;
-      std::cout << "pi = " << pi << std::endl;
-      std::cout << "d = " << d << "\n\n";
-    }
-
     for (size_t i = 0; i < basic_indices.size(); i++)
       x[basic_indices[i]] = beta[i];
     z = lp.c * x;
 
     auto pr = price(d, non_basic_indices);
-
-    if (print_iterations) {
-      std::cout << "x = " << x << std::endl;
-      std::cout << "z = " << z << "\n";
-      std::cout << "optimal? = " << pr.is_optimal << "\n\n";
-    }
 
     if (pr.is_optimal) {
       if (phase == Simplex::Phase::Two) {
@@ -141,8 +105,6 @@ void Simplex::solve() {
         return;
       } else { // Phase I
         if (lp.is_feasible(x)) {
-          if (print_iterations)
-            std::cout << "is feasible, x = " << x << "\n";
           phase = Simplex::Phase::Two;
           c = lp.c;
           continue;
@@ -155,18 +117,11 @@ void Simplex::solve() {
       // Transform column vector of improving candidate
       alpha = lp.A.column(non_basic_indices[pr.candidate_index]);
       base.ftran(alpha);
-      if (print_iterations) {
-        std::cout << "Alpha = \n" << alpha << "\n\n";
-      }
 
       // Ratio test
       auto rt =
           ratio_test(alpha, beta, non_basic_indices[pr.candidate_index],
                      basic_indices, d[non_basic_indices[pr.candidate_index]]);
-      if (print_iterations) {
-        std::cout << "selected new basic index: "
-                  << non_basic_indices[pr.candidate_index] << "\n\n";
-      }
 
       switch (rt.result) {
       case IterationResult::BaseChange:
@@ -250,9 +205,6 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
       min_theta = t;
       min_theta_posi = n.index;
       leaving_bound = bound;
-      if (print_iterations)
-        std::cout << "\nmin_theta updated: " << min_theta << " at "
-                  << basic_indices[min_theta_posi] << "\n";
       assert(is_ge(min_theta, 0.0f));
     }
   }
@@ -260,11 +212,6 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
   const double max_steplength = lp.column_header(candidate_index).upper -
                                 lp.column_header(candidate_index).lower;
   min_theta = std::min<double>(min_theta, max_steplength);
-
-  if (print_iterations) {
-    std::cout << "\nMin theta = " << min_theta << " at position "
-              << min_theta_posi << "\n\n";
-  }
 
   RatioTestResult rt;
   rt.step_length = direction * min_theta; // make signed again
