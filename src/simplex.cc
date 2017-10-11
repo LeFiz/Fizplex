@@ -18,7 +18,7 @@ void Simplex::set_initial_x() {
     } else if (is_finite(col_header.upper)) {
       x[i] = col_header.upper;
     } else {
-      x[i] = 0.0f;
+      x[i] = 0.0;
     }
   }
 }
@@ -69,17 +69,17 @@ void Simplex::solve() {
     // Set c for phase I
     if (phase == Simplex::Phase::One) {
       for (auto i : non_basic_indices)
-        c[i] = 0.0f;
+        c[i] = 0.0;
       for (size_t i = 0; i < basic_indices.size(); i++) {
         auto column_header = lp.column_header(basic_indices[i]);
         if (is_finite(column_header.lower) &&
             is_lower(beta[i], column_header.lower)) {
-          c[basic_indices[i]] = -1.0f;
+          c[basic_indices[i]] = -1.0;
         } else if (is_finite(column_header.upper) &&
                    is_greater(beta[i], column_header.upper)) {
-          c[basic_indices[i]] = 1.0f;
+          c[basic_indices[i]] = 1.0;
         } else {
-          c[basic_indices[i]] = 0.0f;
+          c[basic_indices[i]] = 0.0;
         }
       }
     }
@@ -149,17 +149,17 @@ void Simplex::solve() {
 
 Simplex::PricingResult
 Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
-  double min_val = 0.0f;
+  double min_val = 0.0;
   size_t min_posi = 0;
   for (size_t i = 0; i < non_basic_indices.size(); i++) {
     size_t j = non_basic_indices[i];
     if (lp.column_header(j).type ==
         ColType::Fixed) // Fixed vars should not enter the basis
       continue;
-    double sign = 1.0f;
+    double sign = 1.0;
     if ((is_eq(x[j], lp.column_header(j).upper)) ||
-        (lp.column_header(j).type == ColType::Free && is_ge(d[j], 0.0f)))
-      sign = -1.0f;
+        (lp.column_header(j).type == ColType::Free && is_ge(d[j], 0.0)))
+      sign = -1.0;
     if (sign * d[j] < min_val) {
       min_val = sign * d[j];
       min_posi = i;
@@ -180,7 +180,7 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
   double bound = inf;
   double leaving_bound = inf;
   double a = inf;
-  const double direction = is_ge(candidate_cost, 0.0f) ? -1.0f : 1.0f;
+  const double direction = is_ge(candidate_cost, 0.0) ? -1.0 : 1.0;
 
   for (const auto &n : alpha) {
     if (is_zero(n.value))
@@ -195,7 +195,7 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
     }
 
     a = n.value * direction;
-    if (is_le(a, 0.0f)) {
+    if (is_le(a, 0.0)) {
       bound = column_header.upper; // = inf for ColType = Lower
     } else {
       bound = column_header.lower; // = -inf for ColType = upper
@@ -205,7 +205,7 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
       min_theta = t;
       min_theta_posi = n.index;
       leaving_bound = bound;
-      assert(is_ge(min_theta, 0.0f));
+      assert(is_ge(min_theta, 0.0));
     }
   }
 
