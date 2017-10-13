@@ -1,9 +1,9 @@
 #include "simplex.h"
-#include "test.h"
+#include "gtest/gtest.h"
 
 // TODO LP from string: LP lp("min x - 2*y; x+3*y = 1; 0<=x<=inf, -inf<=y<=inf")
 
-Test(Simplex, solve, "Ax <= b, x >= 0, unbounded") {
+TEST(SimplexTest, LowerRowLowerVarUnbounded) {
   LP lp;
   lp.add_column(ColType::LowerBound, 0, inf, -1);
   lp.add_row(RowType::LE, -inf, 14, {-2});
@@ -11,11 +11,11 @@ Test(Simplex, solve, "Ax <= b, x >= 0, unbounded") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::Unbounded);
-  EXPECT(is_infinite(splx.get_z()));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::Unbounded);
+  EXPECT_TRUE(is_infinite(splx.get_z()));
 }
 
-Test(Simplex, solve, "Ax <= b, x <= 0, bounded") {
+TEST(SimplexTest, LowerRowUpperVarOptimalSolution) {
   LP lp;
   lp.add_column(ColType::UpperBound, -inf, 0.0, 1);
   lp.add_row(RowType::LE, -inf, 14, {-2});
@@ -23,11 +23,11 @@ Test(Simplex, solve, "Ax <= b, x <= 0, bounded") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), -7.0));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT_TRUE(is_eq(splx.get_z(), -7.0));
 }
 
-Test(Simplex, solve, "Ax <= b, l <= x <= u, bounded, boundflip") {
+TEST(SimplexTest, LowerRowBoundedVarOptimalSolutionWithBoundFlip) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5, -1);
   lp.add_row(RowType::LE, -inf, 14, {2});
@@ -35,11 +35,11 @@ Test(Simplex, solve, "Ax <= b, l <= x <= u, bounded, boundflip") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), -5.0));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT_TRUE(is_eq(splx.get_z(), -5.0));
 }
 
-Test(Simplex, solve, "Ax == b, l <= x <= u, bounded") {
+TEST(SimplexTest, EqualityRowBoundedVarsOptimalSolution) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5, -1);
   lp.add_column(ColType::Bounded, 0, 5, 0);
@@ -48,12 +48,12 @@ Test(Simplex, solve, "Ax == b, l <= x <= u, bounded") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), -5));
-  EXPECT(splx.get_x() == DVector({5.0, 5.0, 0.0}));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT_TRUE(is_eq(splx.get_z(), -5));
+  EXPECT_TRUE(splx.get_x() == DVector({5.0, 5.0, 0.0}));
 }
 
-Test(Simplex, solve, "Ax >= b, x <= 0, bounded") {
+TEST(SimplexTest, GreaterRowUpperVarOptimalSolution) {
   LP lp;
   lp.add_column(ColType::UpperBound, -inf, 0, 1);
   lp.add_row(RowType::GE, -5, inf, {1});
@@ -61,11 +61,11 @@ Test(Simplex, solve, "Ax >= b, x <= 0, bounded") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), -5.0));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT_TRUE(is_eq(splx.get_z(), -5.0));
 }
 
-Test(Simplex, solve, "l <= Ax <= u, l <= x <= u, bounded") {
+TEST(SimplexTest, RangeRowBoundedVarOptimalSolution) {
   LP lp;
   lp.add_column(ColType::Bounded, -4, 6, -5);
   lp.add_row(RowType::Range, -5, 5, {1});
@@ -73,12 +73,12 @@ Test(Simplex, solve, "l <= Ax <= u, l <= x <= u, bounded") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), -25.0));
-  EXPECT(splx.get_x() == DVector({5.0, 0.0}));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT_TRUE(is_eq(splx.get_z(), -25.0));
+  EXPECT_TRUE(splx.get_x() == DVector({5.0, 0.0}));
 }
 
-Test(Simplex, solve, "-inf <= Ax <= inf, x free, unbounded") {
+TEST(SimplexTest, NonBindingRowFreeVarUnbounded) {
   LP lp;
   lp.add_column(ColType::Free, -inf, inf, 1);
   lp.add_row(RowType::NonBinding, -inf, inf, {1});
@@ -86,13 +86,13 @@ Test(Simplex, solve, "-inf <= Ax <= inf, x free, unbounded") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::Unbounded);
-  EXPECT(is_infinite(splx.get_z()));
-  EXPECT(is_le(splx.get_z(), 0));
-  EXPECT(is_infinite(splx.get_x()[0]));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::Unbounded);
+  EXPECT_TRUE(is_infinite(splx.get_z()));
+  EXPECT_TRUE(is_le(splx.get_z(), 0));
+  EXPECT_TRUE(is_infinite(splx.get_x()[0]));
 }
 
-Test(Simplex, solve, "Ax <= b, x == 0, bounded") {
+TEST(SimplexTest, RangeRowFixedVarOptimalSolution) {
   LP lp;
   lp.add_column(ColType::Fixed, 0, 0, -1);
   lp.add_row(RowType::Range, -5, 5, {1});
@@ -100,12 +100,12 @@ Test(Simplex, solve, "Ax <= b, x == 0, bounded") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), 0));
-  EXPECT(is_eq(splx.get_x()[0], 0));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT_TRUE(is_eq(splx.get_z(), 0));
+  EXPECT_TRUE(is_eq(splx.get_x()[0], 0));
 }
 
-Test(Simplex, solve, "Ax >= b, 0 <= x <= 1, bounded") {
+TEST(SimplexTest, EqualityRowLowerVarsOptimalSolution) {
   LP lp;
   lp.add_column(ColType::LowerBound, 1.0, inf, 2);
   lp.add_column(ColType::LowerBound, 1.0, inf, 1);
@@ -114,11 +114,11 @@ Test(Simplex, solve, "Ax >= b, 0 <= x <= 1, bounded") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), 4.0));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT_TRUE(is_eq(splx.get_z(), 4.0));
 }
 
-Test(Simplex, solve, "2-phase, 4 var, 4 constr") {
+TEST(SimplexTwoPhaseTest, FourRowsFourVarsOptimalSolution) {
   LP lp;
   lp.add_column(ColType::Free, -inf, inf, 3);
   lp.add_column(ColType::Free, -inf, inf, -2);
@@ -132,11 +132,11 @@ Test(Simplex, solve, "2-phase, 4 var, 4 constr") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), -32));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT_TRUE(is_eq(splx.get_z(), -32));
 }
 
-Test(Simplex, solve, "infeasible") {
+TEST(SimplexPhaseOneTest, LowerRowLowerVarInfeasible) {
   LP lp;
   lp.add_column(ColType::LowerBound, 1.0, inf, 2);
   lp.add_row(RowType::LE, -inf, 0, {1});
@@ -144,10 +144,10 @@ Test(Simplex, solve, "infeasible") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::Infeasible);
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::Infeasible);
 }
 
-Test(Simplex, solve, "infeasible") {
+TEST(SimplexPhaseOneTest, EqualityRowFixedVarInfeasible) {
   LP lp;
   lp.add_column(ColType::Fixed, -3.0, -3.0, 2);
   lp.add_row(RowType::Equality, 0, 0, {2.5});
@@ -155,10 +155,10 @@ Test(Simplex, solve, "infeasible") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::Infeasible);
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::Infeasible);
 }
 
-Test(Simplex, solve, "Ax <= b, x >= 0, optimal Solution exists") {
+TEST(SimplexTest, ThreeRowsThreeVarsOptimalSolution) {
   LP lp;
   lp.add_column(ColType::LowerBound, 0, inf, -1);
   lp.add_column(ColType::LowerBound, 0, inf, -2);
@@ -170,6 +170,6 @@ Test(Simplex, solve, "Ax <= b, x >= 0, optimal Solution exists") {
   Simplex splx(lp);
   splx.solve();
 
-  EXPECT(splx.get_result() == Simplex::Result::OptimalSolution);
-  EXPECT(is_eq(splx.get_z(), -13));
+  EXPECT_TRUE(splx.get_result() == Simplex::Result::OptimalSolution);
+  EXPECT_TRUE(is_eq(splx.get_z(), -13));
 }
