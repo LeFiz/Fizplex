@@ -1,8 +1,7 @@
-
 #include "base.h"
-#include "test.h"
+#include "gtest/gtest.h"
 
-Test(Base, invert, "invertible, no re-ordering") {
+TEST(BaseTest, InvertRegularNoReordering) {
   ColMatrix m(3, 3,
               {{{0, 7}, {2, -3}},
                {{0, 2}, {1, 3}, {2, 4}},
@@ -14,16 +13,16 @@ Test(Base, invert, "invertible, no re-ordering") {
   const SVector r0 = {{0, -2}, {1, 3}, {2, 9}};
   const SVector r1 = {{0, 8}, {1, -11}, {2, -34}};
   const SVector r2 = {{0, -5}, {1, 7}, {2, 21}};
-  EXPECT(b.invert());
+  EXPECT_TRUE(b.invert());
   b.ftran(e0);
   b.ftran(e1);
   b.ftran(e2);
-  EXPECT(e0 == r0);
-  EXPECT(e1 == r1);
-  EXPECT(e2 == r2);
+  EXPECT_TRUE(e0 == r0);
+  EXPECT_TRUE(e1 == r1);
+  EXPECT_TRUE(e2 == r2);
 }
 
-Test(Base, invert, "invertible, with re-ordering") {
+TEST(BaseTest, InvertRegularWithReordering) {
   ColMatrix m(3, 3,
               {{{1, 7}, {2, -3}},
                {{0, 2}, {1, 3}, {2, 4}},
@@ -35,25 +34,25 @@ Test(Base, invert, "invertible, with re-ordering") {
   const SVector r0 = {{0, -2.0 / 71}, {1, 17.0 / 71}, {2, 37.0 / 71}};
   const SVector r1 = {{0, 8.0 / 71}, {1, 3.0 / 71}, {2, -6.0 / 71}};
   const SVector r2 = {{0, -5.0 / 71}, {1, 7.0 / 71}, {2, -14.0 / 71}};
-  EXPECT(b.invert());
+  EXPECT_TRUE(b.invert());
   b.ftran(e0);
   b.ftran(e1);
   b.ftran(e2);
-  EXPECT(e0 == r0);
-  EXPECT(e1 == r1);
-  EXPECT(e2 == r2);
+  EXPECT_TRUE(e0 == r0);
+  EXPECT_TRUE(e1 == r1);
+  EXPECT_TRUE(e2 == r2);
 }
 
-Test(Base, invert, "singular") {
+TEST(BaseTest, InvertSingular) {
   ColMatrix m(3, 3,
               {{{0, 1}, {1, 1}, {2, 1}},
                {{0, 1}, {1, 1}, {2, 1}},
                {{0, 1}, {1, 1}, {2, 1}}});
   Base b(m);
-  EXPECT(b.invert() == false);
+  EXPECT_TRUE(b.invert() == false);
 }
 
-Test(Base, ftran, "DVector, with reordering") {
+TEST(BaseTest, FTranDVectorWithReordering) {
   ColMatrix m(3, 3,
               {{{1, 7}, {2, -3}},
                {{0, 2}, {1, 3}, {2, 4}},
@@ -75,17 +74,17 @@ Test(Base, ftran, "DVector, with reordering") {
   r2[1] = 7.0 / 71;
   r2[2] = -14.0 / 71;
 
-  EXPECT(b.invert());
+  EXPECT_TRUE(b.invert());
   b.ftran(e0);
   b.ftran(e1);
   b.ftran(e2);
 
-  EXPECT(e0 == r0);
-  EXPECT(e1 == r1);
-  EXPECT(e2 == r2);
+  EXPECT_TRUE(e0 == r0);
+  EXPECT_TRUE(e1 == r1);
+  EXPECT_TRUE(e2 == r2);
 }
 
-Test(Base, ftran, "DVector, no reordering") {
+TEST(BaseTest, FTranDVectorNoReordering) {
   ColMatrix m(3, 3,
               {{{0, 7}, {2, -3}},
                {{0, 2}, {1, 3}, {2, 4}},
@@ -107,17 +106,17 @@ Test(Base, ftran, "DVector, no reordering") {
   r2[1] = 7;
   r2[2] = 21;
 
-  EXPECT(b.invert());
+  EXPECT_TRUE(b.invert());
   b.ftran(e0);
   b.ftran(e1);
   b.ftran(e2);
 
-  EXPECT(e0 == r0);
-  EXPECT(e1 == r1);
-  EXPECT(e2 == r2);
+  EXPECT_TRUE(e0 == r0);
+  EXPECT_TRUE(e1 == r1);
+  EXPECT_TRUE(e2 == r2);
 }
 
-Test(Base, btran, "DVector, no reordering") {
+TEST(BaseTest, BTranDVectorNoReordering) {
   ColMatrix m(3, 3,
               {{{0, 7}, {2, -3}},
                {{0, 2}, {1, 3}, {2, 4}},
@@ -139,17 +138,17 @@ Test(Base, btran, "DVector, no reordering") {
   r2[1] = -34;
   r2[2] = 21;
 
-  EXPECT(b.invert());
+  EXPECT_TRUE(b.invert());
   b.btran(e0);
   b.btran(e1);
   b.btran(e2);
 
-  EXPECT(e0 == r0);
-  EXPECT(e1 == r1);
-  EXPECT(e2 == r2);
+  EXPECT_TRUE(e0 == r0);
+  EXPECT_TRUE(e1 == r1);
+  EXPECT_TRUE(e2 == r2);
 }
 
-Test(Base, btran, "DVector, with reordering") {
+TEST(BaseTest, BTranDVectorWithReordering) {
   ColMatrix m(3, 3,
               {{{1, 7}, {2, -3}},
                {{0, 2}, {1, 3}, {2, 4}},
@@ -171,12 +170,12 @@ Test(Base, btran, "DVector, with reordering") {
   r2[1] = -6.0 / 71;
   r2[2] = -14.0 / 71;
 
-  EXPECT(b.invert());
+  EXPECT_TRUE(b.invert());
   b.btran(e0);
   b.btran(e1);
   b.btran(e2);
 
-  EXPECT(e0 == r0);
-  EXPECT(e1 == r1);
-  EXPECT(e2 == r2);
+  EXPECT_TRUE(e0 == r0);
+  EXPECT_TRUE(e1 == r1);
+  EXPECT_TRUE(e2 == r2);
 }
