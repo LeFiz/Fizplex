@@ -1,69 +1,69 @@
 #include "lp.h"
-#include "test.h"
+#include "gtest/gtest.h"
 
-Test(LP, column_count, "empty LP") {
+TEST(LPTest, ColumnCount) {
   LP lp;
-  EXPECT(lp.column_count() == 0);
+  EXPECT_TRUE(lp.column_count() == 0);
 }
 
-Test(LP, row_count, "empty LP") {
+TEST(LPTest, RowCount) {
   LP lp;
-  EXPECT(lp.row_count() == 0);
+  EXPECT_TRUE(lp.row_count() == 0);
 }
 
-Test(LP, add_column, "empty LP") {
+TEST(LPTest, AddColumn) {
   LP lp;
   lp.add_column(ColType::Bounded, -1.33333, 302);
-  EXPECT(lp.column_count() == 1);
+  EXPECT_TRUE(lp.column_count() == 1);
 }
 
-Test(LP, add_row, "empty LP") {
+TEST(LPTest, AddRow) {
   LP lp;
   lp.add_row(RowType::Range, -1.33333, 302);
-  EXPECT(lp.row_count() == 1);
+  EXPECT_TRUE(lp.row_count() == 1);
 }
 
-Test(LP, add_row, "b is set properly for range rows") {
+TEST(LPTest, AddRangeRowBIsSetProperly) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::Range, 3, 15);
-  EXPECT(is_eq(lp.b[0], 15));
+  EXPECT_TRUE(is_eq(lp.b[0], 15));
 }
 
-Test(LP, add_row, "b is set properly for GE rows") {
+TEST(LPTest, AddGERowBIsSetProperly) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::GE, 3, 15);
-  EXPECT(is_eq(lp.b[0], 3));
+  EXPECT_TRUE(is_eq(lp.b[0], 3));
 }
 
-Test(LP, get_value, "single value in LP") {
+TEST(LPTest, GetValue) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::Range, 3, 15);
   const double d = 3.14;
   lp.add_value(0, 0, d);
-  EXPECT(is_eq(lp.get_value(0, 0), d));
+  EXPECT_TRUE(is_eq(lp.get_value(0, 0), d));
 }
 
-Test(LP, get_value, "non-existing value") {
+TEST(LPTest, GetValueWhenNoValueWasAddedIsZero) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::Range, 3, 15);
-  EXPECT(is_zero(lp.get_value(0, 0)));
+  EXPECT_TRUE(is_zero(lp.get_value(0, 0)));
 }
 
-Test(LP, add_obj_value, "non-empty LP") {
+TEST(LPTest, AddObjValue) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::Range, 3, 15);
   const double d = 3.14;
   lp.add_logicals();
   lp.add_obj_value(0, d);
-  EXPECT(is_eq(lp.get_obj_value(0), d));
+  EXPECT_TRUE(is_eq(lp.get_obj_value(0), d));
 }
 
-Test(LP, add_logicals, "all types") {
+TEST(LPTest, AddLogicals) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::Equality, 1, 1);
@@ -73,61 +73,61 @@ Test(LP, add_logicals, "all types") {
   lp.add_row(RowType::GE, 3, inf);
   lp.add_logicals();
 
-  EXPECT(lp.column_count() == 6);
+  EXPECT_TRUE(lp.column_count() == 6);
 
-  EXPECT(lp.column_header(1).type == ColType::Fixed);
-  EXPECT(lp.column_header(2).type == ColType::Bounded);
-  EXPECT(lp.column_header(3).type == ColType::LowerBound);
-  EXPECT(lp.column_header(4).type == ColType::Free);
-  EXPECT(lp.column_header(5).type == ColType::UpperBound);
+  EXPECT_TRUE(lp.column_header(1).type == ColType::Fixed);
+  EXPECT_TRUE(lp.column_header(2).type == ColType::Bounded);
+  EXPECT_TRUE(lp.column_header(3).type == ColType::LowerBound);
+  EXPECT_TRUE(lp.column_header(4).type == ColType::Free);
+  EXPECT_TRUE(lp.column_header(5).type == ColType::UpperBound);
 
-  EXPECT(is_eq(lp.column_header(1).lower, 0));
-  EXPECT(is_eq(lp.column_header(1).upper, 0));
-  EXPECT(is_eq(lp.column_header(2).lower, 0));
-  EXPECT(is_eq(lp.column_header(2).upper, 12));
-  EXPECT(is_eq(lp.column_header(3).lower, 0));
-  EXPECT(is_eq(lp.column_header(5).upper, 0));
+  EXPECT_TRUE(is_eq(lp.column_header(1).lower, 0));
+  EXPECT_TRUE(is_eq(lp.column_header(1).upper, 0));
+  EXPECT_TRUE(is_eq(lp.column_header(2).lower, 0));
+  EXPECT_TRUE(is_eq(lp.column_header(2).upper, 12));
+  EXPECT_TRUE(is_eq(lp.column_header(3).lower, 0));
+  EXPECT_TRUE(is_eq(lp.column_header(5).upper, 0));
 
   for (int i = 0; i < 5; i++)
-    EXPECT(is_eq(lp.get_value(i, 1 + i), 1));
+    EXPECT_TRUE(is_eq(lp.get_value(i, 1 + i), 1));
 }
 
-Test(LP, is_feasible, "bounded var, range row") {
+TEST(LPTest, IsFeasibleForBoundedVarAndRangeRow) {
   LP lp;
   lp.add_column(ColType::Bounded, -1.0f, 5);
   lp.add_row(RowType::Range, 0, 7);
   lp.add_logicals();
   lp.add_value(0, 0, 2.0f);
-  EXPECT(lp.is_feasible(DVector({0, 0})));
-  EXPECT(lp.is_feasible(DVector({1, 0})));
-  EXPECT(lp.is_feasible(DVector({3.5, 0})));
-  EXPECT(!lp.is_feasible(DVector({-1.5, 0})));
-  EXPECT(!lp.is_feasible(DVector({5, 0})));
-  EXPECT(!lp.is_feasible(DVector({-1.0f, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({0, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({1, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({3.5, 0})));
+  EXPECT_TRUE(!lp.is_feasible(DVector({-1.5, 0})));
+  EXPECT_TRUE(!lp.is_feasible(DVector({5, 0})));
+  EXPECT_TRUE(!lp.is_feasible(DVector({-1.0f, 0})));
 }
 
-Test(LP, is_feasible, "free var, range row") {
+TEST(LPTest, IsFeasibleForFreeVarAndRangeRow) {
   LP lp;
   lp.add_column(ColType::Free, -inf, inf);
   lp.add_row(RowType::Range, -5, 5);
   lp.add_logicals();
   lp.add_value(0, 0, 1.0);
-  EXPECT(lp.is_feasible(DVector({0, 0})));
-  EXPECT(lp.is_feasible(DVector({5, 0})));
-  EXPECT(lp.is_feasible(DVector({-5, 0})));
-  EXPECT(!lp.is_feasible(DVector({6, 0})));
-  EXPECT(!lp.is_feasible(DVector({-6, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({0, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({5, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({-5, 0})));
+  EXPECT_TRUE(!lp.is_feasible(DVector({6, 0})));
+  EXPECT_TRUE(!lp.is_feasible(DVector({-6, 0})));
 }
 
-Test(LP, is_feasible, "free var, non-binding row") {
+TEST(LPTest, IsFeasibleForFreeVarAndNonBindingRow) {
   LP lp;
   lp.add_column(ColType::Free, -inf, inf);
   lp.add_row(RowType::NonBinding, -inf, inf);
   lp.add_logicals();
   lp.add_value(0, 0, 1.0);
-  EXPECT(lp.is_feasible(DVector({0, 0})));
-  EXPECT(lp.is_feasible(DVector({5, 0})));
-  EXPECT(lp.is_feasible(DVector({-5, 0})));
-  EXPECT(lp.is_feasible(DVector({inf, 0})));
-  EXPECT(lp.is_feasible(DVector({-inf, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({0, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({5, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({-5, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({inf, 0})));
+  EXPECT_TRUE(lp.is_feasible(DVector({-inf, 0})));
 }
