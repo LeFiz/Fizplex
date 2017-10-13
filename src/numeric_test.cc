@@ -1,54 +1,46 @@
-
 #include "numeric.h"
-#include "test.h"
+#include "gtest/gtest.h"
 
-Test(Numeric, is_eq, "equal numbers") { EXPECT(is_eq(2.00000f, 2)); }
-
-Test(Numeric, is_eq, "inequal numbers") { EXPECT(!is_eq(2.00000f, 3)); }
-
-Test(Numeric, is_finite, "finite values") {
-  EXPECT(is_finite(2.00000f));
-  EXPECT(is_finite(31));
-  EXPECT(is_finite(-31.000000001f));
+TEST(NumericTest, Equality) {
+  EXPECT_TRUE(is_eq(2.0, 2));
+  EXPECT_TRUE(!is_eq(2.0, 3));
 }
 
-Test(Numeric, is_finite, "infinite values") {
-  EXPECT(!is_finite(inf));
-  EXPECT(!is_finite(-inf));
+TEST(NumericTest, IsFinite) {
+  EXPECT_TRUE(is_finite(31.0));
+  EXPECT_TRUE(is_finite(-31.0));
+  EXPECT_TRUE(!is_finite(inf));
+  EXPECT_TRUE(!is_finite(-inf));
 }
 
-Test(Numeric, is_infinite, "infinite values") {
-  EXPECT(is_infinite(inf));
-  EXPECT(is_infinite(-inf));
+TEST(NumericTest, IsInfinite) {
+  EXPECT_TRUE(is_infinite(inf));
+  EXPECT_TRUE(is_infinite(-inf));
+  EXPECT_TRUE(!is_infinite(31.0));
+  EXPECT_TRUE(!is_infinite(-31.0));
 }
 
-Test(Numeric, is_infinite, "finite values") {
-  EXPECT(!is_infinite(2.00000f));
-  EXPECT(!is_infinite(31));
-  EXPECT(!is_infinite(-31.000000001f));
+TEST(NumericTest, GreaterOrEqual) {
+  EXPECT_TRUE(is_ge(1.0, 0.0));
+  EXPECT_TRUE(is_ge(0.0, 0.0));
+  EXPECT_TRUE(is_ge(-2.1, -9));
 }
 
-Test(Numeric, is_ge, "finite values") {
-  EXPECT(is_ge(1.0f, 0.0f));
-  EXPECT(is_ge(0.0f, 0.0f));
-  EXPECT(is_ge(-2.111f, -999));
+TEST(NumericTest, LowerOrEqual) {
+  EXPECT_TRUE(is_le(-1.0, 0.0));
+  EXPECT_TRUE(is_le(0.0, 0.0));
+  EXPECT_TRUE(is_le(-30.0, -9));
 }
 
-Test(Numeric, is_le, "finite values") {
-  EXPECT(is_le(-1.0f, 0.0f));
-  EXPECT(is_le(0.0f, 0.0f));
-  EXPECT(is_le(-2111.0f, -999));
+TEST(NumericTest, StrictlyLower) {
+  EXPECT_TRUE(is_lower(-1.0, 1.0));
+  EXPECT_TRUE(!is_lower(0.0, 0.0));
+  EXPECT_TRUE(is_lower(-21.0, -9));
 }
 
-Test(Numeric, is_lower, "finite values") {
-  EXPECT(is_lower(-1.0f, 1.0f));
-  EXPECT(!is_lower(0.0f, 0.0f));
-  EXPECT(is_lower(-2111.0f, -999));
-}
-
-Test(Numeric, is_greater, "finite values") {
-  EXPECT(!is_greater(-1.0f, 1.0f));
-  EXPECT(is_greater(1.0f, 0.0f));
-  EXPECT(!is_greater(1.0f, 1.0f));
-  EXPECT(is_greater(2111.0f, -999));
+TEST(NumericTest, StrictlyGreater) {
+  EXPECT_TRUE(!is_greater(-1.0, 1.0));
+  EXPECT_TRUE(is_greater(1.0, 0.0));
+  EXPECT_TRUE(!is_greater(1.0, 1.0));
+  EXPECT_TRUE(is_greater(21.0, -9));
 }

@@ -1,5 +1,4 @@
 #include "svector.h"
-//#include "test.h"
 #include "gtest/gtest.h"
 
 TEST(SVectorTest, EmptyHasZeolength) {
