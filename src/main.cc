@@ -7,10 +7,13 @@
 #include "lp.h"
 #include "simplex.h"
 #include "svector.h"
+#include "gtest/gtest.h"
+
 #include "test.h"
 
-int main() {
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
   TestRunner::run();
 
-  return 0;
+  return RUN_ALL_TESTS();
 }
