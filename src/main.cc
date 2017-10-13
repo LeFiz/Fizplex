@@ -9,11 +9,8 @@
 #include "svector.h"
 #include "gtest/gtest.h"
 
-#include "test.h"
-
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
-  TestRunner::run();
 
   return RUN_ALL_TESTS();
 }
