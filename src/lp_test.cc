@@ -100,8 +100,8 @@ Test(LP, is_feasible, "bounded var, range row") {
   lp.add_value(0, 0, 2.0f);
   EXPECT(lp.is_feasible(DVector({0, 0})));
   EXPECT(lp.is_feasible(DVector({1, 0})));
-  EXPECT(lp.is_feasible(DVector({3.5f, 0})));
-  EXPECT(!lp.is_feasible(DVector({-1.5f, 0})));
+  EXPECT(lp.is_feasible(DVector({3.5, 0})));
+  EXPECT(!lp.is_feasible(DVector({-1.5, 0})));
   EXPECT(!lp.is_feasible(DVector({5, 0})));
   EXPECT(!lp.is_feasible(DVector({-1.0f, 0})));
 }
@@ -111,7 +111,7 @@ Test(LP, is_feasible, "free var, range row") {
   lp.add_column(ColType::Free, -inf, inf);
   lp.add_row(RowType::Range, -5, 5);
   lp.add_logicals();
-  lp.add_value(0, 0, 1.0f);
+  lp.add_value(0, 0, 1.0);
   EXPECT(lp.is_feasible(DVector({0, 0})));
   EXPECT(lp.is_feasible(DVector({5, 0})));
   EXPECT(lp.is_feasible(DVector({-5, 0})));
@@ -124,7 +124,7 @@ Test(LP, is_feasible, "free var, non-binding row") {
   lp.add_column(ColType::Free, -inf, inf);
   lp.add_row(RowType::NonBinding, -inf, inf);
   lp.add_logicals();
-  lp.add_value(0, 0, 1.0f);
+  lp.add_value(0, 0, 1.0);
   EXPECT(lp.is_feasible(DVector({0, 0})));
   EXPECT(lp.is_feasible(DVector({5, 0})));
   EXPECT(lp.is_feasible(DVector({-5, 0})));

@@ -20,7 +20,7 @@ void LP::add_column(ColType _type, double _lower, double _upper,
 }
 
 void LP::add_logical_column(ColType _type, double _lower, double _upper) {
-  add_column(_type, _lower, _upper, 0.0f, true);
+  add_column(_type, _lower, _upper, 0.0, true);
 }
 
 LP::Row::Row(RowType _type, double _lower, double _upper)
@@ -66,7 +66,7 @@ void LP::add_b() {
     b.append(row.lower);
     break;
   case RowType::NonBinding:
-    b.append(0.0f);
+    b.append(0.0);
     break;
   default:
     b.append(row.upper);
@@ -131,7 +131,7 @@ bool LP::is_feasible(const DVector &x) const {
     }
   }
   for (size_t row = 0; row < row_count(); row++) {
-    double val = 0.0f;
+    double val = 0.0;
     for (size_t col = 0; col < column_count(); col++) {
       val += A.get_value(row, col) * x[col];
     }

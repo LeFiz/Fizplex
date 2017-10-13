@@ -100,7 +100,7 @@ void Base::updateVecWithETM(ETM &etm, DVector &vec) {
   double mult = vec[etm.col];
   if (is_zero(mult)) // all updates would be += 0
     return;
-  vec[etm.col] = 0.0f; // special case for pivot
+  vec[etm.col] = 0.0; // special case for pivot
 
   for (auto &entry : etm.eta)
     vec[entry.index] += entry.value * mult;
@@ -134,7 +134,7 @@ void Base::ftran(DVector &vec) {
 void Base::btran(DVector &vec) const {
   const size_t num = etms.size();
   for (size_t i = 0; i < num; i++) {
-    double d = 0.0f;
+    double d = 0.0;
     for (const auto &n : etms[num - i - 1]->eta) {
       d += n.value * vec[rowOrdering[n.index]];
     }
