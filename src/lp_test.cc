@@ -17,10 +17,33 @@ TEST(LPTest, AddColumn) {
   EXPECT_TRUE(lp.column_count() == 1);
 }
 
-TEST(LPTest, AddRow) {
+TEST(LPTest, AddAndEditColumn) {
+  LP lp;
+  lp.add_column(ColType::Bounded, -1.0, 2.0);
+  lp.column_header(0u).upper = 3.14;
+  EXPECT_DOUBLE_EQ(3.14, lp.column_header(0u).upper);
+}
+
+TEST(LPTest, AddRowFromValues) {
   LP lp;
   lp.add_row(RowType::Range, -1.33333, 302);
   EXPECT_TRUE(lp.row_count() == 1);
+  EXPECT_TRUE(lp.row_header(0u).type == RowType::Range);
+}
+
+TEST(LPTest, AddAndEditRow) {
+  LP lp;
+  lp.add_row(RowType::Range, -1.0, 2.0);
+  lp.update_row_header(0u, RowType::Range, 0.0, 3.0);
+  EXPECT_DOUBLE_EQ(0.0, lp.row_header(0u).lower);
+}
+
+TEST(LPTest, AddRowFromRow) {
+  LP lp;
+  LP::Row r(RowType::LE, -1.33333, 302);
+  lp.add_row(r);
+  EXPECT_TRUE(lp.row_count() == 1);
+  EXPECT_TRUE(lp.row_header(0u).type == RowType::LE);
 }
 
 TEST(LPTest, AddRangeRowBIsSetProperly) {

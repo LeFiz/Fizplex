@@ -27,9 +27,7 @@ LP::Row::Row(RowType _type, double _lower, double _upper)
     : type(_type), lower(_lower), upper(_upper) {}
 
 void LP::add_row(RowType _type, double _lower, double _upper) {
-  rows.push_back(Row(_type, _lower, _upper));
-  A.add_row();
-  add_b();
+  add_row(Row(_type, _lower, _upper));
 }
 
 void LP::add_row(RowType type, double lower, double upper, DVector row) {
@@ -39,6 +37,19 @@ void LP::add_row(RowType type, double lower, double upper, DVector row) {
   for (size_t col_index = 0; col_index < row.dimension(); col_index++) {
     add_value(row_index, col_index, row[col_index]);
   }
+}
+
+void LP::add_row(Row row) {
+  rows.push_back(row);
+  A.add_row();
+  b.resize(rows.size());
+  set_b(rows.size() - 1);
+}
+
+void LP::update_row_header(size_t ind, RowType type, double lower,
+                           double upper) {
+  rows[ind] = Row(type, lower, upper);
+  set_b(ind);
 }
 
 size_t LP::column_count() const { return cols.size(); }
@@ -59,17 +70,17 @@ double LP::get_value(size_t row, size_t column) const {
   return A.get_value(row, column);
 }
 
-void LP::add_b() {
-  const Row &row = rows.back();
+void LP::set_b(size_t ind) {
+  const Row &row = rows[ind];
   switch (row.type) {
   case RowType::GE:
-    b.append(row.lower);
+    b[ind] = row.lower;
     break;
   case RowType::NonBinding:
-    b.append(0.0);
+    b[ind] = 0.0;
     break;
   default:
-    b.append(row.upper);
+    b[ind] = row.upper;
   }
 }
 
@@ -89,7 +100,8 @@ void LP::add_logicals() {
 
     switch (rows[i].type) {
     case RowType::Equality:
-      assert(is_finite(rows[i].upper));
+      assert(
+          is_finite(rows[i].upper)); // TODO Move to general is_consistent func
       assert(is_finite(rows[i].lower));
       assert(is_eq(rows[i].upper, rows[i].lower));
       add_logical_column(ColType::Fixed, 0.0, 0.0);
@@ -117,9 +129,19 @@ void LP::add_logicals() {
   }
 }
 
+LP::Column &LP::column_header(size_t column) {
+  assert(column < cols.size());
+  return cols[column];
+}
+
 const LP::Column &LP::column_header(size_t column) const {
   assert(column < cols.size());
   return cols[column];
+}
+
+const LP::Row &LP::row_header(size_t row) const {
+  assert(row < rows.size());
+  return rows[row];
 }
 
 bool LP::is_feasible(const DVector &x) const {

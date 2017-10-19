@@ -70,6 +70,6 @@ void ColMatrix::add_column(const SVector &v) {
 }
 
 double ColMatrix::get_value(size_t row, size_t column) const {
-  assert(row < m && column < n);
+  assert(column < n && row < m);
   return cols[column].get_value(row);
 }
