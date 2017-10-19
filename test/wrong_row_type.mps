@@ -1,0 +1,8 @@
+NAME          WRONGROWTYPE
+ROWS
+ Q  R01
+COLUMNS
+    X01       R01       1.0
+RHS
+  RHSNAME     R01       2.0
+ENDATA
