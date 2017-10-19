@@ -40,6 +40,7 @@ private:
                              size_t candidate_index,
                              std::vector<size_t> &basic_indices,
                              double candidate_cost) const;
+  static constexpr int max_rounds = 999;
 };
 
 #endif

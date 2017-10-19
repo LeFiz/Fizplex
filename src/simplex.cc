@@ -52,7 +52,7 @@ void Simplex::solve() {
     c = lp.c;
   }
 
-  for (int round = 0; round < 10; round++) {
+  for (int round = 0; round < max_rounds; round++) {
     // Set up base + inverse
     ColMatrix m(row_count, 0);
     for (const auto i : basic_indices)
@@ -71,7 +71,7 @@ void Simplex::solve() {
       for (auto i : non_basic_indices)
         c[i] = 0.0;
       for (size_t i = 0; i < basic_indices.size(); i++) {
-        auto column_header = lp.column_header(basic_indices[i]);
+        const auto column_header = lp.column_header(basic_indices[i]);
         if (is_finite(column_header.lower) &&
             is_lower(beta[i], column_header.lower)) {
           c[basic_indices[i]] = -1.0;
