@@ -91,9 +91,7 @@ void Simplex::solve() {
       d[non_basic_indices[i]] =
           c[non_basic_indices[i]] - pi * lp.A.column(non_basic_indices[i]);
 
-    for (size_t i = 0; i < basic_indices.size(); i++)
-      x[basic_indices[i]] = beta[i];
-    z = lp.c * x;
+    z = c * x;
 
     auto pr = price(d, non_basic_indices);
 
