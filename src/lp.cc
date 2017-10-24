@@ -1,5 +1,6 @@
 #include "lp.h"
 #include <cassert>
+#include <unordered_map>
 
 LP::LP() : A(), b(), c(), cols(), rows() {}
 
@@ -163,4 +164,15 @@ bool LP::is_feasible(const DVector &x) const {
     }
   }
   return true;
+}
+
+std::ostream &operator<<(std::ostream &os, const LP::Column &c) {
+  static std::unordered_map<ColType, std::string> ctos = {
+      {ColType::Fixed, "Fixed"},
+      {ColType::Bounded, "Bounded"},
+      {ColType::LowerBound, "LowerBound"},
+      {ColType::Free, "Free"},
+      {ColType::UpperBound, "UpperBound"}};
+  os << ctos[c.type] << ": " << c.lower << " <= x <= " << c.upper;
+  return os;
 }

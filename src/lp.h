@@ -61,4 +61,6 @@ private:
                   bool is_logical);
 };
 
+std::ostream &operator<<(std::ostream &os, const LP::Column &);
+
 #endif
