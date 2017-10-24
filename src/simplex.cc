@@ -47,15 +47,11 @@ void Simplex::solve() {
   DVector c(col_count);
 
   set_initial_x();
-  if (lp.is_feasible(x)) {
-    phase = Simplex::Phase::Two;
-    c = lp.c;
-  }
 
   for (int round = 0; round < max_rounds; round++) {
     // Set up base + inverse
     ColMatrix m(row_count, 0);
-    for (const auto i : basic_indices)
+    for (auto i : basic_indices)
       m.add_column(lp.A.column(i));
     Base base(m);
     base.invert();
