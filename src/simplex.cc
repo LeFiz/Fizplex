@@ -118,15 +118,19 @@ void Simplex::solve() {
       base.ftran(alpha);
 
       // Ratio test
-      auto rt = ratio_test(alpha, beta, pr.candidate_index, basic_indices,
-                           d[pr.candidate_index]);
+      const auto rt = ratio_test(alpha, beta, pr.candidate_index, basic_indices,
+                                 d[pr.candidate_index]);
 
       switch (rt.result) {
       case IterationResult::BaseChange: {
         x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
-        size_t candidate_non_basic_index =
-            *std::find(non_basic_indices.begin(), non_basic_indices.end(),
-                       pr.candidate_index);
+        const auto it = std::find(non_basic_indices.begin(),
+                                  non_basic_indices.end(), pr.candidate_index);
+
+        assert(it != non_basic_indices.end());
+        const size_t candidate_non_basic_index =
+            std::distance(non_basic_indices.begin(), it);
+
         std::swap<size_t>(non_basic_indices[candidate_non_basic_index],
                           basic_indices[rt.leaving_index]);
         break;
@@ -156,10 +160,12 @@ Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
   for (auto j : non_basic_indices) {
     if (lp.column_header(j).type == ColType::Fixed)
       continue; // Fixed vars should not enter the basis
+
     double sign = 1.0;
     if ((is_eq(x[j], lp.column_header(j).upper)) ||
         (lp.column_header(j).type == ColType::Free && is_ge(d[j], 0.0)))
       sign = -1.0;
+
     if (sign * d[j] < min_val) {
       min_val = sign * d[j];
       min_posi = j;
