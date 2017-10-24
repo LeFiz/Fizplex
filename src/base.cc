@@ -144,7 +144,7 @@ void Base::btran(DVector &vec) const {
   // Reorder vec according to base column swaps
   DVector w(m);
   for (size_t i = 0; i < m; i++)
-    w[rowOrdering[i]] = vec[i];
+    w[i] = vec[rowOrdering[i]];
   vec = w;
 }
 

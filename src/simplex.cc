@@ -86,15 +86,14 @@ void Simplex::solve() {
       }
     }
 
+    z = c * x;
+
     // Price
     for (size_t i = 0; i < row_count; i++)
-      pi[i] = c[basic_indices[i]];
+      pi[i] = c[basic_indices[i]]; // ==c_B
     base.btran(pi);
-    for (size_t i = 0; i < non_basic_indices.size(); i++)
-      d[non_basic_indices[i]] =
-          c[non_basic_indices[i]] - pi * lp.A.column(non_basic_indices[i]);
-
-    z = c * x;
+    for (size_t i = 0; i < col_count; i++)
+      d[i] = c[i] - pi * lp.A.column(i);
 
     auto pr = price(d, non_basic_indices);
 
