@@ -65,6 +65,9 @@ void Simplex::solve() {
     for (size_t i = 0; i < basic_indices.size(); i++)
       x[basic_indices[i]] = beta[i];
 
+    if (phase == Phase::Two)
+      assert(lp.is_feasible(x));
+
     // Set c for phase I
     if (phase == Simplex::Phase::One) {
       for (auto i : non_basic_indices)
