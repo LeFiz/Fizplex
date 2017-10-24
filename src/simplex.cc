@@ -62,6 +62,9 @@ void Simplex::solve() {
       beta -= x[i] * lp.A.column(i);
     base.ftran(beta);
 
+    for (size_t i = 0; i < basic_indices.size(); i++)
+      x[basic_indices[i]] = beta[i];
+
     // Set c for phase I
     if (phase == Simplex::Phase::One) {
       for (auto i : non_basic_indices)
