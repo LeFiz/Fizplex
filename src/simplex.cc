@@ -41,7 +41,7 @@ void Simplex::solve() {
 
   // Set up vectors
   DVector beta(row_count);
-  DVector pi(col_count);
+  DVector pi(row_count);
   DVector d(col_count);
   SVector alpha;
   DVector c(col_count);
