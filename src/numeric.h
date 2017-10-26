@@ -10,6 +10,24 @@ const double eps = 1e-6;
 const double inf = std::numeric_limits<double>::infinity();
 
 inline bool is_eq(double lhs, double rhs) { return fabs(lhs - rhs) <= eps; }
+inline bool is_eq_norm(double lhs, double rhs) {
+  const auto diff = fabs(lhs - rhs);
+  if (diff <= 1e-7)
+    return true;
+  const auto l = fabs(lhs);
+  const auto r = fabs(rhs);
+  const auto larger = l > r ? l : r;
+  if (diff <= 1e-6 * larger)
+    return true;
+  return false;
+}
+
+inline bool is_lower_norm(double lhs, double rhs) {
+  return (lhs < rhs) && !is_eq_norm(lhs, rhs);
+}
+inline bool is_greater_norm(double lhs, double rhs) {
+  return (lhs > rhs) && !is_eq_norm(lhs, rhs);
+}
 
 inline bool is_zero(double val) { return fabs(val) <= eps; }
 inline bool is_ge(double lhs, double rhs) { return (lhs + eps) >= rhs; }
