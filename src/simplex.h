@@ -15,14 +15,22 @@ public:
   const Result &get_result() const;
 
 private:
+  enum class Phase { One, Two };
   struct PricingResult {
     bool is_optimal;
     size_t candidate_index;
   };
-  enum class IterationResult { Unbounded, BoundFlip, BaseChange };
-  enum class Phase { One, Two };
+  enum class IterationDecision {
+    Unbounded,
+    BoundFlip,
+    BaseChange,
+    OptimalSolution,
+    SwitchToPhaseTwo,
+    Infeasible,
+    Unfinished
+  };
   struct RatioTestResult {
-    IterationResult result;
+    IterationDecision result;
     size_t leaving_index;
     double step_length;
     double leaving_bound;
@@ -34,6 +42,7 @@ private:
   Phase phase = Phase::One;
 
   void set_initial_x();
+  void print_iteration_results(IterationDecision &, int) const;
   PricingResult price(DVector &pi,
                       std::vector<size_t> &non_basic_indices) const;
   RatioTestResult ratio_test(SVector &alpha, DVector &beta,
@@ -41,6 +50,10 @@ private:
                              std::vector<size_t> &basic_indices,
                              double candidate_cost) const;
   static constexpr int max_rounds = 999;
+
+  friend std::ostream &operator<<(std::ostream &, const Simplex::Phase &);
+  friend std::ostream &operator<<(std::ostream &,
+                                  const Simplex::IterationDecision &);
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include "base.h"
 #include <algorithm>
 #include <iostream>
+#include <unordered_map>
 
 Simplex::Simplex(LP &_lp) : lp(_lp) {}
 
@@ -231,4 +232,27 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
     rt.leaving_index = min_theta_posi;
   }
   return rt;
+}
+
+void Simplex::print_iteration_results(IterationDecision &id, int round) const {
+  std::cout << round << " | " << phase << " | " << id << " | " << z << "\n";
+}
+
+std::ostream &operator<<(std::ostream &os, const Simplex::Phase &p) {
+  os << (p == Simplex::Phase::One ? "One" : "Two");
+  return os;
+}
+
+std::ostream &operator<<(std::ostream &os,
+                         const Simplex::IterationDecision &id) {
+  static std::unordered_map<Simplex::IterationDecision, std::string> idtos = {
+      {Simplex::IterationDecision::Unbounded, "Unbounded"},
+      {Simplex::IterationDecision::BoundFlip, "BoundFlip"},
+      {Simplex::IterationDecision::BaseChange, "BaseChange"},
+      {Simplex::IterationDecision::OptimalSolution, "OptimalSolution"},
+      {Simplex::IterationDecision::SwitchToPhaseTwo, "SwitchToPhaseTwo"},
+      {Simplex::IterationDecision::Infeasible, "Infeasible"},
+      {Simplex::IterationDecision::Unfinished, "Unfinished"}};
+  os << idtos[id];
+  return os;
 }
