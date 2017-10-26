@@ -76,10 +76,10 @@ void Simplex::solve() {
       for (size_t i = 0; i < basic_indices.size(); i++) {
         const auto column_header = lp.column_header(basic_indices[i]);
         if (is_finite(column_header.lower) &&
-            is_lower(beta[i], column_header.lower)) {
+            is_lower_norm(beta[i], column_header.lower)) {
           c[basic_indices[i]] = -1.0;
         } else if (is_finite(column_header.upper) &&
-                   is_greater(beta[i], column_header.upper)) {
+                   is_greater_norm(beta[i], column_header.upper)) {
           c[basic_indices[i]] = 1.0;
         } else {
           c[basic_indices[i]] = 0.0;
@@ -98,57 +98,66 @@ void Simplex::solve() {
 
     auto pr = price(d, non_basic_indices);
 
+    IterationDecision iteration_decision = IterationDecision::Unfinished;
+
     if (pr.is_optimal) {
       if (phase == Simplex::Phase::Two) {
-        result = Result::OptimalSolution;
-        return;
+        assert(lp.is_feasible(x));
+        iteration_decision = IterationDecision::OptimalSolution;
       } else { // Phase I
         if (lp.is_feasible(x)) {
-          phase = Simplex::Phase::Two;
-          c = lp.c;
-          continue;
-        } else {
-          result = Result::Infeasible;
-          return;
-        }
+          iteration_decision = IterationDecision::SwitchToPhaseTwo;
+        } else
+          iteration_decision = IterationDecision::Infeasible;
       }
-    } else {
-      // Transform column vector of improving candidate
-      alpha = lp.A.column(pr.candidate_index);
-      base.ftran(alpha);
+    }
+    // Transform column vector of improving candidate
+    alpha = lp.A.column(pr.candidate_index);
+    base.ftran(alpha);
 
-      // Ratio test
-      const auto rt = ratio_test(alpha, beta, pr.candidate_index, basic_indices,
-                                 d[pr.candidate_index]);
+    // Ratio test
+    const auto rt = ratio_test(alpha, beta, pr.candidate_index, basic_indices,
+                               d[pr.candidate_index]);
+    if (iteration_decision == IterationDecision::Unfinished)
+      iteration_decision = rt.result;
 
-      switch (rt.result) {
-      case IterationResult::BaseChange: {
-        x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
-        const auto it = std::find(non_basic_indices.begin(),
-                                  non_basic_indices.end(), pr.candidate_index);
+    switch (iteration_decision) {
+    case IterationDecision::BaseChange: {
+      x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
+      const auto it = std::find(non_basic_indices.begin(),
+                                non_basic_indices.end(), pr.candidate_index);
 
-        assert(it != non_basic_indices.end());
-        const size_t candidate_non_basic_index =
-            std::distance(non_basic_indices.begin(), it);
+      assert(it != non_basic_indices.end());
+      const size_t candidate_non_basic_index =
+          std::distance(non_basic_indices.begin(), it);
 
-        std::swap<size_t>(non_basic_indices[candidate_non_basic_index],
-                          basic_indices[rt.leaving_index]);
-        break;
-      }
-      case IterationResult::Unbounded:
-        assert(phase != Simplex::Phase::One);
+      std::swap<size_t>(non_basic_indices[candidate_non_basic_index],
+                        basic_indices[rt.leaving_index]);
+      break;
+    }
+    case IterationDecision::Unbounded:
+      assert(phase != Simplex::Phase::One);
 
-        result = Result::Unbounded;
-        x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
-        x[pr.candidate_index] = rt.step_length;
-        z = -inf;
-        return;
-      case IterationResult::BoundFlip:
-        x[pr.candidate_index] += rt.step_length;
-        break;
-      default:
-        assert(false);
-      }
+      result = Result::Unbounded;
+      x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
+      x[pr.candidate_index] = rt.step_length;
+      z = -inf;
+      return;
+    case IterationDecision::BoundFlip:
+      x[pr.candidate_index] += rt.step_length;
+      break;
+    case IterationDecision::OptimalSolution:
+      result = Result::OptimalSolution;
+      return;
+    case IterationDecision::SwitchToPhaseTwo:
+      phase = Simplex::Phase::Two;
+      c = lp.c;
+      continue;
+    case IterationDecision::Infeasible:
+      result = Result::Infeasible;
+      return;
+    default:
+      assert(false);
     }
   }
 }
@@ -162,7 +171,8 @@ Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
       continue; // Fixed vars should not enter the basis
 
     double sign = 1.0;
-    if ((is_eq(x[j], lp.column_header(j).upper)) ||
+    if ((is_finite(lp.column_header(j).upper) &&
+         is_eq_norm(x[j], lp.column_header(j).upper)) ||
         (lp.column_header(j).type == ColType::Free && is_ge(d[j], 0.0)))
       sign = -1.0;
 
@@ -201,7 +211,7 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
     }
 
     a = n.value * direction;
-    if (is_le(a, 0.0)) {
+    if (is_lower(a, 0.0)) {
       bound = column_header.upper; // = inf for ColType = Lower
     } else {
       bound = column_header.lower; // = -inf for ColType = upper
@@ -211,7 +221,9 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
       min_theta = t;
       min_theta_posi = n.index;
       leaving_bound = bound;
-      assert(is_ge(min_theta, 0.0));
+      if (phase == Phase::Two) // not necessarily in phase I, as x < 0 for x >=
+                               // 0 is possible
+        assert(is_ge(min_theta, 0.0));
     }
   }
 
@@ -223,12 +235,13 @@ Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
   rt.step_length = direction * min_theta; // make signed again
   rt.leaving_bound = leaving_bound;
   if (is_infinite(min_theta)) {
-    rt.result = IterationResult::Unbounded;
+    rt.result = IterationDecision::Unbounded;
     rt.leaving_index = min_theta_posi;
-  } else if (is_eq(min_theta, max_steplength)) {
-    rt.result = IterationResult::BoundFlip;
+  } else if (is_finite(max_steplength) &&
+             is_eq_norm(min_theta, max_steplength)) {
+    rt.result = IterationDecision::BoundFlip;
   } else {
-    rt.result = IterationResult::BaseChange;
+    rt.result = IterationDecision::BaseChange;
     rt.leaving_index = min_theta_posi;
   }
   return rt;
