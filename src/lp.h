@@ -47,6 +47,7 @@ public:
   double get_obj_value(size_t ind) const;
 
   bool is_feasible(const DVector &vec) const;
+  void print_infeasibilities(const DVector &) const;
   ColMatrix A;
   DVector b;
   DVector c;
