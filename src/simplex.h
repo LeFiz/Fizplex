@@ -6,6 +6,10 @@
 class Simplex {
 public:
   enum class Result { Infeasible, OptimalSolution, Unbounded, Unsolved };
+  struct PricingResult {
+    bool is_optimal;
+    size_t candidate_index;
+  };
 
   explicit Simplex(LP &_lp);
   void solve();
@@ -16,10 +20,6 @@ public:
 
 private:
   enum class Phase { One, Two };
-  struct PricingResult {
-    bool is_optimal;
-    size_t candidate_index;
-  };
   enum class IterationDecision {
     Unbounded,
     BoundFlip,
@@ -43,8 +43,6 @@ private:
 
   void set_initial_x();
   void print_iteration_results(IterationDecision &, int) const;
-  PricingResult price(DVector &pi,
-                      std::vector<size_t> &non_basic_indices) const;
   RatioTestResult ratio_test(SVector &alpha, DVector &beta,
                              size_t candidate_index,
                              std::vector<size_t> &basic_indices,

@@ -1,5 +1,6 @@
 #include "simplex.h"
 #include "base.h"
+#include "pricer.h"
 #include <algorithm>
 #include <iostream>
 #include <unordered_map>
@@ -67,7 +68,8 @@ void Simplex::solve() {
       x[basic_indices[i]] = beta[i];
 
     if (phase == Phase::Two)
-      assert(lp.is_feasible(x));
+      lp.print_infeasibilities(x);
+    //  assert(lp.is_feasible(x));
 
     // Set c for phase I
     if (phase == Simplex::Phase::One) {
@@ -96,7 +98,8 @@ void Simplex::solve() {
     for (size_t i = 0; i < col_count; i++)
       d[i] = c[i] - pi * lp.A.column(i);
 
-    auto pr = price(d, non_basic_indices);
+    Pricer pricer;
+    auto pr = pricer.price(x, lp, d, non_basic_indices);
 
     IterationDecision iteration_decision = IterationDecision::Unfinished;
 
@@ -120,6 +123,8 @@ void Simplex::solve() {
                                d[pr.candidate_index]);
     if (iteration_decision == IterationDecision::Unfinished)
       iteration_decision = rt.result;
+
+    print_iteration_results(iteration_decision, round);
 
     switch (iteration_decision) {
     case IterationDecision::BaseChange: {
@@ -160,31 +165,6 @@ void Simplex::solve() {
       assert(false);
     }
   }
-}
-
-Simplex::PricingResult
-Simplex::price(DVector &d, std::vector<size_t> &non_basic_indices) const {
-  double min_val = 0.0;
-  size_t min_posi = 0;
-  for (auto j : non_basic_indices) {
-    if (lp.column_header(j).type == ColType::Fixed)
-      continue; // Fixed vars should not enter the basis
-
-    double sign = 1.0;
-    if ((is_finite(lp.column_header(j).upper) &&
-         is_eq_norm(x[j], lp.column_header(j).upper)) ||
-        (lp.column_header(j).type == ColType::Free && is_ge(d[j], 0.0)))
-      sign = -1.0;
-
-    if (sign * d[j] < min_val) {
-      min_val = sign * d[j];
-      min_posi = j;
-    }
-  }
-  PricingResult pr;
-  pr.is_optimal = is_zero(min_val);
-  pr.candidate_index = min_posi;
-  return pr;
 }
 
 Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
