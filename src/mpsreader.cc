@@ -13,7 +13,7 @@ LP MPSReader::read_lp() {
   while (std::getline(ifs, line)) {
     std::istringstream iss(line);
     const auto first_word = next_word(iss);
-    if (is_indicator(first_word))
+    if (is_indicator(first_word) && current_section != first_word)
       current_section = first_word;
     else { // Data record
       if (current_section == "ROWS") {
