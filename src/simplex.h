@@ -10,16 +10,6 @@ public:
     bool is_optimal;
     size_t candidate_index;
   };
-
-  explicit Simplex(LP &_lp);
-  void solve();
-
-  const DVector &get_x() const;
-  const double &get_z() const;
-  const Result &get_result() const;
-
-private:
-  enum class Phase { One, Two };
   enum class IterationDecision {
     Unbounded,
     BoundFlip,
@@ -35,6 +25,16 @@ private:
     double step_length;
     double leaving_bound;
   };
+
+  explicit Simplex(LP &_lp);
+  void solve();
+
+  const DVector &get_x() const;
+  const double &get_z() const;
+  const Result &get_result() const;
+
+private:
+  enum class Phase { One, Two };
   LP &lp;
   DVector x;
   double z = inf;
@@ -43,10 +43,6 @@ private:
 
   void set_initial_x();
   void print_iteration_results(IterationDecision &, int) const;
-  RatioTestResult ratio_test(SVector &alpha, DVector &beta,
-                             size_t candidate_index,
-                             std::vector<size_t> &basic_indices,
-                             double candidate_cost) const;
   static constexpr int max_rounds = 999;
 
   friend std::ostream &operator<<(std::ostream &, const Simplex::Phase &);

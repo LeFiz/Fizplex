@@ -1,6 +1,7 @@
 #include "simplex.h"
 #include "base.h"
 #include "pricer.h"
+#include "ratio_tester.h"
 #include <algorithm>
 #include <iostream>
 #include <unordered_map>
@@ -119,8 +120,9 @@ void Simplex::solve() {
     base.ftran(alpha);
 
     // Ratio test
-    const auto rt = ratio_test(alpha, beta, pr.candidate_index, basic_indices,
-                               d[pr.candidate_index]);
+    RatioTester r;
+    const auto rt = r.ratio_test(lp, alpha, beta, pr.candidate_index,
+                                 basic_indices, d[pr.candidate_index]);
     if (iteration_decision == IterationDecision::Unfinished)
       iteration_decision = rt.result;
 
@@ -165,66 +167,6 @@ void Simplex::solve() {
       assert(false);
     }
   }
-}
-
-Simplex::RatioTestResult Simplex::ratio_test(SVector &alpha, DVector &beta,
-                                             size_t candidate_index,
-                                             std::vector<size_t> &basic_indices,
-                                             double candidate_cost) const {
-  double min_theta = inf;
-  size_t min_theta_posi = 0;
-  double bound = inf;
-  double leaving_bound = inf;
-  double a = inf;
-  const double direction = is_ge(candidate_cost, 0.0) ? -1.0 : 1.0;
-
-  for (const auto &n : alpha) {
-    if (is_zero(n.value))
-      continue; // alpha_i = 0 can not limit displacement
-
-    const auto &column_header = lp.column_header(basic_indices[n.index]);
-    if (column_header.type == ColType::Fixed) {
-      min_theta = 0; // Fixed variable always means step_length = 0
-      min_theta_posi = n.index;
-      leaving_bound = column_header.lower;
-      break;
-    }
-
-    a = n.value * direction;
-    if (is_lower(a, 0.0)) {
-      bound = column_header.upper; // = inf for ColType = Lower
-    } else {
-      bound = column_header.lower; // = -inf for ColType = upper
-    }
-    double t = (beta[n.index] - bound) / a;
-    if (t < min_theta) {
-      min_theta = t;
-      min_theta_posi = n.index;
-      leaving_bound = bound;
-      if (phase == Phase::Two) // not necessarily in phase I, as x < 0 for x >=
-                               // 0 is possible
-        assert(is_ge(min_theta, 0.0));
-    }
-  }
-
-  const double max_steplength = lp.column_header(candidate_index).upper -
-                                lp.column_header(candidate_index).lower;
-  min_theta = std::min<double>(min_theta, max_steplength);
-
-  RatioTestResult rt;
-  rt.step_length = direction * min_theta; // make signed again
-  rt.leaving_bound = leaving_bound;
-  if (is_infinite(min_theta)) {
-    rt.result = IterationDecision::Unbounded;
-    rt.leaving_index = min_theta_posi;
-  } else if (is_finite(max_steplength) &&
-             is_eq_norm(min_theta, max_steplength)) {
-    rt.result = IterationDecision::BoundFlip;
-  } else {
-    rt.result = IterationDecision::BaseChange;
-    rt.leaving_index = min_theta_posi;
-  }
-  return rt;
 }
 
 void Simplex::print_iteration_results(IterationDecision &id, int round) const {
