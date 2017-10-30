@@ -19,6 +19,11 @@ const SVector &ColMatrix::column(size_t i) const {
   return cols[i];
 }
 
+SVector &ColMatrix::column(size_t i) {
+  assert(i < n);
+  return cols[i];
+}
+
 std::ostream &operator<<(std::ostream &os, ColMatrix const &matrix) {
   for (auto &col : matrix.cols)
     os << col << std::endl;

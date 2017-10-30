@@ -1,4 +1,3 @@
-
 #include "colmatrix.h"
 #include "gtest/gtest.h"
 
