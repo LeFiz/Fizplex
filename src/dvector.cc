@@ -48,6 +48,15 @@ const double &DVector::operator[](size_t i) const {
   return vals[i];
 }
 
+double DVector::max_abs() const {
+  double max_val = 0.0;
+  for (auto val : vals) {
+    if (fabs(val) > max_val)
+      max_val = fabs(val);
+  }
+  return max_val;
+}
+
 double DVector::operator*(const DVector &rhs) const {
   assert(dimension() == rhs.dimension());
   double d = 0;

@@ -18,6 +18,7 @@ public:
   bool operator!=(const DVector &rhs) const;
   double &operator[](size_t i);
   const double &operator[](size_t i) const;
+  double max_abs() const;
 
   double operator*(const DVector &rhs) const;
   double operator*(const SVector &rhs) const;

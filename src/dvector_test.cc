@@ -136,3 +136,9 @@ TEST(DVectorSVectorTest, OperatorCompoundSubtraction) {
   v -= sv;
   EXPECT_TRUE(v == w);
 }
+
+TEST(DVectorTest, MaxAbs) {
+  EXPECT_DOUBLE_EQ(0.0, DVector().max_abs());
+  EXPECT_DOUBLE_EQ(4.4, DVector({3.1, 4.4, -1.3}).max_abs());
+  EXPECT_DOUBLE_EQ(3.1, DVector({-3.1, 3.0}).max_abs());
+}
