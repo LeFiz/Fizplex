@@ -63,3 +63,16 @@ TEST(SVectorTest, ScalaMult) {
   SVector w = {{0, -4}, {1, 6}, {4, 18}};
   EXPECT_TRUE(2.0 * v == w);
 }
+
+TEST(SVectorTest, SubscriptUpdatesExistingValues) {
+  SVector v = {{0, -2.1}, {3, 0.4}};
+  v[0] = 3.0;
+  EXPECT_DOUBLE_EQ(3.0, v[0]);
+}
+
+TEST(SVectorTest, SubscriptAddsNewValues) {
+  SVector v = {{0, -2.1}, {3, 0.4}};
+  v[5] = 3.2;
+  EXPECT_DOUBLE_EQ(3.2, v[5]);
+  EXPECT_DOUBLE_EQ(0.4, v[3]);
+}

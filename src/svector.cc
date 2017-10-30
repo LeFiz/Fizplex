@@ -64,6 +64,15 @@ double SVector::get_value(size_t ind) const {
   return 0.0;
 }
 
+double &SVector::operator[](size_t ind) {
+  for (size_t i = 0; i < values.size(); ++i) {
+    if (values[i].index == ind)
+      return values[i].value;
+  }
+  add_value(ind, 0.0);
+  return values.back().value;
+}
+
 SVector operator*(const double c, const SVector &vec) {
   SVector result = vec;
   for (auto &n : result)
