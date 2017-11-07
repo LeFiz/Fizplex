@@ -24,7 +24,6 @@ void DVector::append(double val) {
   vals[dim - 1] = val;
 }
 
-// cppcheck-suppress passedByValue
 DVector::DVector(std::initializer_list<double> l) : vals(l), dim(l.size()) {}
 
 bool DVector::operator==(const DVector &rhs) const {

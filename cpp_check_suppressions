@@ -1,0 +1,7 @@
+missingInclude
+unusedFunction
+
+noExplicitConstructor:src/dvector.h
+noExplicitConstructor:src/svector.h
+passedByValue:src/dvector.cc:27
+passedByValue:src/svector.cc:7

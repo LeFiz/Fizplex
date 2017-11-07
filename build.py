@@ -6,7 +6,11 @@ print colored("\nClang-Format ...\n", 'blue')
 call('clang-format-4.0 -i src/*.cc src/*.h', shell=True)
 
 print colored("CppCheck ...\n", 'blue')
-call(['cppcheck', '--enable=all', '--inconclusive', '--suppress=missingIncludeSystem', '--inline-suppr', '--template=gcc', '--quiet', 'src'])
+call([  'cppcheck',
+        '--enable=all', '--inconclusive',
+        '--suppressions-list=cpp_check_suppressions',
+        '--quiet', '--template={file}:{line}: {message} [{id}]',
+        'src'])
 
 start=time();
 print colored("Make ...", 'blue')

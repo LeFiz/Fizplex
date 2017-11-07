@@ -4,7 +4,6 @@
 
 SVector::SVector() : values() {}
 
-// cppcheck-suppress passedByValue
 SVector::SVector(std::initializer_list<Nonzero> l) : values(l) {}
 
 void SVector::add_value(size_t ind, double val) {
