@@ -2,14 +2,16 @@
 #include <exception>
 #include <fstream>
 
-MPSReader::MPSReader(std::string mps_file_) : mps_file(mps_file_) {}
+namespace MPSReader {
 
-LP MPSReader::read_lp() {
+LP read_lp(std::string mps_file) {
+  LP lp;
   std::ifstream ifs(mps_file);
   if (!ifs.is_open())
     throw std::runtime_error("Couldn't open file " + mps_file);
   std::string line, current_section;
   index_map rows, vars;
+  std::string obj_name;
   while (std::getline(ifs, line)) {
     std::istringstream iss(line);
     const auto first_word = next_word(iss);
@@ -28,7 +30,7 @@ LP MPSReader::read_lp() {
             throw std::runtime_error("Row name is empty");
         }
       } else if (current_section == "RHS")
-        parse_and_add_rhs(first_word, iss, rows);
+        parse_and_add_rhs(first_word, iss, rows, lp);
       else if (current_section == "COLUMNS") {
         const std::string var_name = first_word;
         if (vars.find(var_name) == vars.end()) {
@@ -49,13 +51,13 @@ LP MPSReader::read_lp() {
   return lp;
 }
 
-std::string MPSReader::next_word(std::istringstream &iss) {
+std::string next_word(std::istringstream &iss) {
   std::string word;
   iss >> word;
   return word;
 }
 
-bool MPSReader::is_indicator(const std::string &word) const {
+bool is_indicator(const std::string &word) {
   for (int i = 0; i < indicator_count; ++i) {
     if (word == indicators[i])
       return true;
@@ -63,7 +65,7 @@ bool MPSReader::is_indicator(const std::string &word) const {
   return false;
 }
 
-LP::Row MPSReader::parse_row_type(const std::string &word) {
+LP::Row parse_row_type(const std::string &word) {
   if (word == "L")
     return (LP::Row(RowType::LE, -inf, 0.0));
   else if (word == "G")
@@ -76,9 +78,8 @@ LP::Row MPSReader::parse_row_type(const std::string &word) {
     throw std::runtime_error("Could not parse \"" + word + "\" as Row type");
 }
 
-void MPSReader::parse_and_add_rhs(const std::string &first_word,
-                                  std::istringstream &iss,
-                                  const index_map &rows) {
+void parse_and_add_rhs(const std::string &first_word, std::istringstream &iss,
+                       const index_map &rows, LP &lp) {
   bool has_rhs_name = (rows.find(first_word) == rows.end());
   while (iss.rdbuf()->in_avail() > 0) {
     const auto row_name = has_rhs_name ? next_word(iss) : first_word;
@@ -101,4 +102,5 @@ void MPSReader::parse_and_add_rhs(const std::string &first_word,
       break;
     }
   }
+}
 }

@@ -3,8 +3,7 @@
 #include "gtest/gtest.h"
 
 TEST(VerificationTest, Afiro) {
-  MPSReader r("./test/afiro.mps");
-  LP lp = r.read_lp();
+  LP lp = MPSReader::read_lp("./test/afiro.mps");
 
   Simplex spx(lp);
   spx.solve();
@@ -12,8 +11,7 @@ TEST(VerificationTest, Afiro) {
 }
 
 TEST(VerificationTest, Sc105) {
-  MPSReader r("./test/sc105.mps");
-  LP lp = r.read_lp();
+  LP lp = MPSReader::read_lp("./test/sc105.mps");
 
   Simplex spx(lp);
   spx.solve();
@@ -21,8 +19,7 @@ TEST(VerificationTest, Sc105) {
 }
 
 TEST(VerificationTest, Blend) {
-  MPSReader r("./test/blend.mps");
-  LP lp = r.read_lp();
+  LP lp = MPSReader::read_lp("./test/blend.mps");
 
   Simplex spx(lp);
   spx.solve();
@@ -30,8 +27,7 @@ TEST(VerificationTest, Blend) {
 }
 
 TEST(ExperimentalVerificationTest, Brandy) {
-  MPSReader r("./test/brandy.mps");
-  LP lp = r.read_lp();
+  LP lp = MPSReader::read_lp("./test/brandy.mps");
 
   Simplex spx(lp);
   spx.solve();
@@ -40,8 +36,7 @@ TEST(ExperimentalVerificationTest, Brandy) {
 }
 
 TEST(ExperimentalVerificationTest, Agg) {
-  MPSReader r("./test/agg.mps");
-  LP lp = r.read_lp();
+  LP lp = MPSReader::read_lp("./test/agg.mps");
 
   Simplex spx(lp);
   spx.solve();
@@ -50,8 +45,7 @@ TEST(ExperimentalVerificationTest, Agg) {
 }
 
 TEST(ExperimentalVerificationTest, Stocfor1) {
-  MPSReader r("./test/stocfor1.mps");
-  LP lp = r.read_lp();
+  LP lp = MPSReader::read_lp("./test/stocfor1.mps");
 
   Simplex spx(lp);
   spx.solve();
