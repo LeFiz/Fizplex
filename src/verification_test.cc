@@ -26,6 +26,14 @@ TEST(VerificationTest, Blend) {
   EXPECT_TRUE(is_eq(-3.0812149846E+01, spx.get_z()));
 }
 
+TEST(VerificationTest, Stocfor1) {
+  LP lp = MPSReader::read_lp("./test/stocfor1.mps");
+
+  Simplex spx(lp);
+  spx.solve();
+  EXPECT_TRUE(is_eq(-4.1131976219E+04, spx.get_z()));
+}
+
 TEST(ExperimentalVerificationTest, Brandy) {
   LP lp = MPSReader::read_lp("./test/brandy.mps");
 
@@ -42,13 +50,4 @@ TEST(ExperimentalVerificationTest, Agg) {
   spx.solve();
   EXPECT_TRUE(is_eq(-3.5991767287E+07, spx.get_z()));
   EXPECT_DOUBLE_EQ(-3.5991767287E+07, spx.get_z());
-}
-
-TEST(ExperimentalVerificationTest, Stocfor1) {
-  LP lp = MPSReader::read_lp("./test/stocfor1.mps");
-
-  Simplex spx(lp);
-  spx.solve();
-  EXPECT_TRUE(is_eq(-4.1131976219E+04, spx.get_z()));
-  EXPECT_DOUBLE_EQ(-4.1131976219E+04, spx.get_z());
 }
