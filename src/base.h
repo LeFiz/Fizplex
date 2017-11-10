@@ -30,10 +30,11 @@ private:
   void updateVecWithETM(ETM &etm, SVector &vec);
   void updateVecWithETM(ETM &etm, DVector &vec);
   void swapBaseColumns(size_t i, size_t j);
+  bool work_vector_is_zero();
 
   std::unique_ptr<size_t[]> rowOrdering;
   std::vector<std::unique_ptr<ETM>> etms;
-  std::unique_ptr<double[]> work;
+  DVector work;
   ColMatrix base;
 
   size_t m;

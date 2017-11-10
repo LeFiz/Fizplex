@@ -10,10 +10,9 @@ void Base::setBase(const ColMatrix &b) {
   etms.clear();
 }
 
-Base::Base(const ColMatrix &b) {
+Base::Base(const ColMatrix &b) : work(b.row_count()) {
   assert(b.row_count() == b.col_count());
   setBase(b);
-  work = std::make_unique<double[]>(m);
 }
 
 void Base::swapBaseColumns(size_t i, size_t j) {
@@ -24,6 +23,7 @@ void Base::swapBaseColumns(size_t i, size_t j) {
 }
 
 bool Base::invert() {
+  assert(work_vector_is_zero());
   etms.clear();
   etms.reserve(m);
   for (size_t i = 0; i < m; i++)
@@ -56,11 +56,18 @@ bool Base::invert() {
       return false;
     updateUnfinishedEtas(i);
   }
+  assert(work_vector_is_zero());
   return true;
 }
 
+bool Base::work_vector_is_zero() {
+  auto sum_func = [](double sum, const double val) {
+    return sum + std::fabs(val);
+  };
+  return !(std::accumulate(work.begin(), work.end(), 0.0, sum_func) > 0.0);
+}
+
 void Base::updateVecWithETM(ETM &etm, SVector &vec) {
-  //  assert(std::accumulate(work.begin(), work.end(), 0) == 0); // quite slow
 
   double mult = 0.0;
   bool found = false;
@@ -69,13 +76,15 @@ void Base::updateVecWithETM(ETM &etm, SVector &vec) {
     if (v.index == etm.col) {
       found = true;
       mult = v.value;
-      v.value = 0; // otherwise v_col = v_col + v_col * mult; should be v_col =
-                   // v_col * mult
+      v.value =
+          0.0; // otherwise v_col = v_col + v_col * mult; should be v_col =
+               // v_col * mult
     }
   }
   if (found) { // if !found: v^i_finishedETM is zero, no update required
     for (auto &entry : etm.eta)
-      work[entry.index] = entry.value;
+      if (!is_zero(entry.value))
+        work[entry.index] = entry.value;
     for (auto &e : vec) {
       if (!is_zero(work[e.index])) {
         e.value += work[e.index] * mult;
@@ -89,14 +98,10 @@ void Base::updateVecWithETM(ETM &etm, SVector &vec) {
       }
     }
   }
-
-  // assert(std::accumulate(work.begin(), work.end(), 0) == 0);
 }
 
 void Base::updateVecWithETM(ETM &etm, DVector &vec) {
-  //  assert(std::accumulate(work.begin(), work.end(), 0) == 0); // quite slow
   assert(vec.dimension() == m);
-
   double mult = vec[etm.col];
   if (is_zero(mult)) // all updates would be += 0
     return;
@@ -104,8 +109,6 @@ void Base::updateVecWithETM(ETM &etm, DVector &vec) {
 
   for (auto &entry : etm.eta)
     vec[entry.index] += entry.value * mult;
-
-  // assert(std::accumulate(work.begin(), work.end(), 0) == 0);
 }
 
 void Base::ftran(SVector &vec) {

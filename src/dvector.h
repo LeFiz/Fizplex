@@ -19,6 +19,9 @@ public:
   const double &operator[](size_t i) const;
   double max_abs() const;
 
+  auto begin() { return std::begin(vals); }
+  auto end() { return std::end(vals); }
+
   double operator*(const DVector &rhs) const;
   double operator*(const SVector &rhs) const;
   DVector &operator-=(const DVector &rhs);
