@@ -116,12 +116,11 @@ void Base::ftran(DVector &vec) {
 
 void Base::btran(DVector &vec) const {
   const size_t num = etms.size();
-  for (size_t i = 0; i < num; i++) {
+  for (size_t i = num; i-- > 0;) {
     double d = 0.0;
-    for (auto it = etms[num - i - 1].eta.cbegin();
-         it != etms[num - i - 1].eta.cend(); ++it)
+    for (auto it = etms[i].eta.cbegin(); it != etms[i].eta.cend(); ++it)
       d += it->value * vec[row_ordering[it->index]];
-    vec[row_ordering[etms[num - i - 1].col]] = d;
+    vec[row_ordering[etms[i].col]] = d;
   }
 
   // Reorder vec according to base column swaps
