@@ -47,11 +47,11 @@ bool Base::invert() {
   return true;
 }
 
-bool Base::work_vector_is_zero() {
-  auto sum_func = [](double sum, const double val) {
+bool Base::work_vector_is_zero() const {
+  static const auto sum_func = [](const double sum, const double val) {
     return sum + std::fabs(val);
   };
-  return !(std::accumulate(work.begin(), work.end(), 0.0, sum_func) > 0.0);
+  return !(std::accumulate(work.cbegin(), work.cend(), 0, sum_func) > 0.0);
 }
 
 void Base::updateVecWithETM(ETM &etm, SVector &vec) {

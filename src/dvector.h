@@ -21,6 +21,8 @@ public:
 
   auto begin() { return std::begin(vals); }
   auto end() { return std::end(vals); }
+  auto cbegin() const { return std::cbegin(vals); }
+  auto cend() const { return std::cend(vals); }
 
   double operator*(const DVector &rhs) const;
   double operator*(const SVector &rhs) const;
