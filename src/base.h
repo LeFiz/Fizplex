@@ -24,14 +24,13 @@ private:
     ETM(const SVector &e, size_t c) : eta(e), col(c){};
   };
 
-  void updateUnfinishedEtas(size_t i);
-  void updateVecWithETM(ETM &etm, SVector &vec);
-  void updateVecWithETM(ETM &etm, DVector &vec);
-  void swapBaseColumns(size_t i, size_t j);
+  void apply_etm(ETM &etm, SVector &vec);
+  void apply_etm(ETM &etm, DVector &vec);
+  void swap_columns(size_t i, size_t j);
   bool work_vector_is_zero() const;
 
-  std::unique_ptr<size_t[]> rowOrdering;
-  std::vector<std::unique_ptr<ETM>> etms;
+  std::unique_ptr<size_t[]> row_ordering;
+  std::vector<ETM> etms;
   DVector work;
 
   size_t m;
