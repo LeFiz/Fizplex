@@ -1,33 +1,22 @@
 #include "base.h"
 
-void Base::setBase(const ColMatrix &b) {
+Base::Base(const ColMatrix &b) : work(b.row_count()), m(b.row_count()) {
   assert(b.row_count() == b.col_count());
-  base = b;
-  m = b.row_count();
+  for (size_t i = 0; i < m; i++)
+    etms.push_back(std::make_unique<ETM>(b.column(i), i));
   rowOrdering = std::make_unique<size_t[]>(m);
   for (size_t i = 0; i < m; i++)
     rowOrdering[i] = i;
-  etms.clear();
-}
-
-Base::Base(const ColMatrix &b) : work(b.row_count()) {
-  assert(b.row_count() == b.col_count());
-  setBase(b);
 }
 
 void Base::swapBaseColumns(size_t i, size_t j) {
   assert(i < m && j < m);
   etms[i].swap(etms[j]);
-  base.swap_columns(i, j);
   std::swap<size_t>(rowOrdering[i], rowOrdering[j]);
 }
 
 bool Base::invert() {
   assert(work_vector_is_zero());
-  etms.clear();
-  etms.reserve(m);
-  for (size_t i = 0; i < m; i++)
-    etms.push_back(std::make_unique<ETM>(base.column(i), i));
   double mult;
   for (size_t i = 0; i < m; i++) { // Update all columns
     auto found = false;
@@ -124,8 +113,9 @@ void Base::ftran(SVector &vec) {
 }
 
 void Base::ftran(DVector &vec) {
-  for (auto &etm : etms)
+  for (auto &etm : etms) {
     updateVecWithETM(*etm, vec);
+  }
 
   // Reorder vec according to base column swaps
   DVector w(m);
@@ -156,5 +146,3 @@ void Base::updateUnfinishedEtas(size_t finishedETM) {
   for (auto i = finishedETM + 1; i < etms.size(); i++)
     updateVecWithETM(*etms[finishedETM], etms[i]->eta);
 }
-
-const ColMatrix &Base::get_base() const { return base; }

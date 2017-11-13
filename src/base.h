@@ -11,7 +11,6 @@ class Base {
 public:
   Base() = delete;
   explicit Base(const ColMatrix &);
-  void setBase(const ColMatrix &);
   bool invert();
   void ftran(SVector &vec);
   void ftran(DVector &vec);
@@ -35,7 +34,6 @@ private:
   std::unique_ptr<size_t[]> rowOrdering;
   std::vector<std::unique_ptr<ETM>> etms;
   DVector work;
-  ColMatrix base;
 
   size_t m;
 };
