@@ -19,12 +19,10 @@ bool Base::invert() {
   assert(work_vector_is_zero());
   double mult;
   for (size_t i = 0; i < m; i++) { // Update all columns
-    auto found = false;
+    bool found = false;
     for (size_t j = i; j < m; j++) { // Find non-zero column
       for (auto &n : etms[j]->eta) { // Find right index
-        if (n.index == i) {
-          if (is_zero(n.value))
-            break;
+        if (n.index == i and not is_zero(n.value)) {
           found = true;
           mult = -n.value;
           n.value = -1.0;
@@ -34,20 +32,18 @@ bool Base::invert() {
       if (found) {
         for (auto &n : etms[j]->eta)
           n.value /= mult;
-        etms[j]->col = i;
-        if (i != j) {
+        if (i != j)
           swapBaseColumns(i, j);
-        }
+        etms[i]->col = i;
         break;
       }
     }
     if (!found)
       return false;
-    updateUnfinishedEtas(i);
+    else
+      updateUnfinishedEtas(i);
   }
   assert(work_vector_is_zero());
-  //  for (auto &e : etms)
-  //    std::cout << "Etm col " << e->col << "\n" << e->eta << "\n";
   return true;
 }
 
@@ -94,8 +90,6 @@ void Base::updateVecWithETM(ETM &etm, SVector &vec) {
 void Base::updateVecWithETM(ETM &etm, DVector &vec) {
   assert(vec.dimension() == m);
   double mult = vec[etm.col];
-  if (is_zero(mult)) // all updates would be += 0
-    return;
   vec[etm.col] = 0.0; // special case for pivot
 
   for (auto &entry : etm.eta)
@@ -103,21 +97,17 @@ void Base::updateVecWithETM(ETM &etm, DVector &vec) {
 }
 
 void Base::ftran(SVector &vec) {
-  for (auto &etm : etms) {
+  for (const auto &etm : etms)
     updateVecWithETM(*etm, vec);
-  }
 
   // Reorder vec according to base column swaps
-  SVector w;
   for (auto &entry : vec)
-    w.add_value(rowOrdering[entry.index], entry.value);
-  vec = w;
+    entry.index = rowOrdering[entry.index];
 }
 
 void Base::ftran(DVector &vec) {
-  for (auto &etm : etms) {
+  for (auto &etm : etms)
     updateVecWithETM(*etm, vec);
-  }
 
   // Reorder vec according to base column swaps
   DVector w(m);
