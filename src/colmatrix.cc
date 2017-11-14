@@ -78,3 +78,10 @@ double ColMatrix::get_value(size_t row, size_t column) const {
   assert(column < n && row < m);
   return cols[column].get_value(row);
 }
+
+ColMatrix ColMatrix::identity(size_t dim) {
+  ColMatrix m(dim, dim);
+  for (size_t i = 0; i < dim; ++i)
+    m.add_value(i, i, 1.0);
+  return m;
+}

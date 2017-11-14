@@ -26,6 +26,8 @@ public:
   bool operator==(const ColMatrix &rhs) const;
   bool operator!=(const ColMatrix &rhs) const;
 
+  static ColMatrix identity(size_t);
+
   friend std::ostream &operator<<(std::ostream &os, ColMatrix const &matrix);
 
 private:

@@ -82,3 +82,8 @@ TEST(ColMatrix, SwapColumns) {
   EXPECT_EQ(v2, m.column(0));
   EXPECT_EQ(v0, m.column(2));
 }
+
+TEST(ColMatrix, IdentityMatrix) {
+  auto m = ColMatrix::identity(3);
+  EXPECT_EQ(SVector({{1, 1.0}}), m.column(1));
+}
