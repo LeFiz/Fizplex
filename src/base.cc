@@ -66,10 +66,9 @@ void Base::apply_etm(ETM &etm, SVector &vec) {
                // v_col * mult
     }
   }
-  if (found) { // if !found: v^i_finishedETM is zero, no update required
+  if (found) {
     for (auto &entry : etm.eta)
-      if (entry.value > 0.0 or entry.value < 0.0)
-        work[entry.index] = entry.value;
+      work[entry.index] = entry.value;
     for (auto &e : vec) {
       if (work[e.index] > 0.0 or work[e.index] < 0.0) {
         e.value += work[e.index] * mult;
