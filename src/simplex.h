@@ -43,7 +43,7 @@ private:
 
   void set_initial_x();
   void print_iteration_results(IterationDecision &, int) const;
-  static constexpr int max_rounds = 999;
+  static constexpr int max_rounds = 500;
 
   friend std::ostream &operator<<(std::ostream &, const Simplex::Phase &);
   friend std::ostream &operator<<(std::ostream &,

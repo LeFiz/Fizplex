@@ -51,3 +51,12 @@ TEST(ExperimentalVerificationTest, Agg) {
   EXPECT_TRUE(is_eq(-3.5991767287E+07, spx.get_z()));
   EXPECT_DOUBLE_EQ(-3.5991767287E+07, spx.get_z());
 }
+
+TEST(ExperimentalVerificationTest, Israel) {
+  LP lp = MPSReader::read_lp("./test/israel.mps");
+
+  Simplex spx(lp);
+  spx.solve();
+  EXPECT_TRUE(is_eq(-8.9664482186E+05, spx.get_z()));
+  EXPECT_DOUBLE_EQ(-8.9664482186E+05, spx.get_z());
+}

@@ -126,7 +126,7 @@ void Simplex::solve() {
     if (iteration_decision == IterationDecision::Unfinished)
       iteration_decision = rt.result;
 
-    // print_iteration_results(iteration_decision, round);
+    print_iteration_results(iteration_decision, round);
 
     switch (iteration_decision) {
     case IterationDecision::BaseChange: {
