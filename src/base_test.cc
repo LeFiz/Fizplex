@@ -51,6 +51,22 @@ TEST_F(BaseTestRegularNoReordering, ForwardTransformDVector) {
   EXPECT_EQ(DVector({-5, 7, 21}), dv2);
 }
 
+TEST(BaseDiagonalMatrixTest, ExplicitInverse) {
+  const ColMatrix m(2, 2, {{{0, 2.0}}, {{1, 3.0}}});
+  const ColMatrix m_minus_one(2, 2, {{{0, 0.5}}, {{1, 1.0 / 3.0}}});
+  Base b(m);
+  b.invert();
+  EXPECT_EQ(m_minus_one, b.get_inverse());
+}
+
+TEST_F(BaseTestRegularNoReordering, ExplicitInverse) {
+  const ColMatrix inv(3, 3,
+                      {{{0, -2}, {1, 3}, {2, 9}},
+                       {{0, 8}, {1, -11}, {2, -34}},
+                       {{0, -5}, {1, 7}, {2, 21}}});
+  EXPECT_EQ(inv, b.get_inverse());
+}
+
 TEST_F(BaseTestRegularNoReordering, BackwardTransformDVector) {
   b.btran(dv0);
   b.btran(dv1);
@@ -89,6 +105,14 @@ TEST_F(BaseTestRegularWithReordering, ForwardTransformSVector) {
   EXPECT_EQ(SVector({{0, -2.0 / 71}, {1, 17.0 / 71}, {2, 37.0 / 71}}), sv0);
   EXPECT_EQ(SVector({{0, 8.0 / 71}, {1, 3.0 / 71}, {2, -6.0 / 71}}), sv1);
   EXPECT_EQ(SVector({{0, -5.0 / 71}, {1, 7.0 / 71}, {2, -14.0 / 71}}), sv2);
+}
+
+TEST_F(BaseTestRegularWithReordering, ExplicitInverse) {
+  const ColMatrix inv(3, 3,
+                      {{{0, -2.0 / 71}, {1, 17.0 / 71}, {2, 37.0 / 71}},
+                       {{0, 8.0 / 71}, {1, 3.0 / 71}, {2, -6.0 / 71}},
+                       {{0, -5.0 / 71}, {1, 7.0 / 71}, {2, -14.0 / 71}}});
+  EXPECT_EQ(inv, b.get_inverse());
 }
 
 TEST_F(BaseTestRegularWithReordering, ForwardTransformDVector) {

@@ -12,6 +12,7 @@ public:
   Base() = delete;
   explicit Base(const ColMatrix &);
   bool invert();
+  ColMatrix get_inverse();
   void ftran(SVector &vec);
   void ftran(DVector &vec);
   void btran(DVector &vec) const;

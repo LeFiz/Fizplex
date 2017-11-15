@@ -57,7 +57,8 @@ void Simplex::solve() {
     for (auto i : basic_indices)
       m.add_column(lp.A.column(i));
     Base base(m);
-    base.invert();
+    const bool is_regular = base.invert();
+    assert(is_regular);
 
     // Calc beta
     beta = lp.b;

@@ -128,3 +128,17 @@ void Base::btran(DVector &vec) const {
     w[i] = vec[row_ordering[i]];
   vec = w;
 }
+
+ColMatrix Base::get_inverse() {
+  auto inv = ColMatrix::identity(m);
+  for (size_t ind = 0; ind < m; ++ind) {
+    for (size_t i = 0; i < m; ++i)
+      apply_etm(etms[ind], inv.column(i));
+  }
+
+  for (size_t col = 0; col < m; ++col) {
+    for (auto &n : inv.column(col))
+      n.index = row_ordering[n.index];
+  }
+  return inv;
+}
