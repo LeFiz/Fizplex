@@ -98,7 +98,9 @@ ColMatrix ColMatrix::operator*(const ColMatrix &rhs) const {
       double val = 0.0;
       for (size_t i = 0; i < vec_length; ++i)
         val += get_value(row, i) * rhs.get_value(i, col);
-      if (!is_zero(val))
+      // matrix multipl is used for testing the inverse mainly
+      // use looser equality check for this (1e-5)
+      if (!is_zero(val, 1e-5))
         result.add_value(row, col, val);
     }
   }
