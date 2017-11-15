@@ -78,14 +78,11 @@ TEST_F(BaseTestRegularNoReordering, BackwardTransformDVector) {
 
 class BaseTestRegularWithReordering : public ::testing::Test {
 public:
-  BaseTestRegularWithReordering()
-      : b(ColMatrix(3, 3,
-                    {{{1, 7}, {2, -3}},
-                     {{0, 2}, {1, 3}, {2, 4}},
-                     {{0, 1}, {1, -1}, {2, -2}}})) {
-    is_invertible = b.invert();
-  };
-
+  BaseTestRegularWithReordering() : b(m) { is_invertible = b.invert(); };
+  const ColMatrix m = ColMatrix(3, 3,
+                                {{{1, 7}, {2, -3}},
+                                 {{0, 2}, {1, 3}, {2, 4}},
+                                 {{0, 1}, {1, -1}, {2, -2}}});
   Base b;
   bool is_invertible;
   SVector sv0 = {{0, 1}};
@@ -131,4 +128,10 @@ TEST_F(BaseTestRegularWithReordering, BackwardTransformDVector) {
   EXPECT_EQ(DVector({-2.0 / 71, 8.0 / 71, -5.0 / 71}), dv0);
   EXPECT_EQ(DVector({17.0 / 71, 3.0 / 71, 7.0 / 71}), dv1);
   EXPECT_EQ(DVector({37.0 / 71, -6.0 / 71, -14.0 / 71}), dv2);
+}
+
+TEST_F(BaseTestRegularWithReordering, BaseMatrixTimesInverseIsIdentity) {
+  const auto inv = b.get_inverse();
+  EXPECT_EQ(ColMatrix::identity(3), inv * m);
+  EXPECT_EQ(ColMatrix::identity(3), m * inv);
 }
