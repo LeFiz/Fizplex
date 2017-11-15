@@ -98,7 +98,8 @@ ColMatrix ColMatrix::operator*(const ColMatrix &rhs) const {
       double val = 0.0;
       for (size_t i = 0; i < vec_length; ++i)
         val += get_value(row, i) * rhs.get_value(i, col);
-      result.add_value(row, col, val);
+      if (!is_zero(val))
+        result.add_value(row, col, val);
     }
   }
   return result;
