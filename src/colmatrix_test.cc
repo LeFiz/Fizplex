@@ -87,3 +87,36 @@ TEST(ColMatrix, IdentityMatrix) {
   auto m = ColMatrix::identity(3);
   EXPECT_EQ(SVector({{1, 1.0}}), m.column(1));
 }
+
+TEST(ColMatrix, MatrixMultiplicationWithZero) {
+  const auto zero = ColMatrix(3, 3);
+  const auto idnt = ColMatrix::identity(3);
+  EXPECT_EQ(zero, idnt * zero);
+}
+
+TEST(ColMatrix, MatrixMultiplicationWithIdentity) {
+  const auto idnt = ColMatrix::identity(3);
+  const ColMatrix m(3, 3,
+                    {{{0, 7}, {2, -3}, {1, 0.0}},
+                     {{0, 2}, {1, 3}, {2, 4}},
+                     {{0, 1}, {1, -1}, {2, -2}}});
+  EXPECT_EQ(m, idnt * m);
+  EXPECT_EQ(m, m * idnt);
+}
+
+TEST(ColMatrix, MatrixMultiplicationDifferentDimensions) {
+  const ColMatrix a(
+      2, 4,
+      {{{0, 2}, {1, -7}}, {{0, 3}, {1, 2}}, {{0, -1}, {1, 1}}, {{1, 10}}});
+  const ColMatrix b(
+      4, 2,
+      {{{0, 3}, {1, 2}, {2, -1}, {3, 2}}, {{0, 4}, {1, 1}, {2, 2}, {3, 7}}});
+  const ColMatrix res(2, 2, {{{0, 13}, {1, 2}}, {{0, 9}, {1, 46}}});
+  EXPECT_EQ(res, a * b);
+}
+
+TEST(ColMatrix, MatrixMultiplicationWrongDimensions) {
+  const auto a = ColMatrix::identity(3);
+  const auto b = ColMatrix::identity(2);
+  EXPECT_THROW(a * b, std::invalid_argument);
+}

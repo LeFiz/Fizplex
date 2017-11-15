@@ -25,6 +25,7 @@ public:
 
   bool operator==(const ColMatrix &rhs) const;
   bool operator!=(const ColMatrix &rhs) const;
+  ColMatrix operator*(const ColMatrix &)const;
 
   static ColMatrix identity(size_t);
 

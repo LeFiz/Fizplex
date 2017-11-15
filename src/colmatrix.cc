@@ -85,3 +85,21 @@ ColMatrix ColMatrix::identity(size_t dim) {
     m.add_value(i, i, 1.0);
   return m;
 }
+
+ColMatrix ColMatrix::operator*(const ColMatrix &rhs) const {
+  if (n != rhs.row_count())
+    throw std::invalid_argument("Wrong dimensions for matrix multiplication!");
+  const size_t row_num = m;
+  const size_t col_num = rhs.col_count();
+  const size_t vec_length = n;
+  ColMatrix result(row_num, col_num);
+  for (size_t row = 0; row < row_num; ++row) {
+    for (size_t col = 0; col < col_num; ++col) {
+      double val = 0.0;
+      for (size_t i = 0; i < vec_length; ++i)
+        val += get_value(row, i) * rhs.get_value(i, col);
+      result.add_value(row, col, val);
+    }
+  }
+  return result;
+}
