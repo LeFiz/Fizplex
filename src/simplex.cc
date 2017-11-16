@@ -59,6 +59,12 @@ void Simplex::solve() {
     Base base(m);
     const bool is_regular = base.invert();
     assert(is_regular);
+    //    if (round > 235) {
+    //      auto prod = base.get_inverse() * m;
+    //      if (ColMatrix::identity(row_count) != prod) {
+    //        std::cout << "Inverse * Base failed, result:\n" << prod << "\n";
+    //      }
+    //    }
 
     // Calc beta
     beta = lp.b;
