@@ -19,26 +19,34 @@ bool Base::invert() {
   assert(work_vector_is_zero());
   for (size_t i = 0; i < m; i++) { // Update all columns
     bool found = false;
+    double mult;
+    size_t found_index;
     for (size_t j = i; j < m; j++) { // Find non-zero column
       for (auto &n : etms[j].eta) {  // Find right index
         if (n.index == i and not is_zero(n.value)) {
-          found = true;
-          const double mult = -n.value;
-          n.value = -1.0;
-          for (auto &v : etms[j].eta)
-            v.value /= mult;
-          if (i != j)
-            swap_columns(i, j);
-          etms[i].col = i;
-          for (auto k = i + 1; k < etms.size(); k++)
-            apply_etm(etms[i], etms[k].eta);
-          break;
+          if (!found or (std::fabs(1 - 1.0 / std::fabs(mult)) >
+                         std::fabs(1 - 1.0 / std::fabs(n.value)))) {
+            found = true;
+            found_index = j;
+            mult = -n.value;
+            break;
+          }
         }
       }
-      if (found)
-        break;
     }
-    if (!found)
+    if (found) {
+      for (auto &v : etms[found_index].eta) {
+        if (v.index == i)
+          v.value = -1.0 / mult;
+        else
+          v.value /= mult;
+      }
+      if (i != found_index)
+        swap_columns(i, found_index);
+      etms[i].col = i;
+      for (auto k = i + 1; k < etms.size(); k++)
+        apply_etm(etms[i], etms[k].eta);
+    } else
       return false;
   }
   assert(work_vector_is_zero());
