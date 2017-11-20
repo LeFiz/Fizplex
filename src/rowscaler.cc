@@ -11,8 +11,10 @@ void RowScaler::scale_all() {
       }
     }
     if (max > 0.0) {
-      for (size_t col = 0; col < lp.column_count(); col++)
-        lp.A.column(col)[row] /= max;
+      for (size_t col = 0; col < lp.column_count(); col++) {
+        if (std::fabs(lp.get_value(row, col)) > 0.0)
+          lp.A.column(col)[row] /= max;
+      }
       lp.b[row] /= max;
     }
   }
