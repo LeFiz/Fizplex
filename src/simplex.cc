@@ -75,8 +75,7 @@ void Simplex::solve() {
     for (size_t i = 0; i < basic_indices.size(); i++)
       x[basic_indices[i]] = beta[i];
 
-    if (phase == Phase::Two)
-      lp.print_infeasibilities(x);
+    // if (phase == Phase::Two)
     //  assert(lp.is_feasible(x));
 
     // Set c for phase I
@@ -118,8 +117,9 @@ void Simplex::solve() {
       } else { // Phase I
         if (lp.is_feasible(x)) {
           iteration_decision = IterationDecision::SwitchToPhaseTwo;
-        } else
+        } else {
           iteration_decision = IterationDecision::Infeasible;
+        }
       }
     }
     // Transform column vector of improving candidate

@@ -145,30 +145,6 @@ const LP::Row &LP::row_header(size_t row) const {
   return rows[row];
 }
 
-void LP::print_infeasibilities(const DVector &x) const {
-  assert(x.dimension() == cols.size());
-  for (size_t i = 0; i < cols.size(); i++) {
-    if (is_finite(cols[i].lower) && is_lower_norm(x[i], cols[i].lower))
-      std::cout << "x[" << i << "] = " << x[i]
-                << " below lower bound: " << cols[i].lower << "\n";
-    if (is_finite(cols[i].upper) && is_greater_norm(x[i], cols[i].upper))
-      std::cout << "x[" << i << "] = " << x[i]
-                << " above upper bound: " << cols[i].upper << "\n";
-  }
-  for (size_t row = 0; row < row_count(); row++) {
-    double val = 0.0;
-    for (size_t col = 0; col < column_count(); col++)
-      val += A.get_value(row, col) * x[col];
-
-    if (is_finite(rows[row].lower) && is_lower_norm(val, rows[row].lower))
-      std::cout << "row[" << row << "] = " << val
-                << " below lower bound: " << rows[row].lower << "\n";
-    if (is_finite(rows[row].upper) && is_greater_norm(val, rows[row].upper))
-      std::cout << "row[" << row << "] = " << val
-                << " above upper bound: " << rows[row].upper << "\n";
-  }
-}
-
 bool LP::is_feasible(const DVector &x) const {
   assert(x.dimension() == cols.size());
   for (size_t i = 0; i < cols.size(); i++) {
@@ -179,13 +155,10 @@ bool LP::is_feasible(const DVector &x) const {
   }
   for (size_t row = 0; row < row_count(); row++) {
     double val = 0.0;
-    for (size_t col = 0; col < column_count(); col++) {
+    for (size_t col = 0; col < column_count(); col++)
       val += A.get_value(row, col) * x[col];
-    }
-    if ((is_finite(rows[row].lower) && is_lower_norm(val, rows[row].lower)) ||
-        (is_finite(rows[row].upper) && is_greater_norm(val, rows[row].upper))) {
+    if (!is_eq_norm(val, b[row], 1e-5, 1e-6))
       return false;
-    }
   }
   return true;
 }

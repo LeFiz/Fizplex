@@ -16,26 +16,29 @@ TEST_F(LPTestFeasibility, IsFeasibleForBoundedVarAndRangeRow) {
   lp.add_column(ColType::Bounded, -1.0, 5);
   lp.add_row(RowType::Range, -3, 7);
   lp.add_value(0, 0, 2.0);
+  lp.add_logicals();
 
-  check_feasible(true, {{0}, {-1}, {3.5}});
-  check_feasible(false, {{-1.5}, {4}});
+  check_feasible(true, {{0, 7}, {-1, 9}, {3.5, 0}});
+  check_feasible(false, {{-1.5, 0}, {4, 0}});
 }
 
 TEST_F(LPTestFeasibility, IsFeasibleForFreeVarAndRangeRow) {
   lp.add_column(ColType::Free, -inf, inf);
   lp.add_row(RowType::Range, -5, 5);
   lp.add_value(0, 0, 1.0);
+  lp.add_logicals();
 
-  check_feasible(true, {{0}, {-5}, {5}});
-  check_feasible(false, {{-6}, {6}});
+  check_feasible(true, {{0, 5}, {-5, 10}, {5, 0}});
+  check_feasible(false, {{-6, 1}, {6, -1}});
 }
 
 TEST_F(LPTestFeasibility, IsFeasibleForFreeVarAndNonBindingRow) {
   lp.add_column(ColType::Free, -inf, inf);
   lp.add_row(RowType::NonBinding, -inf, inf);
   lp.add_value(0, 0, 1.0);
+  lp.add_logicals();
 
-  check_feasible(true, {{0}, {-5}, {5}, {-inf}, {inf}});
+  check_feasible(true, {{0, 0}, {-5, 5}, {5, -5}});
 }
 
 TEST(LPTestEmptyLP, ColumnAndRowCount) {
