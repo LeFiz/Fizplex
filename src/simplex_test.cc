@@ -116,7 +116,7 @@ TEST_F(SimplexTest, FourRowsFourVarsOptimalSolution) {
 
   solve_lp();
   EXPECT_EQ(Simplex::Result::OptimalSolution, result);
-  EXPECT_DOUBLE_EQ(-32.0, z);
+  EXPECT_TRUE(is_eq_norm(-32.0, z));
 }
 
 TEST_F(SimplexTest, LowerRowLowerVarInfeasible) {
