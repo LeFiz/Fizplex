@@ -2,12 +2,18 @@
 
 class Debug {
 public:
-  explicit Debug(std::ostream &_out = std::cerr) : out(_out){};
+  explicit Debug(int level, std::ostream &_out = std::cerr)
+      : out(_out), print(level <= max_level){};
+
   template <typename T> Debug &operator<<(T t) {
-    out << t;
+    if (print)
+      out << t;
     return *this;
   }
+  static int get_max_level() { return max_level; }
 
 private:
   std::ostream &out;
+  static constexpr int max_level = 2;
+  bool print;
 };
