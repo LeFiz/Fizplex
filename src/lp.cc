@@ -1,4 +1,5 @@
 #include "lp.h"
+#include "debug.h"
 #include <cassert>
 #include <unordered_map>
 
@@ -147,20 +148,30 @@ const LP::Row &LP::row_header(size_t row) const {
 
 bool LP::is_feasible(const DVector &x) const {
   assert(x.dimension() == cols.size());
+  bool feasible = true;
   for (size_t i = 0; i < cols.size(); i++) {
-    if ((is_finite(cols[i].lower) && is_lower_norm(x[i], cols[i].lower)) ||
-        (is_finite(cols[i].upper) && is_greater_norm(x[i], cols[i].upper))) {
-      return false;
+    if (is_finite(cols[i].lower) && is_lower_norm(x[i], cols[i].lower)) {
+      Debug(0) << "Var " << i << " is below lower bound: " << x[i] << " < "
+               << cols[i].lower << "\n";
+      feasible = false;
+    }
+    if (is_finite(cols[i].upper) && is_greater_norm(x[i], cols[i].upper)) {
+      Debug(0) << "Var " << i << " is above upper bound: " << x[i] << " > "
+               << cols[i].upper << "\n";
+      feasible = false;
     }
   }
   for (size_t row = 0; row < row_count(); row++) {
     double val = 0.0;
     for (size_t col = 0; col < column_count(); col++)
       val += A.get_value(row, col) * x[col];
-    if (!is_eq_norm(val, b[row], 1e-5, 1e-6))
-      return false;
+    if (!is_eq_norm(val, b[row], 1e-5, 1e-6)) {
+      Debug(0) << "Row " << row << " failed equality test ("
+               << "should be: " << b[row] << ", is " << val << ")\n";
+      feasible = false;
+    }
   }
-  return true;
+  return feasible;
 }
 
 std::ostream &operator<<(std::ostream &os, const LP::Column &c) {
