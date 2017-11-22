@@ -45,6 +45,7 @@ private:
   Phase phase = Phase::One;
 
   void set_initial_x();
+  void set_phase_one_objective();
   void print_iteration_results(IterationDecision &, int) const;
   static constexpr int max_rounds = 500;
 

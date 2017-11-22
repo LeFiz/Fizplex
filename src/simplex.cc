@@ -72,22 +72,10 @@ void Simplex::solve() {
       assert(lp.is_feasible(x));
 
     // Set c for phase I
-    if (phase == Simplex::Phase::One) {
-      for (auto i : non_basic_indices)
-        c[i] = 0.0;
-      for (size_t i = 0; i < basic_indices.size(); i++) {
-        const auto column_header = lp.column_header(basic_indices[i]);
-        if (is_finite(column_header.lower) &&
-            is_lower_norm(beta[i], column_header.lower)) {
-          c[basic_indices[i]] = -1.0;
-        } else if (is_finite(column_header.upper) &&
-                   is_greater_norm(beta[i], column_header.upper)) {
-          c[basic_indices[i]] = 1.0;
-        } else {
-          c[basic_indices[i]] = 0.0;
-        }
-      }
-    }
+    if (phase == Simplex::Phase::One)
+      set_phase_one_objective();
+    else
+      assert(c == lp.c);
 
     z = c * x;
 
@@ -161,13 +149,29 @@ void Simplex::solve() {
     case IterationDecision::SwitchToPhaseTwo:
       phase = Simplex::Phase::Two;
       c = lp.c;
-      continue;
+      break;
     case IterationDecision::Infeasible:
       result = Result::Infeasible;
       return;
     default:
       assert(false);
     }
+  }
+}
+
+void Simplex::set_phase_one_objective() {
+  for (auto i : non_basic_indices)
+    c[i] = 0.0;
+  for (auto i : basic_indices) {
+    const auto column_header = lp.column_header(i);
+    if (is_finite(column_header.lower) &&
+        is_lower_norm(x[i], column_header.lower)) {
+      c[i] = -1.0;
+    } else if (is_finite(column_header.upper) &&
+               is_greater_norm(x[i], column_header.upper)) {
+      c[i] = 1.0;
+    } else
+      c[i] = 0.0;
   }
 }
 
