@@ -7,21 +7,17 @@ TEST(BaseTestSingular, InvertIsFalse) {
                     {{{0, 1}, {1, 1}, {2, 1}},
                      {{0, 1}, {1, 1}, {2, 1}},
                      {{0, 1}, {1, 1}, {2, 1}}});
-  EXPECT_FALSE(Base(m).invert());
+  EXPECT_THROW(Base b(m), std::invalid_argument);
 }
 
 class BaseTestRegularNoReordering : public ::testing::Test {
 public:
-  BaseTestRegularNoReordering()
-      : b(ColMatrix(3, 3,
-                    {{{0, 7}, {2, -3}},
-                     {{0, 2}, {1, 3}, {2, 4}},
-                     {{0, 1}, {1, -1}, {2, -2}}})) {
-    is_invertible = b.invert();
-  };
-
+  BaseTestRegularNoReordering() : b(m){};
+  const ColMatrix m = ColMatrix(3, 3,
+                                {{{0, 7}, {2, -3}},
+                                 {{0, 2}, {1, 3}, {2, 4}},
+                                 {{0, 1}, {1, -1}, {2, -2}}});
   Base b;
-  bool is_invertible;
   SVector sv0 = {{0, 1}};
   SVector sv1 = {{1, 1}};
   SVector sv2 = {{2, 1}};
@@ -29,10 +25,6 @@ public:
   DVector dv1 = {0, 1, 0};
   DVector dv2 = {0, 0, 1};
 };
-
-TEST_F(BaseTestRegularNoReordering, IsInvertible) {
-  EXPECT_TRUE(is_invertible);
-}
 
 TEST_F(BaseTestRegularNoReordering, Invert) {
   b.ftran(sv0);
@@ -56,7 +48,6 @@ TEST(BaseDiagonalMatrixTest, ExplicitInverse) {
   const ColMatrix m(2, 2, {{{0, 2.0}}, {{1, 3.0}}});
   const ColMatrix m_minus_one(2, 2, {{{0, 0.5}}, {{1, 1.0 / 3.0}}});
   Base b(m);
-  b.invert();
   EXPECT_EQ(m_minus_one, b.get_inverse());
 }
 
@@ -79,13 +70,12 @@ TEST_F(BaseTestRegularNoReordering, BackwardTransformDVector) {
 
 class BaseTestRegularWithReordering : public ::testing::Test {
 public:
-  BaseTestRegularWithReordering() : b(m) { is_invertible = b.invert(); };
+  BaseTestRegularWithReordering() : b(m){};
   const ColMatrix m = ColMatrix(3, 3,
                                 {{{1, 7}, {2, -3}},
                                  {{0, 2}, {1, 3}, {2, 4}},
                                  {{0, 1}, {1, -1}, {2, -2}}});
   Base b;
-  bool is_invertible;
   SVector sv0 = {{0, 1}};
   SVector sv1 = {{1, 1}};
   SVector sv2 = {{2, 1}};
@@ -93,8 +83,6 @@ public:
   DVector dv1 = {0, 1, 0};
   DVector dv2 = {0, 0, 1};
 };
-
-TEST_F(BaseTestRegularWithReordering, IsInvertible) { EXPECT_TRUE(b.invert()); }
 
 TEST_F(BaseTestRegularWithReordering, ForwardTransformSVector) {
   b.ftran(sv0);
@@ -151,7 +139,6 @@ public:
 TEST_F(BaseTestCreateFromLP, IndicesInIncreasingOrder) {
   const std::vector<size_t> basic_indices = {0, 2};
   Base base = {lp, basic_indices};
-  base.invert();
   EXPECT_EQ(ColMatrix(2, 2, {{{0, 0.5}}, {{1, 1.0 / 3.0}}}),
             base.get_inverse());
 }
@@ -159,7 +146,6 @@ TEST_F(BaseTestCreateFromLP, IndicesInIncreasingOrder) {
 TEST_F(BaseTestCreateFromLP, IndicesInDecreasingOrder) {
   const std::vector<size_t> basic_indices = {2, 0};
   Base base = {lp, basic_indices};
-  base.invert();
   EXPECT_EQ(ColMatrix(2, 2, {{{1, 0.5}}, {{0, 1.0 / 3.0}}}),
             base.get_inverse());
 }

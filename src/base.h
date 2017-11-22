@@ -13,7 +13,7 @@ public:
   Base() = delete;
   explicit Base(const ColMatrix &);
   Base(const LP &lp, const std::vector<size_t> &basic_indices);
-  bool invert();
+  void invert();
   ColMatrix get_inverse();
   void ftran(SVector &vec);
   void ftran(DVector &vec);

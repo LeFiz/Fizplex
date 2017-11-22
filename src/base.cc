@@ -8,6 +8,7 @@ Base::Base(const ColMatrix &b)
     etms.push_back(ETM(b.column(i), i));
   for (size_t i = 0; i < m; i++)
     row_ordering[i] = i;
+  invert();
 }
 
 Base::Base(const LP &lp, const std::vector<size_t> &basic_indices)
@@ -18,6 +19,7 @@ Base::Base(const LP &lp, const std::vector<size_t> &basic_indices)
     etms.push_back(ETM(lp.A.column(basic_indices[i]), i));
   for (size_t i = 0; i < m; i++)
     row_ordering[i] = i;
+  invert();
 }
 
 void Base::swap_columns(size_t i, size_t j) {
@@ -46,13 +48,13 @@ Base::Pivot Base::find_pivot(size_t ind) const {
   return pivot;
 }
 
-bool Base::invert() {
+void Base::invert() {
   assert(work_vector_is_zero());
 
   for (size_t i = 0; i < m; i++) { // Update all columns
     auto pivot = find_pivot(i);
-    if (not pivot.found)
-      return false;
+    if (not pivot.found) // Otherwise base is not regular
+      throw std::invalid_argument("Base is singular.");
 
     for (auto &v : etms[pivot.index].eta) {
       if (v.index == i)
@@ -68,7 +70,6 @@ bool Base::invert() {
   } // for i ...
 
   assert(work_vector_is_zero());
-  return true;
 }
 
 bool Base::work_vector_is_zero() const {

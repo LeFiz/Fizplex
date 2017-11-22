@@ -45,19 +45,8 @@ void Simplex::solve() {
   for (int round = 0; round < max_rounds; round++) {
     // Set up base + inverse
     // std::sort(basic_indices.begin(), basic_indices.end());
-    ColMatrix m(row_count, 0);
-    for (auto i : basic_indices)
-      m.add_column(lp.A.column(i));
-    Base base(m);
-    const bool is_regular = base.invert();
-    assert(is_regular);
+    Base base(lp, basic_indices);
 
-    if (round > 9999) {
-      auto prod = base.get_inverse() * m;
-      if (ColMatrix::identity(row_count) != prod) {
-        Debug(1) << "Inverse * Base failed, result:\n" << prod << "\n";
-      }
-    }
     // Calc beta
     DVector beta(row_count);
     beta = lp.b;
@@ -74,8 +63,6 @@ void Simplex::solve() {
     // Set c for phase I
     if (phase == Simplex::Phase::One)
       set_phase_one_objective();
-    else
-      assert(c == lp.c);
 
     z = c * x;
 
