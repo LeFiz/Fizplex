@@ -36,6 +36,8 @@ public:
 private:
   enum class Phase { One, Two };
   LP &lp;
+  std::vector<size_t> basic_indices;
+  std::vector<size_t> non_basic_indices;
   DVector x;
   double z = inf;
   Result result = Result::Unsolved;

@@ -1,12 +1,20 @@
 #include "simplex.h"
 #include "base.h"
+#include "debug.h"
 #include "pricer.h"
 #include "ratio_tester.h"
 #include <algorithm>
 #include <iostream>
 #include <unordered_map>
 
-Simplex::Simplex(LP &_lp) : lp(_lp) {}
+Simplex::Simplex(LP &_lp) : lp(_lp), x(lp.A.col_count() + lp.A.row_count()) {
+  const size_t structural_count = lp.A.col_count();
+  lp.add_logicals();
+  for (size_t i = 0; i < structural_count; i++)
+    non_basic_indices.push_back(i);
+  for (size_t i = structural_count; i < lp.A.col_count(); i++)
+    basic_indices.push_back(i);
+}
 
 const DVector &Simplex::get_x() const { return x; }
 
@@ -28,44 +36,33 @@ void Simplex::set_initial_x() {
 }
 
 void Simplex::solve() {
-  lp.add_logicals();
   const size_t col_count = lp.A.col_count();
   const size_t row_count = lp.A.row_count();
-  const size_t structural_count = col_count - row_count;
-  x = DVector(col_count);
-
-  // Set up index sets
-  std::vector<size_t> basic_indices;
-  std::vector<size_t> non_basic_indices;
-  for (size_t i = 0; i < structural_count; i++)
-    non_basic_indices.push_back(i);
-  for (size_t i = structural_count; i < col_count; i++)
-    basic_indices.push_back(i);
 
   // Set up vectors
   DVector beta(row_count);
   DVector pi(row_count);
   DVector d(col_count);
-  SVector alpha;
   DVector c(col_count);
 
   set_initial_x();
 
   for (int round = 0; round < max_rounds; round++) {
     // Set up base + inverse
+    // std::sort(basic_indices.begin(), basic_indices.end());
     ColMatrix m(row_count, 0);
     for (auto i : basic_indices)
       m.add_column(lp.A.column(i));
     Base base(m);
     const bool is_regular = base.invert();
     assert(is_regular);
-    //    if (round > 235) {
-    //      auto prod = base.get_inverse() * m;
-    //      if (ColMatrix::identity(row_count) != prod) {
-    //        std::cout << "Inverse * Base failed, result:\n" << prod << "\n";
-    //      }
-    //    }
 
+    if (round > 9999) {
+      auto prod = base.get_inverse() * m;
+      if (ColMatrix::identity(row_count) != prod) {
+        Debug(1) << "Inverse * Base failed, result:\n" << prod << "\n";
+      }
+    }
     // Calc beta
     beta = lp.b;
     for (auto i : non_basic_indices)
@@ -75,8 +72,8 @@ void Simplex::solve() {
     for (size_t i = 0; i < basic_indices.size(); i++)
       x[basic_indices[i]] = beta[i];
 
-    // if (phase == Phase::Two)
-    //  assert(lp.is_feasible(x));
+    if (phase == Phase::Two)
+      assert(lp.is_feasible(x));
 
     // Set c for phase I
     if (phase == Simplex::Phase::One) {
@@ -123,7 +120,7 @@ void Simplex::solve() {
       }
     }
     // Transform column vector of improving candidate
-    alpha = lp.A.column(pr.candidate_index);
+    SVector alpha = lp.A.column(pr.candidate_index);
     base.ftran(alpha);
 
     // Ratio test
