@@ -7,7 +7,9 @@
 #include <iostream>
 #include <unordered_map>
 
-Simplex::Simplex(LP &_lp) : lp(_lp), x(lp.A.col_count() + lp.A.row_count()) {
+Simplex::Simplex(LP &_lp)
+    : lp(_lp), x(lp.A.col_count() + lp.A.row_count()),
+      c(lp.A.col_count() + lp.A.row_count()) {
   const size_t structural_count = lp.A.col_count();
   lp.add_logicals();
   for (size_t i = 0; i < structural_count; i++)
@@ -38,13 +40,6 @@ void Simplex::set_initial_x() {
 void Simplex::solve() {
   const size_t col_count = lp.A.col_count();
   const size_t row_count = lp.A.row_count();
-
-  // Set up vectors
-  DVector beta(row_count);
-  DVector pi(row_count);
-  DVector d(col_count);
-  DVector c(col_count);
-
   set_initial_x();
 
   for (int round = 0; round < max_rounds; round++) {
@@ -64,6 +59,7 @@ void Simplex::solve() {
       }
     }
     // Calc beta
+    DVector beta(row_count);
     beta = lp.b;
     for (auto i : non_basic_indices)
       beta -= x[i] * lp.A.column(i);
@@ -96,6 +92,8 @@ void Simplex::solve() {
     z = c * x;
 
     // Price
+    DVector pi(row_count);
+    DVector d(col_count);
     for (size_t i = 0; i < row_count; i++)
       pi[i] = c[basic_indices[i]]; // ==c_B
     base.btran(pi);
@@ -124,8 +122,8 @@ void Simplex::solve() {
     base.ftran(alpha);
 
     // Ratio test
-    RatioTester r;
-    const auto rt = r.ratio_test(lp, alpha, beta, pr.candidate_index,
+    const auto rt =
+        RatioTester().ratio_test(lp, alpha, beta, pr.candidate_index,
                                  basic_indices, d[pr.candidate_index]);
     if (iteration_decision == IterationDecision::Unfinished)
       iteration_decision = rt.result;

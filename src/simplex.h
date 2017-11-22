@@ -39,6 +39,7 @@ private:
   std::vector<size_t> basic_indices;
   std::vector<size_t> non_basic_indices;
   DVector x;
+  DVector c;
   double z = inf;
   Result result = Result::Unsolved;
   Phase phase = Phase::One;
