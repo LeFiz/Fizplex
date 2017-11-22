@@ -33,7 +33,7 @@ private:
   void apply_etm(ETM &etm, DVector &vec);
   void swap_columns(size_t i, size_t j);
   bool work_vector_is_zero() const;
-  Pivot find_pivot(size_t);
+  Pivot find_pivot(size_t) const;
 
   std::unique_ptr<size_t[]> row_ordering;
   std::vector<ETM> etms;

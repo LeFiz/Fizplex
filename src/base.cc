@@ -17,19 +17,19 @@ void Base::swap_columns(size_t i, size_t j) {
   std::swap<size_t>(row_ordering[i], row_ordering[j]);
 }
 
-Base::Pivot Base::find_pivot(size_t ind) {
+Base::Pivot Base::find_pivot(size_t ind) const {
   static const auto dist_to_one = [](double d) {
     return std::fabs(1 - 1.0 / std::fabs(d));
   };
   Pivot pivot{false, 0, 0};
-  for (size_t j = ind; j < m; j++) { // Find non-zero column
-    for (auto &n : etms[j].eta) {    // Find right index
-      if (n.index == ind and not is_zero(n.value)) {
+  for (size_t j = ind; j < m; j++) { // Find etm with non-zero in ind
+    for (auto it = etms[j].eta.cbegin(); it != etms[j].eta.cend(); ++it) {
+      if (it->index == ind and not is_zero(it->value)) {
         if (not pivot.found or
-            (dist_to_one(n.value) < dist_to_one(pivot.value))) {
+            (dist_to_one(it->value) < dist_to_one(pivot.value))) {
           pivot.found = true;
           pivot.index = j;
-          pivot.value = n.value;
+          pivot.value = it->value;
         }
         break;
       }
