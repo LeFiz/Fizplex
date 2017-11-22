@@ -24,11 +24,16 @@ private:
     ETM() = default;
     ETM(const SVector &e, size_t c) : eta(e), col(c){};
   };
-
+  struct Pivot {
+    bool found;
+    double value;
+    size_t index;
+  };
   void apply_etm(ETM &etm, SVector &vec);
   void apply_etm(ETM &etm, DVector &vec);
   void swap_columns(size_t i, size_t j);
   bool work_vector_is_zero() const;
+  Pivot find_pivot(size_t);
 
   std::unique_ptr<size_t[]> row_ordering;
   std::vector<ETM> etms;

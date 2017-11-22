@@ -12,43 +12,52 @@ Base::Base(const ColMatrix &b) : work(b.row_count()), m(b.row_count()) {
 void Base::swap_columns(size_t i, size_t j) {
   assert(i < m && j < m);
   std::swap(etms[i], etms[j]);
+  etms[i].col = i;
+  etms[j].col = j;
   std::swap<size_t>(row_ordering[i], row_ordering[j]);
 }
 
+Base::Pivot Base::find_pivot(size_t ind) {
+  static const auto dist_to_one = [](double d) {
+    return std::fabs(1 - 1.0 / std::fabs(d));
+  };
+  Pivot pivot{false, 0, 0};
+  for (size_t j = ind; j < m; j++) { // Find non-zero column
+    for (auto &n : etms[j].eta) {    // Find right index
+      if (n.index == ind and not is_zero(n.value)) {
+        if (not pivot.found or
+            (dist_to_one(n.value) < dist_to_one(pivot.value))) {
+          pivot.found = true;
+          pivot.index = j;
+          pivot.value = n.value;
+        }
+        break;
+      }
+    } // for etms[j].eta
+  }   // for j=ind...
+  return pivot;
+}
 bool Base::invert() {
   assert(work_vector_is_zero());
+
   for (size_t i = 0; i < m; i++) { // Update all columns
-    bool found = false;
-    double mult;
-    size_t found_index;
-    for (size_t j = i; j < m; j++) { // Find non-zero column
-      for (auto &n : etms[j].eta) {  // Find right index
-        if (n.index == i and not is_zero(n.value)) {
-          if (!found or (std::fabs(1 - 1.0 / std::fabs(mult)) >
-                         std::fabs(1 - 1.0 / std::fabs(n.value)))) {
-            found = true;
-            found_index = j;
-            mult = -n.value;
-            break;
-          }
-        }
-      }
-    }
-    if (found) {
-      for (auto &v : etms[found_index].eta) {
-        if (v.index == i)
-          v.value = -1.0 / mult;
-        else
-          v.value /= mult;
-      }
-      if (i != found_index)
-        swap_columns(i, found_index);
-      etms[i].col = i;
-      for (auto k = i + 1; k < etms.size(); k++)
-        apply_etm(etms[i], etms[k].eta);
-    } else
+    auto pivot = find_pivot(i);
+    if (not pivot.found)
       return false;
-  }
+
+    for (auto &v : etms[pivot.index].eta) {
+      if (v.index == i)
+        v.value = 1.0 / pivot.value;
+      else
+        v.value /= -pivot.value;
+    }
+    if (i != pivot.index)
+      swap_columns(i, pivot.index);
+
+    for (auto k = i + 1; k < etms.size(); k++)
+      apply_etm(etms[i], etms[k].eta);
+  } // for i ...
+
   assert(work_vector_is_zero());
   return true;
 }
