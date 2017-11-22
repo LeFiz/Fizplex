@@ -35,11 +35,11 @@ private:
   bool work_vector_is_zero() const;
   Pivot find_pivot(size_t) const;
 
-  std::unique_ptr<size_t[]> row_ordering;
   std::vector<ETM> etms;
   DVector work;
 
   size_t m;
+  std::unique_ptr<size_t[]> row_ordering;
 };
 
 #endif

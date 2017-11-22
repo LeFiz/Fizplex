@@ -1,10 +1,11 @@
 #include "base.h"
 
-Base::Base(const ColMatrix &b) : work(b.row_count()), m(b.row_count()) {
+Base::Base(const ColMatrix &b)
+    : work(b.row_count()), m(b.row_count()),
+      row_ordering(std::make_unique<size_t[]>(m)) {
   assert(b.row_count() == b.col_count());
   for (size_t i = 0; i < m; i++)
     etms.push_back(ETM(b.column(i), i));
-  row_ordering = std::make_unique<size_t[]>(m);
   for (size_t i = 0; i < m; i++)
     row_ordering[i] = i;
 }
@@ -61,10 +62,10 @@ bool Base::invert() {
 }
 
 bool Base::work_vector_is_zero() const {
-  static const auto sum_func = [](const double sum, const double val) {
+  static const auto abs_sum = [](double sum, double val) {
     return sum + std::fabs(val);
   };
-  return !(std::accumulate(work.cbegin(), work.cend(), 0, sum_func) > 0.0);
+  return !(std::accumulate(work.cbegin(), work.cend(), 0, abs_sum) > 0.0);
 }
 
 void Base::apply_etm(ETM &etm, SVector &vec) {
