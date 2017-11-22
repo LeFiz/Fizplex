@@ -23,20 +23,18 @@ Base::Pivot Base::find_pivot(size_t ind) const {
   };
   Pivot pivot{false, 0, 0};
   for (size_t j = ind; j < m; j++) { // Find etm with non-zero in ind
-    for (auto it = etms[j].eta.cbegin(); it != etms[j].eta.cend(); ++it) {
-      if (it->index == ind and not is_zero(it->value)) {
-        if (not pivot.found or
-            (dist_to_one(it->value) < dist_to_one(pivot.value))) {
-          pivot.found = true;
-          pivot.index = j;
-          pivot.value = it->value;
-        }
-        break;
-      }
-    } // for etms[j].eta
-  }   // for j=ind...
+    auto val = etms[j].eta.get_value(ind);
+    if (is_zero(val))
+      continue;
+    if (not pivot.found or (dist_to_one(val) < dist_to_one(pivot.value))) {
+      pivot.found = true;
+      pivot.index = j;
+      pivot.value = val;
+    }
+  }
   return pivot;
 }
+
 bool Base::invert() {
   assert(work_vector_is_zero());
 
