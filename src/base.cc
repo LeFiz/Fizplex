@@ -10,6 +10,16 @@ Base::Base(const ColMatrix &b)
     row_ordering[i] = i;
 }
 
+Base::Base(const LP &lp, const std::vector<size_t> &basic_indices)
+    : work(basic_indices.size()), m(basic_indices.size()),
+      row_ordering(std::make_unique<size_t[]>(m)) {
+  assert(basic_indices.size() == lp.row_count());
+  for (size_t i = 0; i < m; i++)
+    etms.push_back(ETM(lp.A.column(basic_indices[i]), i));
+  for (size_t i = 0; i < m; i++)
+    row_ordering[i] = i;
+}
+
 void Base::swap_columns(size_t i, size_t j) {
   assert(i < m && j < m);
   std::swap(etms[i], etms[j]);

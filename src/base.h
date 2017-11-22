@@ -3,6 +3,7 @@
 
 #include "colmatrix.h"
 #include "dvector.h"
+#include "lp.h"
 #include <algorithm>
 #include <memory>
 #include <numeric>
@@ -11,6 +12,7 @@ class Base {
 public:
   Base() = delete;
   explicit Base(const ColMatrix &);
+  Base(const LP &lp, const std::vector<size_t> &basic_indices);
   bool invert();
   ColMatrix get_inverse();
   void ftran(SVector &vec);

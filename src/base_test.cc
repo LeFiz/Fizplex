@@ -1,4 +1,5 @@
 #include "base.h"
+#include "lp.h"
 #include "gtest/gtest.h"
 
 TEST(BaseTestSingular, InvertIsFalse) {
@@ -134,4 +135,31 @@ TEST_F(BaseTestRegularWithReordering, BaseMatrixTimesInverseIsIdentity) {
   const auto inv = b.get_inverse();
   EXPECT_EQ(ColMatrix::identity(3), inv * m);
   EXPECT_EQ(ColMatrix::identity(3), m * inv);
+}
+class BaseTestCreateFromLP : public ::testing::Test {
+public:
+  LP lp;
+  void SetUp() {
+    lp.add_column(ColType::Bounded, -1.0, 1.0);
+    lp.add_column(ColType::Bounded, -1.0, 1.0);
+    lp.add_column(ColType::Bounded, -1.0, 1.0);
+    lp.add_row(RowType::Range, -1, 1, {2, 4, 0});
+    lp.add_row(RowType::Range, -1, 1, {0, 5, 3});
+  }
+};
+
+TEST_F(BaseTestCreateFromLP, IndicesInIncreasingOrder) {
+  const std::vector<size_t> basic_indices = {0, 2};
+  Base base = {lp, basic_indices};
+  base.invert();
+  EXPECT_EQ(ColMatrix(2, 2, {{{0, 0.5}}, {{1, 1.0 / 3.0}}}),
+            base.get_inverse());
+}
+
+TEST_F(BaseTestCreateFromLP, IndicesInDecreasingOrder) {
+  const std::vector<size_t> basic_indices = {2, 0};
+  Base base = {lp, basic_indices};
+  base.invert();
+  EXPECT_EQ(ColMatrix(2, 2, {{{1, 0.5}}, {{0, 1.0 / 3.0}}}),
+            base.get_inverse());
 }
