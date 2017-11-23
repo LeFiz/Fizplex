@@ -1,6 +1,7 @@
 #ifndef SIMPLEX_H
 #define SIMPLEX_H
 
+#include "base.h"
 #include "lp.h"
 
 class Simplex {
@@ -46,6 +47,7 @@ private:
 
   void set_initial_x();
   void set_phase_one_objective();
+  void set_basic_solution(Base &);
   void print_iteration_results(IterationDecision &, int) const;
   static constexpr int max_rounds = 500;
 

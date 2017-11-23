@@ -46,17 +46,7 @@ void Simplex::solve() {
     // std::sort(basic_indices.begin(), basic_indices.end());
     Base base(lp, basic_indices);
 
-    // Calc beta
-    DVector beta = lp.b;
-    for (auto i : non_basic_indices)
-      beta -= x[i] * lp.A.column(i);
-    base.ftran(beta);
-
-    for (size_t i = 0; i < basic_indices.size(); i++)
-      x[basic_indices[i]] = beta[i];
-
-    if (phase == Phase::Two)
-      assert(lp.is_feasible(x));
+    set_basic_solution(base);
 
     // Set c for phase I
     if (phase == Simplex::Phase::One)
@@ -157,6 +147,19 @@ void Simplex::set_phase_one_objective() {
     } else
       c[i] = 0.0;
   }
+}
+
+void Simplex::set_basic_solution(Base &base) {
+  DVector beta = lp.b;
+  for (auto i : non_basic_indices)
+    beta -= x[i] * lp.A.column(i);
+  base.ftran(beta);
+
+  for (size_t i = 0; i < basic_indices.size(); i++)
+    x[basic_indices[i]] = beta[i];
+
+  if (phase == Phase::Two)
+    assert(lp.is_feasible(x));
 }
 
 void Simplex::print_iteration_results(IterationDecision &id, int round) const {
