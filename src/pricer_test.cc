@@ -21,15 +21,15 @@ TEST_F(PricerTestTwoVars, ZeroReducedCostsIsOptimal) {
 TEST_F(PricerTestTwoVars, NegCostAtLowerIsNotOptimal) {
   DVector x = {1.0, -1.0};
   DVector d = {0.0, -1.0};
-  const auto pr = p.price(x, lp, d, nbi);
-  EXPECT_FALSE(pr.is_optimal);
-  EXPECT_EQ(pr.candidate_index, 1u);
+  const auto candidate = p.price(x, lp, d, nbi);
+  EXPECT_FALSE(candidate.is_optimal);
+  EXPECT_EQ(candidate.index, 1u);
 }
 
 TEST_F(PricerTestTwoVars, PosCostAtUpperIsNotOptimal) {
   DVector x = {-1.0, 1.0};
   DVector d = {0.0, 1.0};
-  const auto pr = p.price(x, lp, d, nbi);
-  EXPECT_FALSE(pr.is_optimal);
-  EXPECT_EQ(pr.candidate_index, 1u);
+  const auto candidate = p.price(x, lp, d, nbi);
+  EXPECT_FALSE(candidate.is_optimal);
+  EXPECT_EQ(candidate.index, 1u);
 }

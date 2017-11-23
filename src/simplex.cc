@@ -40,17 +40,19 @@ void Simplex::set_initial_x() {
 void Simplex::solve() {
 
   set_initial_x();
+
   for (int round = 0; round < max_rounds; round++) {
     Base base(lp, basic_indices);
     set_basic_solution(base);
 
     if (phase == Simplex::Phase::One)
       set_phase_one_objective();
+    z = c * x;
 
-    Simplex::PricingResult pr = run_price(base);
+    auto candidate = run_price(base);
 
     IterationDecision iteration_decision = IterationDecision::Unfinished;
-    if (pr.is_optimal) {
+    if (candidate.is_optimal) {
       if (phase == Simplex::Phase::Two) {
         assert(lp.is_feasible(x));
         iteration_decision = IterationDecision::OptimalSolution;
@@ -62,24 +64,19 @@ void Simplex::solve() {
         }
       }
     }
-    // Transform column vector of improving candidate
-    SVector alpha = lp.A.column(pr.candidate_index);
-    base.ftran(alpha);
 
-    // Ratio test
-    const auto rt = RatioTester().ratio_test(lp, alpha, x, pr.candidate_index,
-                                             basic_indices, pr.candidate_cost);
+    const auto rt = run_ratio_test(candidate, base);
+
     if (iteration_decision == IterationDecision::Unfinished)
       iteration_decision = rt.result;
 
-    z = c * x;
     print_iteration_results(iteration_decision, round);
 
     switch (iteration_decision) {
     case IterationDecision::BaseChange: {
       x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
       const auto it = std::find(non_basic_indices.begin(),
-                                non_basic_indices.end(), pr.candidate_index);
+                                non_basic_indices.end(), candidate.index);
 
       assert(it != non_basic_indices.end());
       const size_t candidate_non_basic_index =
@@ -94,11 +91,11 @@ void Simplex::solve() {
 
       result = Result::Unbounded;
       x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
-      x[pr.candidate_index] = rt.step_length;
+      x[candidate.index] = rt.step_length;
       z = -inf;
       return;
     case IterationDecision::BoundFlip:
-      x[pr.candidate_index] += rt.step_length;
+      x[candidate.index] += rt.step_length;
       break;
     case IterationDecision::OptimalSolution:
       result = Result::OptimalSolution;
@@ -145,7 +142,7 @@ void Simplex::set_basic_solution(Base &base) {
     assert(lp.is_feasible(x));
 }
 
-Simplex::PricingResult Simplex::run_price(const Base &base) const {
+Simplex::Candidate Simplex::run_price(const Base &base) const {
   DVector pi(lp.A.row_count());
   DVector d(lp.A.col_count());
   for (size_t i = 0; i < lp.A.row_count(); i++)
@@ -155,6 +152,14 @@ Simplex::PricingResult Simplex::run_price(const Base &base) const {
     d[i] = c[i] - pi * lp.A.column(i);
 
   return Pricer().price(x, lp, d, non_basic_indices);
+}
+
+Simplex::RatioTestResult Simplex::run_ratio_test(Simplex::Candidate candidate,
+                                                 Base &base) const {
+  SVector alpha = lp.A.column(candidate.index);
+  base.ftran(alpha);
+  return RatioTester().ratio_test(lp, alpha, x, candidate.index, basic_indices,
+                                  candidate.cost);
 }
 
 void Simplex::print_iteration_results(IterationDecision &id, int round) const {

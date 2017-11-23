@@ -7,10 +7,10 @@
 class Simplex {
 public:
   enum class Result { Infeasible, OptimalSolution, Unbounded, Unsolved };
-  struct PricingResult {
+  struct Candidate {
     bool is_optimal;
-    size_t candidate_index;
-    double candidate_cost;
+    size_t index;
+    double cost;
   };
   enum class IterationDecision {
     Unbounded,
@@ -49,7 +49,8 @@ private:
   void set_initial_x();
   void set_phase_one_objective();
   void set_basic_solution(Base &);
-  PricingResult run_price(const Base &) const;
+  Candidate run_price(const Base &) const;
+  RatioTestResult run_ratio_test(Candidate, Base &) const;
   void print_iteration_results(IterationDecision &, int) const;
   static constexpr int max_rounds = 500;
 

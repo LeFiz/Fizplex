@@ -1,7 +1,7 @@
 #include "pricer.h"
 #include "simplex.h"
 
-Simplex::PricingResult
+Simplex::Candidate
 Pricer::price(const DVector &x, const LP &lp, const DVector &d,
               const std::vector<size_t> &non_basic_indices) const {
   double min_val = 0.0;
@@ -23,9 +23,9 @@ Pricer::price(const DVector &x, const LP &lp, const DVector &d,
       updated = true;
     }
   }
-  Simplex::PricingResult pr;
-  pr.is_optimal = !updated;
-  pr.candidate_index = min_posi;
-  pr.candidate_cost = d[pr.candidate_index];
-  return pr;
+  Simplex::Candidate candidate;
+  candidate.is_optimal = !updated;
+  candidate.index = min_posi;
+  candidate.cost = d[candidate.index];
+  return candidate;
 }
