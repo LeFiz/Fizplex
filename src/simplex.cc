@@ -63,21 +63,11 @@ void Simplex::solve() {
 
     switch (iteration_decision) {
     case IterationDecision::BaseChange: {
-      x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
-      const auto it = std::find(non_basic_indices.begin(),
-                                non_basic_indices.end(), candidate.index);
-
-      assert(it != non_basic_indices.end());
-      const size_t candidate_non_basic_index =
-          std::distance(non_basic_indices.begin(), it);
-
-      std::swap<size_t>(non_basic_indices[candidate_non_basic_index],
-                        basic_indices[rt.leaving_index]);
+      exchange_base_column(candidate, rt);
       break;
     }
     case IterationDecision::Unbounded:
       assert(phase != Simplex::Phase::One);
-
       result = Result::Unbounded;
       x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
       x[candidate.index] = rt.step_length;
@@ -166,6 +156,19 @@ Simplex::IterationDecision Simplex::decision_for_optimality() const {
       return IterationDecision::Infeasible;
     }
   }
+}
+
+void Simplex::exchange_base_column(Candidate candidate, RatioTestResult rt) {
+  x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
+  const auto it = std::find(non_basic_indices.begin(), non_basic_indices.end(),
+                            candidate.index);
+
+  assert(it != non_basic_indices.end());
+  const size_t candidate_non_basic_index =
+      std::distance(non_basic_indices.begin(), it);
+
+  std::swap<size_t>(non_basic_indices[candidate_non_basic_index],
+                    basic_indices[rt.leaving_index]);
 }
 
 void Simplex::print_iteration_results(IterationDecision &id, int round) const {
