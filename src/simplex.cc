@@ -49,24 +49,13 @@ void Simplex::solve() {
       set_phase_one_objective();
     z = c * x;
 
-    auto candidate = run_price(base);
+    const auto candidate = run_price(base);
 
     IterationDecision iteration_decision = IterationDecision::Unfinished;
-    if (candidate.is_optimal) {
-      if (phase == Simplex::Phase::Two) {
-        assert(lp.is_feasible(x));
-        iteration_decision = IterationDecision::OptimalSolution;
-      } else { // Phase I
-        if (lp.is_feasible(x)) {
-          iteration_decision = IterationDecision::SwitchToPhaseTwo;
-        } else {
-          iteration_decision = IterationDecision::Infeasible;
-        }
-      }
-    }
+    if (candidate.is_optimal)
+      iteration_decision = decision_for_optimality();
 
     const auto rt = run_ratio_test(candidate, base);
-
     if (iteration_decision == IterationDecision::Unfinished)
       iteration_decision = rt.result;
 
@@ -156,10 +145,27 @@ Simplex::Candidate Simplex::run_price(const Base &base) const {
 
 Simplex::RatioTestResult Simplex::run_ratio_test(Simplex::Candidate candidate,
                                                  Base &base) const {
+  // Can skip expensive calculation as it won't be used when optimal
+  if (candidate.is_optimal)
+    return Simplex::RatioTestResult();
+
   SVector alpha = lp.A.column(candidate.index);
   base.ftran(alpha);
   return RatioTester().ratio_test(lp, alpha, x, candidate.index, basic_indices,
                                   candidate.cost);
+}
+
+Simplex::IterationDecision Simplex::decision_for_optimality() const {
+  if (phase == Simplex::Phase::Two) {
+    assert(lp.is_feasible(x));
+    return IterationDecision::OptimalSolution;
+  } else { // Phase I
+    if (lp.is_feasible(x)) {
+      return IterationDecision::SwitchToPhaseTwo;
+    } else {
+      return IterationDecision::Infeasible;
+    }
+  }
 }
 
 void Simplex::print_iteration_results(IterationDecision &id, int round) const {
