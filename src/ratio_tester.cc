@@ -25,7 +25,7 @@ RatioTester::ratio_test(const LP &lp, const SVector &alpha, const DVector &x,
     }
 
     a = n->value * direction;
-    if (is_lower(a, 0.0)) {
+    if (a < 0.0) {
       bound = column_header.upper; // = inf for ColType = Lower
     } else {
       bound = column_header.lower; // = -inf for ColType = upper
