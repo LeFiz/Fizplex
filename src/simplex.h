@@ -53,6 +53,7 @@ private:
   RatioTestResult run_ratio_test(Candidate, Base &) const;
   IterationDecision decision_for_optimality() const;
   void exchange_base_column(Candidate, RatioTestResult);
+  void set_result_for_unbounded(Candidate, RatioTestResult);
 
   void print_iteration_results(IterationDecision &, int) const;
   static constexpr int max_rounds = 500;

@@ -38,7 +38,6 @@ void Simplex::set_initial_x() {
 }
 
 void Simplex::solve() {
-
   set_initial_x();
 
   for (int round = 0; round < max_rounds; round++) {
@@ -67,11 +66,7 @@ void Simplex::solve() {
       break;
     }
     case IterationDecision::Unbounded:
-      assert(phase != Simplex::Phase::One);
-      result = Result::Unbounded;
-      x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
-      x[candidate.index] = rt.step_length;
-      z = -inf;
+      set_result_for_unbounded(candidate, rt);
       return;
     case IterationDecision::BoundFlip:
       x[candidate.index] += rt.step_length;
@@ -169,6 +164,15 @@ void Simplex::exchange_base_column(Candidate candidate, RatioTestResult rt) {
 
   std::swap<size_t>(non_basic_indices[candidate_non_basic_index],
                     basic_indices[rt.leaving_index]);
+}
+
+void Simplex::set_result_for_unbounded(Candidate candidate,
+                                       RatioTestResult rt) {
+  assert(phase != Simplex::Phase::One);
+  result = Result::Unbounded;
+  x[basic_indices[rt.leaving_index]] = rt.leaving_bound;
+  x[candidate.index] = rt.step_length;
+  z = -inf;
 }
 
 void Simplex::print_iteration_results(IterationDecision &id, int round) const {
