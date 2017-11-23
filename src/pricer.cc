@@ -26,5 +26,6 @@ Pricer::price(const DVector &x, const LP &lp, const DVector &d,
   Simplex::PricingResult pr;
   pr.is_optimal = !updated;
   pr.candidate_index = min_posi;
+  pr.candidate_cost = d[pr.candidate_index];
   return pr;
 }

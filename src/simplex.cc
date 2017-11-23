@@ -38,36 +38,18 @@ void Simplex::set_initial_x() {
 }
 
 void Simplex::solve() {
-  const size_t col_count = lp.A.col_count();
-  const size_t row_count = lp.A.row_count();
+
   set_initial_x();
-
   for (int round = 0; round < max_rounds; round++) {
-    // std::sort(basic_indices.begin(), basic_indices.end());
     Base base(lp, basic_indices);
-
     set_basic_solution(base);
 
-    // Set c for phase I
     if (phase == Simplex::Phase::One)
       set_phase_one_objective();
 
-    z = c * x;
-
-    // Price
-    DVector pi(row_count);
-    DVector d(col_count);
-    for (size_t i = 0; i < row_count; i++)
-      pi[i] = c[basic_indices[i]]; // ==c_B
-    base.btran(pi);
-    for (size_t i = 0; i < col_count; i++)
-      d[i] = c[i] - pi * lp.A.column(i);
-
-    Pricer pricer;
-    auto pr = pricer.price(x, lp, d, non_basic_indices);
+    Simplex::PricingResult pr = run_price(base);
 
     IterationDecision iteration_decision = IterationDecision::Unfinished;
-
     if (pr.is_optimal) {
       if (phase == Simplex::Phase::Two) {
         assert(lp.is_feasible(x));
@@ -85,11 +67,12 @@ void Simplex::solve() {
     base.ftran(alpha);
 
     // Ratio test
-    const auto rt = RatioTester().ratio_test(
-        lp, alpha, x, pr.candidate_index, basic_indices, d[pr.candidate_index]);
+    const auto rt = RatioTester().ratio_test(lp, alpha, x, pr.candidate_index,
+                                             basic_indices, pr.candidate_cost);
     if (iteration_decision == IterationDecision::Unfinished)
       iteration_decision = rt.result;
 
+    z = c * x;
     print_iteration_results(iteration_decision, round);
 
     switch (iteration_decision) {
@@ -160,6 +143,18 @@ void Simplex::set_basic_solution(Base &base) {
 
   if (phase == Phase::Two)
     assert(lp.is_feasible(x));
+}
+
+Simplex::PricingResult Simplex::run_price(const Base &base) const {
+  DVector pi(lp.A.row_count());
+  DVector d(lp.A.col_count());
+  for (size_t i = 0; i < lp.A.row_count(); i++)
+    pi[i] = c[basic_indices[i]]; // ==c_B
+  base.btran(pi);
+  for (size_t i = 0; i < lp.A.col_count(); i++)
+    d[i] = c[i] - pi * lp.A.column(i);
+
+  return Pricer().price(x, lp, d, non_basic_indices);
 }
 
 void Simplex::print_iteration_results(IterationDecision &id, int round) const {
