@@ -43,13 +43,11 @@ void Simplex::solve() {
   set_initial_x();
 
   for (int round = 0; round < max_rounds; round++) {
-    // Set up base + inverse
     // std::sort(basic_indices.begin(), basic_indices.end());
     Base base(lp, basic_indices);
 
     // Calc beta
-    DVector beta(row_count);
-    beta = lp.b;
+    DVector beta = lp.b;
     for (auto i : non_basic_indices)
       beta -= x[i] * lp.A.column(i);
     base.ftran(beta);
@@ -97,9 +95,8 @@ void Simplex::solve() {
     base.ftran(alpha);
 
     // Ratio test
-    const auto rt =
-        RatioTester().ratio_test(lp, alpha, beta, pr.candidate_index,
-                                 basic_indices, d[pr.candidate_index]);
+    const auto rt = RatioTester().ratio_test(
+        lp, alpha, x, pr.candidate_index, basic_indices, d[pr.candidate_index]);
     if (iteration_decision == IterationDecision::Unfinished)
       iteration_decision = rt.result;
 

@@ -1,7 +1,7 @@
 #include "ratio_tester.h"
 
 Simplex::RatioTestResult
-RatioTester::ratio_test(const LP &lp, const SVector &alpha, const DVector &beta,
+RatioTester::ratio_test(const LP &lp, const SVector &alpha, const DVector &x,
                         const size_t candidate_index,
                         const std::vector<size_t> &basic_indices,
                         const double candidate_cost) const {
@@ -30,7 +30,7 @@ RatioTester::ratio_test(const LP &lp, const SVector &alpha, const DVector &beta,
     } else {
       bound = column_header.lower; // = -inf for ColType = upper
     }
-    double t = (beta[n->index] - bound) / a;
+    double t = (x[basic_indices[n->index]] - bound) / a;
     if (t < min_theta) {
       min_theta = t;
       min_theta_posi = n->index;
