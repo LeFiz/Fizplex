@@ -17,6 +17,7 @@ void DVector::resize(size_t new_dim) {
     temp[i] = vals[i];
   vals.swap(temp);
   dim = new_dim;
+  assert(vals.size() == dim);
 }
 
 void DVector::append(double val) {

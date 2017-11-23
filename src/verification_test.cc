@@ -7,7 +7,7 @@ TEST(VerificationTest, Afiro) {
 
   Simplex spx(lp);
   spx.solve();
-  EXPECT_TRUE(is_eq(-4.6475314286E02, spx.get_z()));
+  EXPECT_TRUE(is_eq_norm(-4.6475314286E02, spx.get_z()));
 }
 
 TEST(VerificationTest, Sc105) {
@@ -15,7 +15,7 @@ TEST(VerificationTest, Sc105) {
 
   Simplex spx(lp);
   spx.solve();
-  EXPECT_TRUE(is_eq(-5.2202061212E+01, spx.get_z()));
+  EXPECT_TRUE(is_eq_norm(-5.2202061212E+01, spx.get_z()));
 }
 
 TEST(VerificationTest, Blend) {
@@ -23,7 +23,7 @@ TEST(VerificationTest, Blend) {
 
   Simplex spx(lp);
   spx.solve();
-  EXPECT_TRUE(is_eq(-3.0812149846E+01, spx.get_z()));
+  EXPECT_TRUE(is_eq_norm(-3.0812149846E+01, spx.get_z()));
 }
 
 TEST(VerificationTest, Stocfor1) {
@@ -31,32 +31,29 @@ TEST(VerificationTest, Stocfor1) {
 
   Simplex spx(lp);
   spx.solve();
-  EXPECT_TRUE(is_eq(-4.1131976219E+04, spx.get_z()));
+  EXPECT_TRUE(is_eq_norm(-4.1131976219E+04, spx.get_z()));
 }
 
-TEST(ExperimentalVerificationTest, Brandy) {
+TEST(VerificationTest, Brandy) {
   LP lp = MPSReader::read_lp("./test/brandy.mps");
 
   Simplex spx(lp);
   spx.solve();
-  EXPECT_TRUE(is_eq(1.5185098965E+03, spx.get_z()));
-  EXPECT_DOUBLE_EQ(1.5185098965E+03, spx.get_z());
+  EXPECT_TRUE(is_eq_norm(1.5185098965E+03, spx.get_z()));
 }
 
-TEST(ExperimentalVerificationTest, Agg) {
+TEST(VerificationTest, Agg) {
   LP lp = MPSReader::read_lp("./test/agg.mps");
 
   Simplex spx(lp);
   spx.solve();
-  EXPECT_TRUE(is_eq(-3.5991767287E+07, spx.get_z()));
-  EXPECT_DOUBLE_EQ(-3.5991767287E+07, spx.get_z());
+  EXPECT_TRUE(is_eq_norm(-3.5991767287E+07, spx.get_z()));
 }
 
-TEST(ExperimentalVerificationTest, Israel) {
+TEST(VerificationTest, Israel) {
   LP lp = MPSReader::read_lp("./test/israel.mps");
 
   Simplex spx(lp);
   spx.solve();
-  EXPECT_TRUE(is_eq(-8.9664482186E+05, spx.get_z()));
-  EXPECT_DOUBLE_EQ(-8.9664482186E+05, spx.get_z());
+  EXPECT_TRUE(is_eq_norm(-8.9664482186E+05, spx.get_z()));
 }

@@ -162,6 +162,9 @@ void Simplex::exchange_base_column(Candidate candidate, RatioTestResult rt) {
   const size_t candidate_non_basic_index =
       std::distance(non_basic_indices.begin(), it);
 
+  Debug(1) << "Leaving: " << basic_indices[rt.leaving_index]
+           << ", Entering: " << non_basic_indices[candidate_non_basic_index]
+           << "\n";
   std::swap<size_t>(non_basic_indices[candidate_non_basic_index],
                     basic_indices[rt.leaving_index]);
 }

@@ -10,7 +10,12 @@
 #include "gtest/gtest.h"
 
 int main(int argc, char **argv) {
-  ::testing::GTEST_FLAG(filter) = "-Experim*";
   ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  ::testing::GTEST_FLAG(filter) = "-Verific*";
+  auto errors = RUN_ALL_TESTS();
+  if (errors == 0) {
+    ::testing::GTEST_FLAG(filter) = "Verific*";
+    errors += RUN_ALL_TESTS();
+  }
+  return errors;
 }
