@@ -53,7 +53,7 @@ void Base::invert() {
 
   for (size_t i = 0; i < m; i++) { // Update all columns
     auto pivot = find_pivot(i);
-    if (not pivot.found) // Otherwise base is not regular
+    if (not pivot.found) // Base is not regular
       throw std::invalid_argument("Base is singular.");
 
     for (auto &v : etms[pivot.index].eta) {
@@ -79,8 +79,7 @@ bool Base::work_vector_is_zero() const {
   return !(std::accumulate(work.cbegin(), work.cend(), 0, abs_sum) > 0.0);
 }
 
-void Base::apply_etm(ETM &etm, SVector &vec) {
-
+void Base::apply_etm(const ETM &etm, SVector &vec) {
   double mult = 0.0;
   bool found = false;
   // Find nonzero multiplier in vec_i
@@ -94,30 +93,30 @@ void Base::apply_etm(ETM &etm, SVector &vec) {
     }
   }
   if (found) {
-    for (auto &entry : etm.eta)
-      work[entry.index] = entry.value;
+    for (auto it = etm.eta.cbegin(); it != etm.eta.cend(); ++it)
+      work[it->index] = it->value;
     for (auto &e : vec) {
       if (work[e.index] > 0.0 or work[e.index] < 0.0) {
         e.value += work[e.index] * mult;
         work[e.index] = 0.0;
       }
     }
-    for (auto &e : etm.eta) {
-      if (work[e.index] > 0.0 or work[e.index] < 0.0) {
-        vec.add_value(e.index, work[e.index] * mult);
-        work[e.index] = 0.0;
+    for (auto it = etm.eta.cbegin(); it != etm.eta.cend(); ++it) {
+      if (work[it->index] > 0.0 or work[it->index] < 0.0) {
+        vec.add_value(it->index, work[it->index] * mult);
+        work[it->index] = 0.0;
       }
     }
   }
 }
 
-void Base::apply_etm(ETM &etm, DVector &vec) {
+void Base::apply_etm(const ETM &etm, DVector &vec) const {
   assert(vec.dimension() == m);
   double mult = vec[etm.col];
   vec[etm.col] = 0.0; // special case for pivot
 
-  for (auto &entry : etm.eta)
-    vec[entry.index] += entry.value * mult;
+  for (auto it = etm.eta.cbegin(); it != etm.eta.cend(); ++it)
+    vec[it->index] += it->value * mult;
 }
 
 void Base::ftran(SVector &vec) {
@@ -129,7 +128,7 @@ void Base::ftran(SVector &vec) {
     entry.index = row_ordering[entry.index];
 }
 
-void Base::ftran(DVector &vec) {
+void Base::ftran(DVector &vec) const {
   for (auto &etm : etms)
     apply_etm(etm, vec);
 

@@ -16,7 +16,7 @@ public:
   void invert();
   ColMatrix get_inverse();
   void ftran(SVector &vec);
-  void ftran(DVector &vec);
+  void ftran(DVector &vec) const;
   void btran(DVector &vec) const;
 
 private:
@@ -31,8 +31,8 @@ private:
     double value;
     size_t index;
   };
-  void apply_etm(ETM &etm, SVector &vec);
-  void apply_etm(ETM &etm, DVector &vec);
+  void apply_etm(const ETM &etm, SVector &vec);
+  void apply_etm(const ETM &etm, DVector &vec) const;
   void swap_columns(size_t i, size_t j);
   bool work_vector_is_zero() const;
   Pivot find_pivot(size_t) const;
