@@ -48,8 +48,8 @@ std::ostream &operator<<(std::ostream &os, Nonzero const &n) {
 }
 
 std::ostream &operator<<(std::ostream &os, SVector const &vec) {
-  for (const auto &n : vec.values) {
-    os << n;
+  for (auto it = vec.cbegin(); it != vec.cend(); ++it) {
+    os << *it;
   }
   return os;
 }
