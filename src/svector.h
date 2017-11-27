@@ -13,6 +13,11 @@ namespace fizplex {
 // Sparse Vector
 class SVector {
 public:
+  struct Nonzero {
+    size_t index;
+    double value;
+  };
+
   SVector();
   SVector(std::initializer_list<Nonzero>);
 
@@ -38,7 +43,7 @@ private:
 
 SVector operator*(const double c, const SVector &vec);
 
-std::ostream &operator<<(std::ostream &os, Nonzero const &n);
+std::ostream &operator<<(std::ostream &os, SVector::Nonzero const &n);
 std::ostream &operator<<(std::ostream &os, SVector const &n);
 
 } // namespace fizplex

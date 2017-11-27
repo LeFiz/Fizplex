@@ -44,11 +44,6 @@ inline bool is_greater(double lhs, double rhs) { return (rhs + eps) < lhs; }
 inline bool is_finite(double val) { return std::isfinite(val); }
 inline bool is_infinite(double val) { return !std::isfinite(val); }
 
-struct Nonzero {
-  size_t index;
-  double value;
-};
-
 } // namespace fizplex
 
 #endif

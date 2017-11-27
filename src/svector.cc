@@ -45,7 +45,7 @@ bool SVector::operator==(const SVector &rhs) const {
 
 bool SVector::operator!=(const SVector &rhs) const { return !(*this == rhs); }
 
-std::ostream &operator<<(std::ostream &os, Nonzero const &n) {
+std::ostream &operator<<(std::ostream &os, SVector::Nonzero const &n) {
   return os << "(" << n.index << "," << n.value << ")";
 }
 
