@@ -8,6 +8,8 @@
 #include <memory>
 #include <numeric>
 
+namespace fizplex {
+
 class Base {
 public:
   Base() = delete;
@@ -43,5 +45,7 @@ private:
   size_t m;
   std::unique_ptr<size_t[]> row_ordering;
 };
+
+} // namespace fizplex
 
 #endif

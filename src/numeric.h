@@ -5,6 +5,8 @@
 #include <cstddef>
 #include <limits>
 
+namespace fizplex {
+
 const double eps = 1e-6;
 const double zero_eps = 1e-7;
 
@@ -46,5 +48,7 @@ struct Nonzero {
   size_t index;
   double value;
 };
+
+} // namespace fizplex
 
 #endif

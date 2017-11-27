@@ -2,6 +2,8 @@
 #include "gtest/gtest.h"
 #include <exception>
 
+namespace fizplex {
+
 TEST(MPSReaderTest, ReadSimpleMPS) {
   LP lp = MPSReader::read_lp("./test/simple.mps");
   EXPECT_EQ(lp.row_header(0u).type, RowType::LE);
@@ -47,3 +49,5 @@ TEST(MPSReaderTest, MissingRHSNameIsValid) {
   EXPECT_DOUBLE_EQ(2.0, lp.row_header(0u).upper);
   EXPECT_DOUBLE_EQ(4.0, lp.row_header(2u).upper);
 }
+
+} // namespace fizplex

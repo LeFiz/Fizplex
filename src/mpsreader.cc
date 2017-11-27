@@ -2,6 +2,7 @@
 #include <exception>
 #include <fstream>
 
+namespace fizplex {
 namespace MPSReader {
 
 LP read_lp(std::string mps_file) {
@@ -103,4 +104,5 @@ void parse_and_add_rhs(const std::string &first_word, std::istringstream &iss,
     }
   }
 }
-}
+} // namespace MPSReader
+} // namespace fizplex

@@ -3,6 +3,8 @@
 
 #include "lp.h"
 
+namespace fizplex {
+
 class RowScaler {
 public:
   explicit RowScaler(LP &);
@@ -11,5 +13,7 @@ public:
 private:
   LP &lp;
 };
+
+} // namespace fizplex
 
 #endif

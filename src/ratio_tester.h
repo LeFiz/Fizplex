@@ -1,5 +1,6 @@
 #include "simplex.h"
 
+namespace fizplex {
 class RatioTester {
 public:
   Simplex::RatioTestResult ratio_test(const LP &lp, const SVector &alpha,
@@ -8,3 +9,5 @@ public:
                                       const std::vector<size_t> &basic_indices,
                                       const double candidate_cost) const;
 };
+
+} // namespace fizplex

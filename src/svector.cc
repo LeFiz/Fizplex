@@ -2,6 +2,8 @@
 #include <cassert>
 #include <typeinfo>
 
+namespace fizplex {
+
 SVector::SVector() : values() {}
 
 SVector::SVector(std::initializer_list<Nonzero> l) : values(l) {}
@@ -77,3 +79,5 @@ SVector operator*(const double c, const SVector &vec) {
     n.value *= c;
   return result;
 }
+
+} // namespace fizplex

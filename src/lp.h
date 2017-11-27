@@ -6,6 +6,8 @@
 #include "svector.h"
 #include <valarray>
 
+namespace fizplex {
+
 enum class ColType { Fixed, Bounded, LowerBound, Free, UpperBound };
 enum class RowType { Equality, Range, LE, NonBinding, GE };
 
@@ -62,5 +64,7 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &os, const LP::Column &);
+
+} // namespace fizplex
 
 #endif

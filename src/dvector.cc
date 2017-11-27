@@ -3,6 +3,8 @@
 #include <cassert>
 #include <iostream>
 
+namespace fizplex {
+
 DVector::DVector(size_t d) : vals(d), dim(d) {}
 
 const size_t &DVector::dimension() const {
@@ -101,3 +103,5 @@ DVector &DVector::operator-=(const SVector &rhs) {
     vals[it->index] -= it->value;
   return *this;
 }
+
+} // namespace fizplex

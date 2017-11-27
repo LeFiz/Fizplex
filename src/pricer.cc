@@ -1,6 +1,8 @@
 #include "pricer.h"
 #include "simplex.h"
 
+namespace fizplex {
+
 Simplex::Candidate
 Pricer::price(const DVector &x, const LP &lp, const DVector &d,
               const std::vector<size_t> &non_basic_indices) const {
@@ -29,3 +31,5 @@ Pricer::price(const DVector &x, const LP &lp, const DVector &d,
   candidate.cost = d[candidate.index];
   return candidate;
 }
+
+} // namespace fizplex

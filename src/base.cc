@@ -1,5 +1,7 @@
 #include "base.h"
 
+namespace fizplex {
+
 Base::Base(const ColMatrix &b)
     : work(b.row_count()), m(b.row_count()),
       row_ordering(std::make_unique<size_t[]>(m)) {
@@ -167,3 +169,5 @@ ColMatrix Base::get_inverse() {
   }
   return inv;
 }
+
+} // namespace fizplex

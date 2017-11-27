@@ -1,6 +1,8 @@
 #include "rhs_scaler.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 TEST(RhsScalerTest, AlreadyScaledVectorIsUnchanged) {
   DVector v = {1.0, -1.0, 0.5, -0.5};
   RhsScaler rs(v.max_abs());
@@ -37,3 +39,5 @@ TEST(RhsScalerTest, ScalarScaling) {
   rs.unscale(d);
   EXPECT_DOUBLE_EQ(-18.6, d);
 }
+
+} // namespace fizplex

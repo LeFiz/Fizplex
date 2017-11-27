@@ -1,6 +1,8 @@
 #include "simplex.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 class SimplexTest : public ::testing::Test {
 public:
   void solve_lp() {
@@ -147,3 +149,5 @@ TEST_F(SimplexTest, ThreeRowsThreeVarsOptimalSolution) {
   EXPECT_EQ(Simplex::Result::OptimalSolution, result);
   EXPECT_DOUBLE_EQ(-13.0, z);
 }
+
+} // namespace fizplex

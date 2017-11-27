@@ -1,6 +1,8 @@
 #include "rhs_scaler.h"
 #include <cassert>
 
+namespace fizplex {
+
 RhsScaler::RhsScaler(double s) : scale_factor(s) { assert(scale_factor > 0.0); }
 
 void RhsScaler::scale(double &d) const {
@@ -22,3 +24,5 @@ void RhsScaler::unscale(DVector &vec) const {
   if (scale_factor > 0.0)
     vec = scale_factor * vec;
 }
+
+} // namespace fizplex

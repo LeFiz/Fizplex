@@ -1,6 +1,8 @@
 #include "ratio_tester.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 class RatioTesterBounded : public ::testing::Test {
 protected:
   SVector alpha;
@@ -33,3 +35,5 @@ TEST_F(RatioTesterBounded, AlphaNonZeroAndNoUpperIsBaseChange) {
   auto res = rt.ratio_test(lp, alpha, beta, cind, basic, ccost);
   EXPECT_EQ(Simplex::IterationDecision::BaseChange, res.result);
 }
+
+} // namespace fizplex

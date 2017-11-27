@@ -7,6 +7,8 @@
 #include <iostream>
 #include <unordered_map>
 
+namespace fizplex {
+
 Simplex::Simplex(LP &_lp, int print_level_)
     : lp(_lp), print_level(print_level_),
       x(lp.A.col_count() + lp.A.row_count()),
@@ -202,3 +204,5 @@ std::ostream &operator<<(std::ostream &os,
   os << idtos[id];
   return os;
 }
+
+} // namespace fizplex

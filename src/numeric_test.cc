@@ -1,6 +1,8 @@
 #include "numeric.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 TEST(NumericTest, Equality) {
   EXPECT_TRUE(is_eq(2.0, 2));
   EXPECT_TRUE(!is_eq(2.0, 3));
@@ -73,3 +75,5 @@ TEST(NumericTest, IsZero) {
   EXPECT_TRUE(is_zero(1e-10, 1e-5));
   EXPECT_FALSE(is_zero(1e-10, 1e-11));
 }
+
+} // namespace fizplex

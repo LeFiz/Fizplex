@@ -1,6 +1,8 @@
 #include "svector.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 TEST(SVectorTest, EmptyHasZeolength) { EXPECT_TRUE(SVector().length() == 0); }
 
 TEST(SVectorTest, NonEmptyLength) {
@@ -62,3 +64,5 @@ TEST(SVectorTest, SubscriptAddsNewValues) {
   EXPECT_DOUBLE_EQ(3.2, v[5]);
   EXPECT_DOUBLE_EQ(0.4, v[3]);
 }
+
+} // namespace fizplex

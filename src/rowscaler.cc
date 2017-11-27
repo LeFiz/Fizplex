@@ -1,5 +1,7 @@
 #include "rowscaler.h"
 
+namespace fizplex {
+
 RowScaler::RowScaler(LP &_lp) : lp(_lp) {}
 
 void RowScaler::scale_all() {
@@ -19,3 +21,5 @@ void RowScaler::scale_all() {
     }
   }
 }
+
+} // namespace fizplex

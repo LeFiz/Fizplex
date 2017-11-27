@@ -1,5 +1,7 @@
 #include "dvector.h"
 
+namespace fizplex {
+
 class RhsScaler {
 public:
   explicit RhsScaler(double);
@@ -11,3 +13,5 @@ public:
 private:
   double scale_factor = 0.0;
 };
+
+} // namespace fizplex

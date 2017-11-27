@@ -6,6 +6,8 @@
 #include <memory>
 #include <vector>
 
+namespace fizplex {
+
 class ColMatrix {
 public:
   ColMatrix();
@@ -35,5 +37,7 @@ private:
   std::vector<SVector> cols;
   size_t m, n;
 };
+
+} // namespace fizplex
 
 #endif

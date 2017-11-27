@@ -1,5 +1,7 @@
 #include "ratio_tester.h"
 
+namespace fizplex {
+
 Simplex::RatioTestResult
 RatioTester::ratio_test(const LP &lp, const SVector &alpha, const DVector &x,
                         const size_t candidate_index,
@@ -57,3 +59,5 @@ RatioTester::ratio_test(const LP &lp, const SVector &alpha, const DVector &x,
   }
   return rt;
 }
+
+} // namespace fizplex

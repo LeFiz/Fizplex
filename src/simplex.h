@@ -4,6 +4,8 @@
 #include "base.h"
 #include "lp.h"
 
+namespace fizplex {
+
 class Simplex {
 public:
   enum class Result { Infeasible, OptimalSolution, Unbounded, Unsolved };
@@ -63,5 +65,7 @@ private:
   friend std::ostream &operator<<(std::ostream &,
                                   const Simplex::IterationDecision &);
 };
+
+} // namespace fizplex
 
 #endif

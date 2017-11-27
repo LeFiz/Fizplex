@@ -1,5 +1,7 @@
 #include "colmatrix.h"
 
+namespace fizplex {
+
 ColMatrix::ColMatrix() : m(0), n(0) {}
 
 ColMatrix::ColMatrix(size_t _m, size_t _n) : m(_m), n(_n) {
@@ -106,3 +108,5 @@ ColMatrix ColMatrix::operator*(const ColMatrix &rhs) const {
   }
   return result;
 }
+
+} // namespace fizplex

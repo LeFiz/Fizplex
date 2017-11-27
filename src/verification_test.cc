@@ -2,6 +2,8 @@
 #include "simplex.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 TEST(VerificationTest, Afiro) {
   LP lp = MPSReader::read_lp("./test/afiro.mps");
 
@@ -57,3 +59,5 @@ TEST(VerificationTest, Israel) {
   spx.solve();
   EXPECT_TRUE(is_eq_norm(-8.9664482186E+05, spx.get_z()));
 }
+
+} // namespace fizplex

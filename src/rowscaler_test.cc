@@ -1,6 +1,8 @@
 #include "rowscaler.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 class RowScalerTest : public ::testing::Test {
 public:
   RowScalerTest() : lp(), scaler(lp) {
@@ -41,3 +43,5 @@ TEST_F(RowScalerTest, MultipleRows) {
   EXPECT_DOUBLE_EQ(0.2, lp.get_value(1, 2));
   EXPECT_DOUBLE_EQ(10.0, lp.b[1]);
 }
+
+} // namespace fizplex

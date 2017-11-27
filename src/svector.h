@@ -8,6 +8,8 @@
 
 #include "numeric.h"
 
+namespace fizplex {
+
 // Sparse Vector
 class SVector {
 public:
@@ -38,5 +40,7 @@ SVector operator*(const double c, const SVector &vec);
 
 std::ostream &operator<<(std::ostream &os, Nonzero const &n);
 std::ostream &operator<<(std::ostream &os, SVector const &n);
+
+} // namespace fizplex
 
 #endif

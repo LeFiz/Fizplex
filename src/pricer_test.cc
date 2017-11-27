@@ -1,6 +1,8 @@
 #include "pricer.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 class PricerTestTwoVars : public ::testing::Test {
 protected:
   LP lp;
@@ -33,3 +35,5 @@ TEST_F(PricerTestTwoVars, PosCostAtUpperIsNotOptimal) {
   EXPECT_FALSE(candidate.is_optimal);
   EXPECT_EQ(candidate.index, 1u);
 }
+
+} // namespace fizplex

@@ -3,6 +3,7 @@
 #include <string_view>
 #include <unordered_map>
 
+namespace fizplex {
 namespace MPSReader {
 
 using namespace std::string_view_literals;
@@ -19,4 +20,5 @@ bool is_indicator(const std::string &);
 LP::Row parse_row_type(const std::string &word);
 void parse_and_add_rhs(const std::string &first_word, std::istringstream &,
                        const index_map &, LP &);
-}
+} // namespace MPSReader
+} // namespace fizplex

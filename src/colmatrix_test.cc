@@ -1,6 +1,8 @@
 #include "colmatrix.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 TEST(ColMatrix, RowAndColCountEmptyMatrix) {
   const ColMatrix m;
   EXPECT_TRUE(m.row_count() == 0);
@@ -120,3 +122,5 @@ TEST(ColMatrix, MatrixMultiplicationWrongDimensions) {
   const auto b = ColMatrix::identity(2);
   EXPECT_THROW(a * b, std::invalid_argument);
 }
+
+} // namespace fizplex

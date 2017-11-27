@@ -1,7 +1,7 @@
 #include "lp.h"
 #include "gtest/gtest.h"
 
-// TODO structure by case: LPTestRangeRow - b is set properly, logical is set
+namespace fizplex {
 
 class LPTestFeasibility : public ::testing::Test {
 public:
@@ -150,3 +150,5 @@ TEST(LPTest, AddLogicals) {
   for (int i = 0; i < 5; i++)
     EXPECT_TRUE(is_eq(lp.get_value(i, 1 + i), 1));
 }
+
+} // namespace fizplex

@@ -3,6 +3,8 @@
 #include <cassert>
 #include <unordered_map>
 
+namespace fizplex {
+
 LP::LP() : A(), b(), c(), cols(), rows() {}
 
 LP::Column::Column(ColType _type, double _lower, double _upper,
@@ -184,3 +186,5 @@ std::ostream &operator<<(std::ostream &os, const LP::Column &c) {
   os << ctos[c.type] << ": " << c.lower << " <= x <= " << c.upper;
   return os;
 }
+
+} // namespace fizplex

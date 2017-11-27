@@ -2,6 +2,8 @@
 #include "lp.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 TEST(BaseTestSingular, InvertIsFalse) {
   const ColMatrix m(3, 3,
                     {{{0, 1}, {1, 1}, {2, 1}},
@@ -149,3 +151,5 @@ TEST_F(BaseTestCreateFromLP, IndicesInDecreasingOrder) {
   EXPECT_EQ(ColMatrix(2, 2, {{{1, 0.5}}, {{0, 1.0 / 3.0}}}),
             base.get_inverse());
 }
+
+} // namespace fizplex

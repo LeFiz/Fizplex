@@ -5,6 +5,8 @@
 #include <iostream>
 #include <valarray>
 
+namespace fizplex {
+
 class DVector {
 public:
   explicit DVector(size_t dimension = 0);
@@ -44,5 +46,7 @@ private:
 DVector operator*(const double c, const DVector &rhs);
 
 std::ostream &operator<<(std::ostream &os, const DVector &v);
+
+} // namespace fizplex
 
 #endif

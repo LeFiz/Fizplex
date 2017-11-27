@@ -2,6 +2,8 @@
 #include "numeric.h"
 #include "gtest/gtest.h"
 
+namespace fizplex {
+
 TEST(DVectorDimensionTest, NewVectorHasCorrectDim) {
   EXPECT_TRUE(DVector().dimension() == 0);
   EXPECT_TRUE(DVector(5).dimension() == 5);
@@ -90,3 +92,5 @@ TEST(DVectorTest, MaxAbs) {
   EXPECT_DOUBLE_EQ(4.4, DVector({3.1, 4.4, -1.3}).max_abs());
   EXPECT_DOUBLE_EQ(3.1, DVector({-3.1, 3.0}).max_abs());
 }
+
+} // namespace fizplex
