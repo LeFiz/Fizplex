@@ -28,7 +28,7 @@ public:
     double leaving_bound;
   };
 
-  explicit Simplex(LP &_lp);
+  explicit Simplex(LP &_lp, int print_level_ = 0);
   void solve();
 
   const DVector &get_x() const;
@@ -38,6 +38,7 @@ public:
 private:
   enum class Phase { One, Two };
   LP &lp;
+  int print_level;
   std::vector<size_t> basic_indices;
   std::vector<size_t> non_basic_indices;
   DVector x;

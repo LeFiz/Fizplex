@@ -7,8 +7,9 @@
 #include <iostream>
 #include <unordered_map>
 
-Simplex::Simplex(LP &_lp)
-    : lp(_lp), x(lp.A.col_count() + lp.A.row_count()),
+Simplex::Simplex(LP &_lp, int print_level_)
+    : lp(_lp), print_level(print_level_),
+      x(lp.A.col_count() + lp.A.row_count()),
       c(lp.A.col_count() + lp.A.row_count()) {
   const size_t structural_count = lp.A.col_count();
   lp.add_logicals();
@@ -58,7 +59,8 @@ void Simplex::solve() {
     if (iteration_decision == IterationDecision::Unfinished)
       iteration_decision = rt.result;
 
-    print_iteration_results(iteration_decision, round);
+    if (print_level > 0)
+      print_iteration_results(iteration_decision, round);
 
     switch (iteration_decision) {
     case IterationDecision::BaseChange: {

@@ -4,7 +4,7 @@ GENERAL_CC_FLAGS =	-Werror -Wall -Wextra -Wfloat-equal\
 										-Wmissing-declarations -Wmissing-include-dirs -Wuninitialized\
 										-Wwrite-strings -Wold-style-cast -Woverloaded-virtual\
 										-Wsign-promo -pedantic -std=c++17 -MD -MP
-TEST_CC_FLAGS = -O0 -ggdb
+TEST_CC_FLAGS = -O2 -ggdb
 
 LINKER = g++
 

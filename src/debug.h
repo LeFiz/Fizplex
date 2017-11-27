@@ -14,6 +14,6 @@ public:
 
 private:
   std::ostream &out;
-  static constexpr int max_level = 0;
+  static constexpr int max_level = -1;
   bool print;
 };
