@@ -7,8 +7,8 @@
 
 namespace fizplex {
 
-const double eps = 1e-6;
-const double zero_eps = 1e-7;
+constexpr double eps = 1e-6;
+constexpr double zero_eps = 1e-7;
 
 const double inf = std::numeric_limits<double>::infinity();
 
