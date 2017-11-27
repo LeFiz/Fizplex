@@ -13,8 +13,8 @@ TEST(SVectorTest, AddValueInsertsNewValue) {
   SVector v = {{0, -2}, {1, 3}, {2, 9}, {7, -2.11}};
   const double d = 3.14;
   v.add_value(3, d);
-  EXPECT_TRUE(v.length() == 5);
-  EXPECT_TRUE(is_eq(v.get_value(3), d));
+  EXPECT_EQ(5u, v.length());
+  EXPECT_DOUBLE_EQ(d, v.get_value(3));
 }
 
 TEST(SVectorTest, AddValueCanAddSameIndexTwice) {
@@ -42,10 +42,9 @@ TEST(SVectorTest, NonEmptyVecIsNotEqualToEmpty) {
 
 TEST(SVectorTest, ChangeValsThroughIteratorSetsRightVal) {
   SVector v = {{0, -2}, {1, 3}, {2, 9}, {7, -2.11}};
-  for (auto &n : v) {
+  for (auto &n : v)
     n.value *= 3;
-  }
-  EXPECT_TRUE(is_eq(v.get_value(2), 27));
+  EXPECT_DOUBLE_EQ(27.0, v.get_value(2));
 }
 
 TEST(SVectorTest, ScalaMult) {

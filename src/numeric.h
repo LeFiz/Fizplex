@@ -12,7 +12,6 @@ constexpr double zero_eps = 1e-7;
 
 const double inf = std::numeric_limits<double>::infinity();
 
-inline bool is_eq(double lhs, double rhs) { return fabs(lhs - rhs) <= eps; }
 inline bool is_eq_norm(double lhs, double rhs, double epsilon = eps,
                        double zero_epsilon = zero_eps) {
   const auto diff = fabs(lhs - rhs);

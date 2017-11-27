@@ -32,7 +32,7 @@ DVector::DVector(std::initializer_list<double> l) : vals(l), dim(l.size()) {}
 bool DVector::operator==(const DVector &rhs) const {
   assert(dimension() == rhs.dimension());
   for (size_t i = 0; i < dimension(); i++) {
-    if (!is_eq(vals[i], rhs[i]))
+    if (!is_eq_norm(vals[i], rhs[i]))
       return false;
   }
   return true;

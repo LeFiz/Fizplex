@@ -107,7 +107,7 @@ void LP::add_logicals() {
       assert(
           is_finite(rows[i].upper)); // TODO Move to general is_consistent func
       assert(is_finite(rows[i].lower));
-      assert(is_eq(rows[i].upper, rows[i].lower));
+      assert(is_eq_norm(rows[i].upper, rows[i].lower));
       add_logical_column(ColType::Fixed, 0.0, 0.0);
       break;
     case RowType::Range:

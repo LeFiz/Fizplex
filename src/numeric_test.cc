@@ -3,11 +3,6 @@
 
 namespace fizplex {
 
-TEST(NumericTest, Equality) {
-  EXPECT_TRUE(is_eq(2.0, 2));
-  EXPECT_TRUE(!is_eq(2.0, 3));
-}
-
 TEST(NumericTest, NormEquality) {
   EXPECT_TRUE(is_eq_norm(2.0, 2));
   EXPECT_TRUE(is_eq_norm(0.00000001, 0.000000011));

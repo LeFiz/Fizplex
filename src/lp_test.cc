@@ -86,14 +86,14 @@ TEST(LPTest, AddRangeRowBIsSetProperly) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::Range, 3, 15);
-  EXPECT_TRUE(is_eq(lp.b[0], 15));
+  EXPECT_DOUBLE_EQ(15, lp.b[0]);
 }
 
 TEST(LPTest, AddGERowBIsSetProperly) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::GE, 3, 15);
-  EXPECT_TRUE(is_eq(lp.b[0], 3));
+  EXPECT_DOUBLE_EQ(3.0, lp.b[0]);
 }
 
 TEST(LPTest, GetValue) {
@@ -102,14 +102,14 @@ TEST(LPTest, GetValue) {
   lp.add_row(RowType::Range, 3, 15);
   const double d = 3.14;
   lp.add_value(0, 0, d);
-  EXPECT_TRUE(is_eq(lp.get_value(0, 0), d));
+  EXPECT_DOUBLE_EQ(d, lp.get_value(0, 0));
 }
 
 TEST(LPTest, GetValueWhenNoValueWasAddedIsZero) {
   LP lp;
   lp.add_column(ColType::Bounded, 0, 5);
   lp.add_row(RowType::Range, 3, 15);
-  EXPECT_TRUE(is_zero(lp.get_value(0, 0)));
+  EXPECT_DOUBLE_EQ(0.0, lp.get_value(0, 0));
 }
 
 TEST(LPTest, AddObjValue) {
@@ -119,7 +119,7 @@ TEST(LPTest, AddObjValue) {
   const double d = 3.14;
   lp.add_logicals();
   lp.add_obj_value(0, d);
-  EXPECT_TRUE(is_eq(lp.get_obj_value(0), d));
+  EXPECT_DOUBLE_EQ(d, lp.get_obj_value(0));
 }
 
 TEST(LPTest, AddLogicals) {
@@ -134,21 +134,21 @@ TEST(LPTest, AddLogicals) {
 
   EXPECT_TRUE(lp.column_count() == 6);
 
-  EXPECT_TRUE(lp.column_header(1).type == ColType::Fixed);
-  EXPECT_TRUE(lp.column_header(2).type == ColType::Bounded);
-  EXPECT_TRUE(lp.column_header(3).type == ColType::LowerBound);
-  EXPECT_TRUE(lp.column_header(4).type == ColType::Free);
-  EXPECT_TRUE(lp.column_header(5).type == ColType::UpperBound);
+  EXPECT_EQ(lp.column_header(1).type, ColType::Fixed);
+  EXPECT_EQ(lp.column_header(2).type, ColType::Bounded);
+  EXPECT_EQ(lp.column_header(3).type, ColType::LowerBound);
+  EXPECT_EQ(lp.column_header(4).type, ColType::Free);
+  EXPECT_EQ(lp.column_header(5).type, ColType::UpperBound);
 
-  EXPECT_TRUE(is_eq(lp.column_header(1).lower, 0));
-  EXPECT_TRUE(is_eq(lp.column_header(1).upper, 0));
-  EXPECT_TRUE(is_eq(lp.column_header(2).lower, 0));
-  EXPECT_TRUE(is_eq(lp.column_header(2).upper, 12));
-  EXPECT_TRUE(is_eq(lp.column_header(3).lower, 0));
-  EXPECT_TRUE(is_eq(lp.column_header(5).upper, 0));
+  EXPECT_DOUBLE_EQ(0.0, lp.column_header(1).lower);
+  EXPECT_DOUBLE_EQ(0.0, lp.column_header(1).upper);
+  EXPECT_DOUBLE_EQ(0.0, lp.column_header(2).lower);
+  EXPECT_DOUBLE_EQ(0.0, lp.column_header(3).lower);
+  EXPECT_DOUBLE_EQ(0.0, lp.column_header(5).upper);
+  EXPECT_DOUBLE_EQ(12.0, lp.column_header(2).upper);
 
   for (int i = 0; i < 5; i++)
-    EXPECT_TRUE(is_eq(lp.get_value(i, 1 + i), 1));
+    EXPECT_DOUBLE_EQ(1.0, lp.get_value(i, 1 + i));
 }
 
 } // namespace fizplex
