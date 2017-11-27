@@ -9,8 +9,7 @@ namespace fizplex {
 
 constexpr double eps = 1e-6;
 constexpr double zero_eps = 1e-7;
-
-const double inf = std::numeric_limits<double>::infinity();
+constexpr double inf = std::numeric_limits<double>::infinity();
 
 inline bool is_eq_norm(double lhs, double rhs, double epsilon = eps,
                        double zero_epsilon = zero_eps) {
