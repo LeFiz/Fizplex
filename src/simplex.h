@@ -59,7 +59,7 @@ private:
   void set_result_for_unbounded(Candidate, RatioTestResult);
 
   void print_iteration_results(IterationDecision &, int) const;
-  static constexpr int max_rounds = 500;
+  static constexpr int max_rounds = 5000;
 
   friend std::ostream &operator<<(std::ostream &, const Simplex::Phase &);
   friend std::ostream &operator<<(std::ostream &,
