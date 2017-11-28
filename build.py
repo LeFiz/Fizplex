@@ -12,10 +12,5 @@ call([  'cppcheck',
         '--quiet', '--template={file}:{line}: {message} [{id}]',
         'src'])
 
-start=time();
-print colored("Make ...", 'blue')
-call(['make', '-j6'])
-print "Make completed in ", time() - start, "s\n"
-
-print colored("Make run ...\n", 'blue')
-call(['make', 'run'])
+print colored("Make test ...\n", 'blue')
+call(['make', 'test'])
