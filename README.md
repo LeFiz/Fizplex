@@ -14,16 +14,16 @@ The goal is a full-fledged, modern MIP solver. The next big milestone will be so
 ## Building & usage:
 
 ```sh
+$ git submodule init
+$ git submodule update
+$ mkdir build && cd build
+$ cmake ..
 $ make
-$ ./bin/fizplex my_problem.mps
+$ ./fizplex my_problem.mps
 ```
 
-Running tests:
+Running tests (from project root since example files are read in the process):
 
 ```sh
-$ make test
+$ ./build/tests
 ```
-Note, that this requires [googletest].
-
-[googletest]: https://github.com/google/googletest
-
