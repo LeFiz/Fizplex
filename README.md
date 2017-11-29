@@ -1,4 +1,5 @@
 # Fizplex
+[![Build Status](https://travis-ci.org/LeFiz/Fizplex.svg?branch=master)](https://travis-ci.org/LeFiz/Fizplex)
 
 Fizplex is an early-stage linear programming solver. It currently handles small to medium-sized LPs in standard form.
 
