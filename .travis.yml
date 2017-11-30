@@ -10,4 +10,4 @@ addons:
       - g++-7
 
 script:
-  travis.sh
+  - sh travis.sh
