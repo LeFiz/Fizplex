@@ -12,8 +12,6 @@ call([  'cppcheck',
         '--quiet', '--template={file}:{line}: {message} [{id}]',
         'src'])
 
-print colored("Make ...\n", 'blue')
-call(['make', '-C', 'build/', '-j6'])
+print colored("Make tests...\n", 'blue')
+call(['sh', 'travis.sh'])
 
-print colored("Run tests ...\n", 'blue')
-call(['./build/tests'])
