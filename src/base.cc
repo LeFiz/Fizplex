@@ -51,7 +51,7 @@ Base::Pivot Base::find_pivot(size_t ind) const {
 }
 
 void Base::invert() {
-  assert(work_vector_is_zero());
+//  assert(work_vector_is_zero());
 
   for (size_t i = 0; i < m; i++) { // Update all columns
     auto pivot = find_pivot(i);
@@ -71,15 +71,15 @@ void Base::invert() {
       apply_etm(etms[i], etms[k].eta);
   } // for i ...
 
-  assert(work_vector_is_zero());
+//  assert(work_vector_is_zero());
 }
 
-bool Base::work_vector_is_zero() const {
-  static const auto abs_sum = [](double sum, double val) {
-    return sum + std::fabs(val);
-  };
-  return !(std::accumulate(work.cbegin(), work.cend(), 0, abs_sum) > 0.0);
-}
+//bool Base::work_vector_is_zero() const {
+//  static const auto abs_sum = [](double sum, double val) {
+//    return sum + std::fabs(val);
+//  };
+//  return !(std::accumulate(work.cbegin(), work.cend(), 0, abs_sum) > 0.0);
+//}
 
 void Base::apply_etm(const ETM &etm, SVector &vec) {
   double mult = 0.0;
