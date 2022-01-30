@@ -12,55 +12,43 @@ using namespace fizplex;
 
 SimplexOnIntegers::SimplexOnIntegers(LP &a_lp)
 : _lp_original(a_lp)
-, _smx(a_lp)
 {
+    SubIntegerLP lp_copy(&_lp_original);
+    _head = std::make_unique< Node >(lp_copy, nullptr, _lp_original.column_count(), 0);
 }
 
 void SimplexOnIntegers::solve()
 {
-    _smx.solve();
+    bool built = _head->build_tree();
     
-    _head_result = _smx.get_result();
-    _head_x = _smx.get_x();
-    _head_z = - _smx.get_z();
-    
-    const auto size = _lp_original.column_count();
-    printf("original lp size : %lu\n", size);
-    const DVector x = get_x();
-    for (size_t i=0; i<size; ++i) {
-        auto v = floor(x[i] + 0.5);
-        
-        if (abs(v - x[i]) < 1e-3) {
-            ; // integer, pass
-        }
-        else {
-            assert(!_integer_sln_found);
-            
-            printf("LEFT : \n");
-            auto subLP = SubIntegerLP(&_lp_original, i, x[i], true);
-            auto n_left = Node(subLP, nullptr, size);
-            if (n_left.get_obj_value() > 0) // FIXME: need proper way to know the we have a sln there
-            {
-                printf("left int-solution found, level : 1\n");
-                _head_z = n_left.get_obj_value();
-                _head_x = n_left.get_x();
-                _integer_sln_found = true;
-            }
-
-            printf("RIGHT : \n");
-            auto subLP_right = SubIntegerLP(&_lp_original, i, x[i], false);
-            auto n_right = Node(subLP_right, nullptr, size);
-            if ((_integer_sln_found && n_right.get_obj_value() > _head_z) ||
-                (!_integer_sln_found && n_right.get_obj_value() > 0)) {
-                printf("right int-solution found, level : 1\n");
-                _head_z = n_right.get_obj_value();
-                _head_x = n_right.get_x();
-                _integer_sln_found = true;
-            }
-            
-            break;
-        }
+    if (built) {
+        _head_result = Simplex::Result::OptimalSolution;
+        std::tie(_head_z, _head_x) = _head->get_solution();
     }
+    else {
+        _head_result = Simplex::Result::Infeasible;
+    }
+//    _smx.solve();
+//
+//    _head_result = _smx.get_result();
+//    _head_x = _smx.get_x();
+//    _head_z = - _smx.get_z();
+//
+//    const auto size = _lp_original.column_count();
+//    printf("original lp size : %lu\n", size);
+//    const DVector x = get_x();
+//    for (size_t i=0; i<size; ++i) {
+//        auto v = floor(x[i] + 0.5);
+//
+//        if (abs(v - x[i]) < 1e-3) {
+//            ; // integer, pass
+//        }
+//        else {
+//            assert(!_integer_sln_found);
+//
+            
+//        }
+//    }
 }
 
 const DVector &SimplexOnIntegers::get_x() const
@@ -80,6 +68,10 @@ const Simplex::Result &SimplexOnIntegers::get_result() const
 
 
 //=================================================================================================
+SubIntegerLP::SubIntegerLP(const LP* parent_lp)
+: LP(*parent_lp)
+{
+}
 SubIntegerLP::SubIntegerLP(const LP* parent_lp,
                            size_t edge_idx,
                            double edge_value,
@@ -112,29 +104,40 @@ SubIntegerLP::SubIntegerLP(const SubIntegerLP& other)
 }
 
 //=================================================================================================
-Node::Node(SubIntegerLP sub_lp, Node* parent, size_t orig_size)
+Node::Node(SubIntegerLP sub_lp, Node* parent, size_t orig_size, uint32_t deep_level)
 : _sub_lp(sub_lp)
+, _backup_lp(sub_lp)
+, _orig_size(orig_size)
+, _deep_level(deep_level)
 , _parent(parent)
+{
+    printf("Node level of %u created\n", deep_level);
+}
+
+bool Node::build_tree()
 {
     auto subSmx = Simplex(_sub_lp);
     
     subSmx.solve();
     
+    ////// prints
     auto res_left = subSmx.get_result();
     auto subx = subSmx.get_x();
     printf("result %i\n", res_left);
     printf("sub obj: %f\n", -subSmx.get_z());
-    for (size_t j=0; j<orig_size; j++) {
+    for (size_t j=0; j<_orig_size; j++) {
         printf("%f\n", subx[j]);
     }
+    ///////
     
     if (res_left != Simplex::Result::OptimalSolution) {
-        return;
+        return false;
     }
     
     bool integer_sol = true;
+    size_t none_integer_idx = 0;
     const auto& x = subSmx.get_x();
-    for (size_t i=0; i<orig_size; ++i) {
+    for (size_t i=0; i<_orig_size; ++i) {
         auto v = floor(x[i] + 0.5);
         
         if (abs(v - x[i]) < 1e-3) {
@@ -142,6 +145,7 @@ Node::Node(SubIntegerLP sub_lp, Node* parent, size_t orig_size)
         }
         else {
             integer_sol = false;
+            none_integer_idx = i;
             break;
         }
     }
@@ -149,5 +153,28 @@ Node::Node(SubIntegerLP sub_lp, Node* parent, size_t orig_size)
     if (integer_sol) {
         _obj = - subSmx.get_z();
         _x = subSmx.get_x();
+        
+        return true;
     }
+    
+    return create_children(none_integer_idx, x[none_integer_idx]);
+}
+
+bool Node::create_children(size_t idx, double value)
+{
+    if (_deep_level >= MAX_DEEP) {
+        return false;
+    }
+    
+    printf("LEFT : \n");
+    auto subLP_left = SubIntegerLP(&_backup_lp, idx, value, true);
+    _left = std::make_unique< Node >(subLP_left, this, _orig_size, _deep_level + 1);
+    bool left_built = _left->build_tree();
+
+    printf("RIGHT : \n");
+    auto subLP_right = SubIntegerLP(&_backup_lp, idx, value, false);
+    _right = std::make_unique< Node >(subLP_right, this, _orig_size, _deep_level + 1);
+    bool right_built = _right->build_tree();
+
+    return left_built || right_built;
 }
