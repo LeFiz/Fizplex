@@ -7,6 +7,16 @@ namespace fizplex {
 
 LP::LP() : A(), b(), c(), cols(), rows() {}
 
+LP::LP(const LP& other)
+: A(other.A)
+, b(other.b)
+, c(other.c)
+, cols(other.cols)
+, rows(other.rows)
+{
+    printf("LP copy contructor called \n");
+}
+
 LP::Column::Column(ColType _type, double _lower, double _upper,
                    bool _is_logical)
     : type(_type), is_logical(_is_logical), lower(_lower), upper(_upper) {}
