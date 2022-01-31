@@ -40,11 +40,13 @@ void SimplexOnIntegers::solve()
             }
         }
         else {
-            if (nullptr != top_node->left_child())
-                tree.push( top_node->left_child().get() );
+            auto& lchild = top_node->left_child();
+            if (nullptr != lchild && lchild->lower_bound() >= cur_best)
+                tree.push( lchild.get() );
             
-            if (nullptr != top_node->right_child())
-                tree.push( top_node->right_child().get() );
+            auto& rchild = top_node->right_child();
+            if (nullptr != rchild && rchild->lower_bound() >= cur_best)
+                tree.push( rchild.get() );
         }
         
         tree.pop();

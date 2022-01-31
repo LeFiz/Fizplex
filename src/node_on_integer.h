@@ -13,7 +13,7 @@
 namespace fizplex {
 
 
-static uint32_t MAX_DEEP = 15;
+static uint32_t MAX_DEEP = 16;
 
 class SubIntegerLP : public LP
 {
@@ -41,6 +41,7 @@ public:
     bool build_tree();
     
     std::pair<double, DVector> get_solution() const;
+    double lower_bound() const;
     
     std::unique_ptr<Node>& left_child();
     std::unique_ptr<Node>& right_child();

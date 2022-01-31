@@ -120,6 +120,21 @@ bool Node::create_children(size_t idx, double value)
     
     return true;
 }
+double Node::lower_bound() const
+{
+    auto lp0 = LP(_backup_lp);
+    
+    // invert the objective 
+    for (size_t i=0; i<_orig_size; ++i)
+    {
+        auto o0 = lp0.get_obj_value(i);
+        lp0.add_obj_value(i, -o0);
+    }
+    auto bsplx = Simplex(lp0);
+    bsplx.solve();
+    
+    return bsplx.get_z();
+}
 
 std::pair<double, DVector> Node::get_solution() const {
     double z_left = -inf;
