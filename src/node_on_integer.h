@@ -13,7 +13,7 @@
 namespace fizplex {
 
 
-static uint32_t MAX_DEEP = 16;
+static uint32_t MAX_DEEP = 18;
 
 class SubIntegerLP : public LP
 {
