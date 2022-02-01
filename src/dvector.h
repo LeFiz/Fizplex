@@ -30,8 +30,8 @@ public:
   // Iterator access
   auto begin() { return std::begin(vals); }
   auto end() { return std::end(vals); }
-  auto cbegin(){ return std::begin(vals); }
-  auto cend() { return std::end(vals); }
+  auto cbegin() const { return std::begin(vals); }
+  auto cend() const { return std::end(vals); }
 
   // Math operators
   double operator*(const DVector &rhs) const;
