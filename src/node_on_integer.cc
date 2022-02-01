@@ -7,6 +7,7 @@
 
 #include "node_on_integer.h"
 #include "simplex.h"
+#include "debug.h"
 
 using namespace fizplex;
 
@@ -54,7 +55,7 @@ Node::Node(SubIntegerLP sub_lp, Node* parent, size_t orig_size, uint32_t deep_le
 , _deep_level(deep_level)
 , _parent(parent)
 {
-    printf("Node level of %u created\n", deep_level);
+    Debug(1) << "Node level of " << deep_level << " created:\n";
 }
 std::unique_ptr<Node>& Node::left_child()
 {

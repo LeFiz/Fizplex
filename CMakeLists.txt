@@ -28,6 +28,8 @@ add_library(core
   src/mpsreader.cc
   src/pricer.cc
   src/ratio_tester.cc
+  src/node_on_integer.cc
+  src/simplex_on_integers.cc
   )
 
 add_executable(tests
@@ -38,6 +40,7 @@ add_executable(tests
   src/base_test.cc
   src/lp_test.cc
   src/simplex_test.cc
+  src/simplex_on_int_test.cc
   src/mpsreader_test.cc
   src/pricer_test.cc
   src/ratio_tester_test.cc
