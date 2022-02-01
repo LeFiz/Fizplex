@@ -110,11 +110,9 @@ bool Node::create_children(size_t idx, double value)
         return false;
     }
     
-    printf("LEFT : \n");
     auto subLP_left = SubIntegerLP(&_backup_lp, idx, value, true);
     _left = std::make_unique< Node >(subLP_left, this, _orig_size, _deep_level + 1);
     
-    printf("RIGHT : \n");
     auto subLP_right = SubIntegerLP(&_backup_lp, idx, value, false);
     _right = std::make_unique< Node >(subLP_right, this, _orig_size, _deep_level + 1);
     
