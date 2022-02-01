@@ -1,6 +1,8 @@
 #include "mpsreader.h"
 #include <exception>
 #include <fstream>
+#include <string>
+#include <sstream>
 
 namespace fizplex {
 namespace MPSReader {

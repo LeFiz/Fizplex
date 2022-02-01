@@ -37,12 +37,13 @@ TEST_F(SimplexTest, LowerRowUpperVarOptimalSolution) {
 }
 
 TEST_F(SimplexTest, LowerRowBoundedVarOptimalSolutionWithBoundFlip) {
-  lp.add_column(ColType::Bounded, 0, 5, -1);
+  lp.add_column(ColType::Bounded, 0, 8, -1);
   lp.add_row(RowType::LE, -inf, 14, {2});
 
   solve_lp();
   EXPECT_EQ(Simplex::Result::OptimalSolution, result);
-  EXPECT_DOUBLE_EQ(-5.0, z);
+  EXPECT_DOUBLE_EQ(-7.0, z);
+    EXPECT_DOUBLE_EQ(7.0, x[0]);
 }
 
 TEST_F(SimplexTest, EqualityRowBoundedVarsOptimalSolution) {

@@ -29,6 +29,7 @@ public:
   };
 
   LP();
+  LP(const LP&);
 
   void add_column(ColType type, double lower, double upper,
                   double obj_value = 0.0f);

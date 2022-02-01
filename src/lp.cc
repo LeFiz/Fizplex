@@ -7,6 +7,14 @@ namespace fizplex {
 
 LP::LP() : A(), b(), c(), cols(), rows() {}
 
+LP::LP(const LP& other)
+: A(other.A)
+, b(other.b)
+, c(other.c)
+, cols(other.cols)
+, rows(other.rows)
+{}
+
 LP::Column::Column(ColType _type, double _lower, double _upper,
                    bool _is_logical)
     : type(_type), is_logical(_is_logical), lower(_lower), upper(_upper) {}
@@ -166,7 +174,7 @@ bool LP::is_feasible(const DVector &x) const {
   for (size_t row = 0; row < row_count(); row++) {
     double val = 0.0;
     for (size_t col = 0; col < column_count(); col++)
-      val += A.get_value(row, col) * x[col];
+        val += A.get_value(row, col) * x[col];
     if (!is_eq_norm(val, b[row], 1e-4, 1e-5)) {
       Debug(0) << "Row " << row << " failed equality test ("
                << "should be: " << b[row] << ", is " << val << ")\n";
